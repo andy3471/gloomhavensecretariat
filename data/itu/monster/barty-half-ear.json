@@ -1,0 +1,177 @@
+{
+  "name": "barty-half-ear",
+  "edition": "itu",
+  "deck": "guard",
+  "boss": true,
+  "hidden": true,
+  "count": 1,
+  "standeeShare": "bandit-guard",
+  "standeeShareEdition": "gh",
+  "baseStat": {
+    "type": "boss"
+  },
+  "stats": [
+    {
+      "level": 0,
+      "health": "(HxC)/2",
+      "movement": 2,
+      "attack": 2
+    },
+    {
+      "level": 1,
+      "health": "(HxC)/2",
+      "movement": 3,
+      "attack": 2
+    },
+    {
+      "level": 2,
+      "health": "(HxC)/2",
+      "movement": 3,
+      "attack": 3
+    },
+    {
+      "level": 3,
+      "health": "(HxC)/2",
+      "movement": 3,
+      "attack": 3
+    },
+    {
+      "level": 4,
+      "health": "(HxC)/2",
+      "movement": 4,
+      "attack": 3
+    },
+    {
+      "level": 5,
+      "health": "(HxC)/2",
+      "movement": 4,
+      "attack": 4
+    },
+    {
+      "level": 6,
+      "health": "(HxC)/2",
+      "movement": 4,
+      "attack": 4
+    },
+    {
+      "level": 7,
+      "health": "(HxC)/2",
+      "movement": 5,
+      "attack": 4
+    },
+    {
+      "type": "elite",
+      "level": 0,
+      "health": "(HxC)/2",
+      "movement": 2,
+      "attack": 3
+    },
+    {
+      "type": "elite",
+      "level": 1,
+      "health": "(HxC)/2",
+      "movement": 2,
+      "attack": 3,
+      "actions": [
+        {
+          "type": "shield",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "type": "elite",
+      "level": 2,
+      "health": "(HxC)/2",
+      "movement": 2,
+      "attack": 4,
+      "actions": [
+        {
+          "type": "shield",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "type": "elite",
+      "level": 3,
+      "health": "(HxC)/2",
+      "movement": 3,
+      "attack": 4,
+      "actions": [
+        {
+          "type": "shield",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "type": "elite",
+      "level": 4,
+      "health": "(HxC)/2",
+      "movement": 3,
+      "attack": 4,
+      "actions": [
+        {
+          "type": "condition",
+          "value": "muddle"
+        },
+        {
+          "type": "shield",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "type": "elite",
+      "level": 5,
+      "health": "(HxC)/2",
+      "movement": 3,
+      "attack": 5,
+      "actions": [
+        {
+          "type": "condition",
+          "value": "muddle"
+        },
+        {
+          "type": "shield",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "type": "elite",
+      "level": 6,
+      "health": "(HxC)/2",
+      "movement": 3,
+      "attack": 5,
+      "actions": [
+        {
+          "type": "condition",
+          "value": "muddle"
+        },
+        {
+          "type": "shield",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "type": "elite",
+      "level": 7,
+      "health": "(HxC)/2",
+      "movement": 3,
+      "attack": 5,
+      "actions": [
+        {
+          "type": "condition",
+          "value": "muddle"
+        },
+        {
+          "type": "shield",
+          "value": 3
+        }
+      ]
+    }
+  ]
+}

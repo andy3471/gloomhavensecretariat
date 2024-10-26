@@ -9,8 +9,8 @@
   "rewards": {
     "gold": 15,
     "items": [
-      "33",
-      "33"
+      "33-gh",
+      "33-gh"
     ]
   },
   "monsters": [
@@ -18,10 +18,17 @@
     "bandit-archer",
     "bandit-guard"
   ],
+  "objectives": [
+    {
+      "name": "Door 2",
+      "health": "10",
+      "marker": "2"
+    }
+  ],
   "rooms": [
     {
       "roomNumber": 1,
-      "ref": "itu2-1",
+      "ref": "i1a",
       "initial": true,
       "rooms": [
         2
@@ -58,18 +65,76 @@
     },
     {
       "roomNumber": 2,
-      "ref": "itu2-2",
-      "monster": []
+      "ref": "i2b",
+      "rooms": [
+        3
+      ],
+      "monster": [
+        {
+          "name": "ancient-artillery",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "elite"
+        },
+        {
+          "name": "ancient-artillery",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "bandit-archer",
+          "type": "normal"
+        },
+        {
+          "name": "bandit-archer",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "bandit-guard",
+          "type": "normal"
+        },
+        {
+          "name": "bandit-guard",
+          "player4": "normal"
+        }
+      ]
     },
     {
       "roomNumber": 3,
-      "ref": "itu2-3",
-      "monster": []
+      "ref": "a1b",
+      "rooms": [
+        4
+      ],
+      "monster": [
+        {
+          "name": "bandit-archer",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "bandit-archer",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        }
+      ],
+      "objectives": [
+        1
+      ]
     },
     {
       "roomNumber": 4,
-      "ref": "itu2-4",
-      "monster": []
+      "ref": "b2a",
+      "monster": [
+        {
+          "name": "barty-half-ear",
+          "type": "boss"
+        }
+      ]
     }
   ]
 }

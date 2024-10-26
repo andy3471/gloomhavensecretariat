@@ -2,6 +2,9 @@
   "edition": {
     "itu": "Into The Unknown"
   },
+  "monster": {
+    "barty-half-ear": "Barty Half Ear"
+  },
   "custom": {
     "itu": {
       "flowChartGroup": {
