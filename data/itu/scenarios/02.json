@@ -25,6 +25,24 @@
       "marker": "2"
     }
   ],
+  "rules": [
+    {
+      "round": "true",
+      "always": true,
+      "once": true,
+      "figures": [
+        {
+          "identifier": {
+            "type": "monster",
+            "edition": "itu",
+            "name": "barty-half-ear"
+          },
+          "type": "dead"
+        }
+      ],
+      "finish": "won"
+    }
+  ],
   "rooms": [
     {
       "roomNumber": 1,
