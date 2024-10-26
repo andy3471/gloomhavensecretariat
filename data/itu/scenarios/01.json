@@ -1,0 +1,87 @@
+{
+  "index": "1",
+  "name": "Just Another Night",
+  "flowChartGroup": "intro",
+  "coordinates": {
+    "x": 15,
+    "y": 372.75,
+    "width": 283,
+    "height": 192,
+    "gridLocation": "B1"
+  },
+  "edition": "itu",
+  "initial": true,
+  "unlocks": [
+    "2"
+  ],
+  "monsters": [
+    "common-vermling-raider"
+  ],
+  "rooms": [
+    {
+      "roomNumber": 1,
+      "ref": "itu-1",
+      "initial": true,
+      "monster": [
+        {
+          "name": "bandit-archer",
+          "type": "normal"
+        },
+        {
+          "name": "bandit-archer",
+          "type": "elite"
+        },
+        {
+          "name": "bandit-archer",
+          "type": "elite"
+        },
+        {
+          "name": "bandit-guard",
+          "type": "elite"
+        },
+        {
+          "name": "bandit-guard",
+          "type": "elite"
+        },
+        {
+          "name": "bandit-guard",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "bandit-guard",
+          "player4": "normal"
+        },
+        {
+          "name": "inox-archer",
+          "type": "normal"
+        },
+        {
+          "name": "inox-archer",
+          "type": "elite"
+        },
+        {
+          "name": "inox-guard",
+          "type": "elite"
+        },
+        {
+          "name": "inox-guard",
+          "type": "elite"
+        },
+        {
+          "name": "inox-guard",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "inox-guard",
+          "player4": "normal"
+        },
+        {
+          "name": "inox-shaman",
+          "type": "elite"
+        }
+      ]
+    }
+  ]
+}
