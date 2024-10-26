@@ -26,7 +26,35 @@
       "rooms": [
         1
       ],
-      "monster": []
+      "monster": [
+        {
+          "name": "ancient-artillery",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "elite"
+        },
+        {
+          "name": "ancient-artillery",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "bandit-guard",
+          "type": "elite"
+        },
+        {
+          "name": "bandit-guard",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "elite"
+        },
+        {
+          "name": "bandit-guard",
+          "player3": "normal",
+          "player4": "normal"
+        }
+      ]
     },
     {
       "roomNumber": 2,
