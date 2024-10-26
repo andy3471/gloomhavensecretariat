@@ -1,0 +1,47 @@
+{
+  "index": "2",
+  "name": "A Quatryl Scorned",
+  "flowChartGroup": "intro",
+  "edition": "itu",
+  "unlocks": [
+    "2"
+  ],
+  "rewards": {
+    "gold": 15,
+    "items": [
+      "33",
+      "33"
+    ]
+  },
+  "monsters": [
+    "ancient-artililery",
+    "bandit-archer",
+    "bandit-guard"
+  ],
+  "rooms": [
+    {
+      "roomNumber": 1,
+      "ref": "itu2-1",
+      "initial": true,
+      "rooms": [
+        1
+      ],
+      "monster": []
+    },
+    {
+      "roomNumber": 2,
+      "ref": "itu2-2",
+      "monster": []
+    },
+    {
+      "roomNumber": 3,
+      "ref": "itu2-3",
+      "monster": []
+    },
+    {
+      "roomNumber": 4,
+      "ref": "itu2-4",
+      "monster": []
+    }
+  ]
+}

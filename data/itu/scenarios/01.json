@@ -2,25 +2,22 @@
   "index": "1",
   "name": "Just Another Night",
   "flowChartGroup": "intro",
-  "coordinates": {
-    "x": 15,
-    "y": 372.75,
-    "width": 283,
-    "height": 192,
-    "gridLocation": "B1"
-  },
   "edition": "itu",
   "initial": true,
   "unlocks": [
     "2"
   ],
   "monsters": [
-    "common-vermling-raider"
+    "bandit-archer",
+    "bandit-guard",
+    "inox-archer",
+    "inox-guard",
+    "inox-shaman"
   ],
   "rooms": [
     {
       "roomNumber": 1,
-      "ref": "itu-1",
+      "ref": "itu1-1",
       "initial": true,
       "monster": [
         {
