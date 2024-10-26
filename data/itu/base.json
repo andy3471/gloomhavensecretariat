@@ -1,3 +1,6 @@
 {
-  "edition": "itu"
+  "edition": "itu",
+  "extensions": [
+    "gh"
+  ]
 }

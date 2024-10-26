@@ -1,5 +1,12 @@
 {
   "edition": {
-    "itu": "Into the unknown"
+    "itu": "Into The Unknown"
+  },
+  "custom": {
+    "itu": {
+      "flowChartGroup": {
+        "itu": "Into the Unkown"
+      }
+    }
   }
 }

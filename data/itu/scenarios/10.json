@@ -1,0 +1,17 @@
+{
+  "index": "10",
+  "name": "TODO",
+  "flowChartGroup": "itu",
+  "edition": "itu",
+  "rewards": {},
+  "monsters": [],
+  "rooms": [
+    {
+      "roomNumber": 1,
+      "ref": "itu10-1",
+      "initial": true,
+      "rooms": [],
+      "monster": []
+    }
+  ]
+}

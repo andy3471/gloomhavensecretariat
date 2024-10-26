@@ -1,0 +1,20 @@
+{
+  "index": "5",
+  "name": "TODO",
+  "flowChartGroup": "itu",
+  "edition": "itu",
+  "unlocks": [
+    "6"
+  ],
+  "rewards": {},
+  "monsters": [],
+  "rooms": [
+    {
+      "roomNumber": 1,
+      "ref": "itu5-1",
+      "initial": true,
+      "rooms": [],
+      "monster": []
+    }
+  ]
+}

@@ -1,10 +1,10 @@
 {
   "index": "2",
   "name": "A Quatryl Scorned",
-  "flowChartGroup": "intro",
+  "flowChartGroup": "itu",
   "edition": "itu",
   "unlocks": [
-    "2"
+    "3"
   ],
   "rewards": {
     "gold": 15,
@@ -24,7 +24,7 @@
       "ref": "itu2-1",
       "initial": true,
       "rooms": [
-        1
+        2
       ],
       "monster": [
         {
