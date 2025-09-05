@@ -1,20 +1,196 @@
 {
   "index": "3",
-  "name": "TODO",
+  "name": "Unreliable Medicine",
   "flowChartGroup": "itu",
   "edition": "itu",
   "unlocks": [
     "4"
   ],
-  "rewards": {},
-  "monsters": [],
+  "rewards": {
+    "gold": 10,
+    "battleGoals": 2
+  },
+  "monsters": [
+    "earth-demon",
+    "giant-viper"
+  ],
   "rooms": [
     {
       "roomNumber": 1,
-      "ref": "itu3-1",
+      "ref": "B1b",
       "initial": true,
-      "rooms": [],
-      "monster": []
+      "rooms": [
+        2,
+        3
+      ],
+      "monster": [
+        {
+          "name": "earth-demon",
+          "player2": "elite",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "earth-demon",
+          "player3": "normal",
+          "player4": "elite"
+        },
+        {
+          "name": "giant-viper",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "giant-viper",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "giant-viper",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "giant-viper",
+          "player4": "elite"
+        }
+      ]
+    },
+    {
+      "roomNumber": 2,
+      "ref": "H2b",
+      "rooms": [
+        4
+      ],
+      "monster": [
+        {
+          "name": "earth-demon",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "vermling-scout",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "elite"
+        },
+        {
+          "name": "vermling-scout",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "vermling-scout",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "vermling-scout",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "vermling-scout",
+          "player3": "normal",
+          "player4": "elite"
+        },
+        {
+          "name": "vermling-shaman",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        }
+      ]
+    },
+    {
+      "roomNumber": 3,
+      "ref": "A4a",
+      "rooms": [
+        4
+      ],
+      "monster": [
+        {
+          "name": "vermling-scout",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "vermling-scout",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "vermling-scout",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        }
+      ]
+    },
+    {
+      "roomNumber": 4,
+      "ref": "M1b",
+      "rooms": [
+        2,
+        3
+      ],
+      "monster": [
+        {
+          "name": "giant-viper",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "giant-viper",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "giant-viper",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "elite"
+        },
+        {
+          "name": "giant-viper",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "elite"
+        },
+        {
+          "name": "giant-viper",
+          "player3": "normal",
+          "player4": "elite"
+        },
+        {
+          "name": "giant-viper",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "giant-viper",
+          "player4": "normal"
+        },
+        {
+          "name": "vermling-shaman",
+          "player2": "elite",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "vermling-shaman",
+          "player3": "normal",
+          "player4": "elite"
+        }
+      ]
     }
   ]
 }
