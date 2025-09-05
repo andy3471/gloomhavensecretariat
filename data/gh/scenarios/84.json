@@ -10,10 +10,11 @@
     "gridLocation": "D-12"
   },
   "edition": "gh",
+  "eventType": "road",
   "requirements": [
     {
       "party": [
-        "Tremors"
+        "tremors"
       ]
     }
   ],

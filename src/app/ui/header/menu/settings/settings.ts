@@ -10,6 +10,7 @@ import { SettingMenuComponent } from "./setting/setting";
 import { ghsTextSearch } from "src/app/ui/helper/Static";
 
 @Component({
+  standalone: false,
   selector: 'ghs-settings-menu',
   templateUrl: 'settings.html',
   styleUrls: ['../menu.scss', 'settings.scss']
@@ -38,7 +39,7 @@ export class SettingsMenuComponent {
     Object.keys(ConditionName).forEach((conditionName) => {
       const condition = new Condition(conditionName);
       if (!gameManager.game.edition || gameManager.conditions(gameManager.game.edition).map((condition) => condition.name).indexOf(condition.name) != -1 || condition.types.indexOf(ConditionType.hidden) != -1) {
-        if (condition.types.indexOf(ConditionType.turn) != -1 || condition.types.indexOf(ConditionType.afterTurn) != -1) {
+        if (condition.types.indexOf(ConditionType.turn) != -1 || condition.types.indexOf(ConditionType.afterTurn) != -1 || condition.types.indexOf(ConditionType.autoApply) != -1 && condition.types.indexOf(ConditionType.apply) == -1) {
           this.applyConditionsExcludes.push(condition);
         }
 

@@ -10,19 +10,20 @@
     "gridLocation": "J-3"
   },
   "edition": "fc",
+  "eventType": "rift",
   "unlocks": [
     "111"
   ],
   "requirements": [
     {
       "global": [
-        "Knowledge is Power:2"
+        "knowledge-is-power:2"
       ]
     }
   ],
   "rewards": {
     "partyAchievements": [
-      "Dimensional Equilibrium"
+      "dimensional-equilibrium"
     ],
     "items": [
       "48-gh"

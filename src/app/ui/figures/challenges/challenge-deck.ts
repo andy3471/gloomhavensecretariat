@@ -12,9 +12,9 @@ export class ChallengeDeckChange {
 
     deck: ChallengeDeck;
     type: string;
-    values: string[];
+    values: (string | number | boolean)[];
 
-    constructor(deck: ChallengeDeck, type: string, ...values: string[]) {
+    constructor(deck: ChallengeDeck, type: string, ...values: (string | number | boolean)[]) {
         this.deck = deck;
         this.type = type;
         this.values = values;
@@ -22,6 +22,7 @@ export class ChallengeDeckChange {
 }
 
 @Component({
+    standalone: false,
     selector: 'ghs-challenge-deck',
     templateUrl: './challenge-deck.html',
     styleUrls: ['./challenge-deck.scss']
@@ -81,7 +82,7 @@ export class ChallengeDeckComponent implements OnInit, OnDestroy, OnChanges {
                 this.current = this.deck.current;
                 this.drawTimeout = null;
                 this.init = true;
-            }, !settingsManager.settings.animations ? 0 : this.initTimeout)
+            }, settingsManager.settings.animations ? this.initTimeout * settingsManager.settings.animationSpeed : 0)
         }
 
         this.uiChangeSubscription = gameManager.uiChange.subscribe({
@@ -179,7 +180,7 @@ export class ChallengeDeckComponent implements OnInit, OnDestroy, OnChanges {
                     this.queue = 0;
                 }
             }
-        }, !settingsManager.settings.animations ? 0 : (this.vertical ? 1050 : 1850));
+        }, settingsManager.settings.animations ? 1050 * settingsManager.settings.animationSpeed : 0);
     }
 
     draw(event: any) {
@@ -188,11 +189,11 @@ export class ChallengeDeckComponent implements OnInit, OnDestroy, OnChanges {
         } else if (!this.drawDisabled && this.deck.cards.length > 0) {
             if (!this.drawTimeout && this.deck.current < (this.deck.cards.length - (this.queue == 0 ? 0 : 1))) {
                 this.drawTimeout = setTimeout(() => {
-                    this.before.emit(new ChallengeDeckChange(this.deck, 'challengeDeckDraw'));
+                    this.before.emit(new ChallengeDeckChange(this.deck, 'challengeDeck.draw'));
                     gameManager.challengesManager.drawCard(this.deck);
-                    this.after.emit(new ChallengeDeckChange(this.deck, 'challengeDeckDraw'));
+                    this.after.emit(new ChallengeDeckChange(this.deck, 'challengeDeck.draw'));
                     this.drawTimeout = null;
-                }, !settingsManager.settings.animations ? 0 : 150)
+                }, settingsManager.settings.animations ? 150 * settingsManager.settings.animationSpeed : 0)
             }
         } else {
             this.dialog.open(ChallengeDeckDialogComponent, {
@@ -227,9 +228,9 @@ export class ChallengeDeckComponent implements OnInit, OnDestroy, OnChanges {
         if (this.disabled) {
             this.open(event);
         } else if (index <= this.current) {
-            this.before.emit(new ChallengeDeckChange(this.deck, 'challengeDeckToggle', '' + index));
+            this.before.emit(new ChallengeDeckChange(this.deck, 'challengeDeck.toggle', index));
             gameManager.challengesManager.toggleKeep(this.deck, index, this.keepAvailable);
-            this.after.emit(new ChallengeDeckChange(this.deck, 'challengeDeckToggle', '' + index));
+            this.after.emit(new ChallengeDeckChange(this.deck, 'challengeDeck.toggle', index));
         }
     }
 

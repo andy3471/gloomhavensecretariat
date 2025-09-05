@@ -11,6 +11,10 @@
   },
   "edition": "fh",
   "complexity": 2,
+  "eventType": "road",
+  "blocks": [
+    "4B"
+  ],
   "rewards": {
     "prosperity": 1,
     "morale": 1,

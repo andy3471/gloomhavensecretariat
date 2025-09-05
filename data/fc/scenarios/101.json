@@ -10,13 +10,14 @@
     "gridLocation": "K-9"
   },
   "edition": "fc",
+  "eventType": "rift",
   "unlocks": [
     "108",
     "109"
   ],
   "rewards": {
     "globalAchievements": [
-      "Knowledge is Power"
+      "knowledge-is-power"
     ],
     "collectiveGold": 20,
     "reputation": 1,

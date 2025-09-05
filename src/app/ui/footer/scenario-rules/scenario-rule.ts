@@ -12,6 +12,7 @@ import { ScenarioData } from "src/app/game/model/data/ScenarioData";
 import { HiddenScenarioFigureRuleTypes, ScenarioFigureRule, ScenarioFigureRuleIdentifier, ScenarioRule, ScenarioRuleIdentifier } from "src/app/game/model/data/ScenarioRule";
 
 @Component({
+    standalone: false,
     selector: 'ghs-scenario-rule',
     templateUrl: './scenario-rule.html',
     styleUrls: ['./scenario-rule.scss']
@@ -28,7 +29,9 @@ export class ScenarioRuleComponent implements OnInit {
     ngOnInit(): void {
         if (this.rule.figures) {
             this.rule.figures.forEach((figureRule) => {
-                figureRule.value = '' + figureRule.value;
+                if (figureRule.value) {
+                    figureRule.value = '' + figureRule.value;
+                }
             })
         }
     }
@@ -42,7 +45,7 @@ export class ScenarioRuleComponent implements OnInit {
             if (gameManager.game.scenario) {
                 const section = gameManager.sectionData(gameManager.game.scenario.edition, true).find((sectionData) => sectionData.index == cardId && sectionData.group == 'randomMonsterCard');
                 if (section) {
-                    return "&nbsp%data.section." + section.name + '% (#' + section.index + ")";
+                    return "&nbsp%" + gameManager.scenarioManager.scenarioTitle(section, true) + '% (#' + section.index + ")";
                 }
             }
 
@@ -59,7 +62,7 @@ export class ScenarioRuleComponent implements OnInit {
             if (gameManager.game.scenario) {
                 const section = gameManager.sectionData(gameManager.game.scenario.edition, true).find((sectionData) => sectionData.index == cardId && sectionData.group == 'randomDungeonCard');
                 if (section) {
-                    return "&nbsp%data.section." + section.name + '% (#' + section.index + ")";
+                    return "&nbsp%" + gameManager.scenarioManager.scenarioTitle(section, true) + '% (#' + section.index + ")";
                 }
             }
 

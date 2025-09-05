@@ -9,6 +9,7 @@ import { ObjectiveContainer } from "src/app/game/model/ObjectiveContainer";
 import { ghsDialogClosingHelper } from "src/app/ui/helper/Static";
 
 @Component({
+    standalone: false,
     selector: 'ghs-character-initiative-dialog',
     templateUrl: 'initiative-dialog.html',
     styleUrls: ['./initiative-dialog.scss']
@@ -22,10 +23,10 @@ export class CharacterInitiativeDialogComponent {
     settingsManager: SettingsManager = settingsManager;
     GameState = GameState;
     character: Character | undefined;
-    objective:  ObjectiveContainer | undefined;
+    objective: ObjectiveContainer | undefined;
 
 
-    constructor(@Inject(DIALOG_DATA) public figure: Character |  ObjectiveContainer, private dialogRef: DialogRef) {
+    constructor(@Inject(DIALOG_DATA) public figure: Character | ObjectiveContainer, private dialogRef: DialogRef) {
         if (this.figure instanceof Character) {
             this.character = this.figure;
         } else if (this.figure instanceof ObjectiveContainer) {
@@ -42,10 +43,14 @@ export class CharacterInitiativeDialogComponent {
 
     @HostListener('document:keydown', ['$event'])
     onKeyPress(event: KeyboardEvent) {
-        if (event.key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']) {
-            this.pickNumber(+event.key);
-            event.preventDefault();
-            event.stopPropagation();
+        if (settingsManager.settings.keyboardShortcuts) {
+            if (event.key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']) {
+                this.pickNumber(+event.key);
+                event.preventDefault();
+                event.stopPropagation();
+            } else if (event.key === 'Enter') {
+                ghsDialogClosingHelper(this.dialogRef);
+            }
         }
     }
 
@@ -62,6 +67,9 @@ export class CharacterInitiativeDialogComponent {
             gameManager.stateManager.before("setInitiative", (this.character ? gameManager.characterManager.characterName(this.character) : "data.objective." + this.figure.name), "" + (initiative > 0 && initiative < 100 ? initiative : 0));
             if (initiative > 0 && initiative < 100) {
                 this.setInitiative(initiative);
+                if (this.character && initiative != 99 && (this.character.name != 'prism' || this.character.tags.indexOf('long_rest') == -1)) {
+                    this.character.longRest = false;
+                }
             } else if (gameManager.game.state == GameState.draw) {
                 this.figure.initiative = 0;
             }
@@ -83,13 +91,13 @@ export class CharacterInitiativeDialogComponent {
 
     longRest() {
         if (this.character) {
-            if (this.character.longRest && this.character.initiative == 99) {
-                gameManager.stateManager.before("setInitiative", gameManager.characterManager.characterName(this.character), "" + 99);
+            if (this.character.longRest) {
+                gameManager.stateManager.before("setInitiative", gameManager.characterManager.characterName(this.character), this.character.initiative);
                 this.character.longRest = false;
                 gameManager.stateManager.after();
             } else {
                 gameManager.stateManager.before("characterLongRest", gameManager.characterManager.characterName(this.character));
-                if (this.character.initiative == 99) {
+                if (this.character.initiative == 99 || this.character.name == 'prism' && this.character.tags.indexOf('long_rest') != -1) {
                     this.character.longRest = true;
                 } else {
                     this.setInitiative(99);

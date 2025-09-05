@@ -1,3 +1,4 @@
+import { Enhancement } from "./data/Enhancement";
 import { AdditionalIdentifier, Identifier } from "./data/Identifier";
 import { LootType } from "./data/Loot";
 import { GameScenarioModel } from "./Scenario";
@@ -22,6 +23,8 @@ export class CharacterProgress {
   donations: number = 0;
   scenarioStats: ScenarioStats[] = [];
   trial: Identifier | undefined;
+  deck: number[] = [];
+  enhancements: Enhancement[] = [];
 
 }
 

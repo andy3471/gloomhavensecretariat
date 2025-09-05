@@ -6,6 +6,7 @@ import { DamageStats, ScenarioStats } from "src/app/game/model/CharacterProgress
 import { LootType } from "src/app/game/model/data/Loot";
 
 @Component({
+  standalone: false,
     selector: 'ghs-statistics-dialog',
     templateUrl: 'statistics-dialog.html',
     styleUrls: ['./statistics-dialog.scss']
@@ -81,7 +82,7 @@ export class StatisticsDialogComponent implements OnInit {
         scenarioStats.bossKills = damageStats.bossKills;
         scenarioStats.exhausts = damageStats.exhausts;
         scenarioStats.maxDealtDamage = damageStats.maxDealtDamage;
-        scenarioStats.maxDealtDamage = damageStats.maxDealtDamage;
+        scenarioStats.maxDamage = damageStats.maxDamage;
 
         if (stats.length) {
             scenarioStats.gold = stats.map((stat) => stat.gold).reduce((a, b) => a + b);

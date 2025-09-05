@@ -11,6 +11,7 @@
   },
   "edition": "fh",
   "complexity": 3,
+  "eventType": "road",
   "allyDeck": true,
   "rewards": {
     "prosperity": 1,
@@ -31,13 +32,13 @@
   ],
   "objectives": [
     {
-      "name": "Door 1",
+      "name": "Door",
       "health": "(1+L)x2",
       "marker": "1",
       "initiative": 20
     },
     {
-      "name": "Door 2",
+      "name": "Door",
       "health": "(1+L)x2",
       "marker": "2",
       "initiative": 20
@@ -64,7 +65,8 @@
           "identifier": {
             "type": "objective",
             "edition": "objective",
-            "name": "Door 1"
+            "name": "Door",
+            "marker": "1"
           },
           "type": "dead"
         }
@@ -82,7 +84,8 @@
           "identifier": {
             "type": "objective",
             "edition": "objective",
-            "name": "Door 2"
+            "name": "Door",
+            "marker": "2"
           },
           "type": "dead"
         }

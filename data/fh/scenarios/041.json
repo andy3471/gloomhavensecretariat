@@ -11,6 +11,7 @@
   },
   "edition": "fh",
   "complexity": 2,
+  "eventType": "road",
   "requirements": [
     {
       "campaignSticker": [
@@ -20,7 +21,7 @@
   ],
   "rewards": {
     "gold": 15,
-    "custom": "Read %data.section:36.7% now",
+    "custom": "%data.scenario.rewards.fh.041%",
     "campaignSticker": [
       "coral-shard"
     ],

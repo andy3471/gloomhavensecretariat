@@ -6,7 +6,7 @@
   border-radius: 1em;
 
   * {
-    transition: opacity 1s ease-in-out;
+    transition: opacity calc(var(--ghs-animation-speed) * 1000ms) ease-in-out;
   }
 
   .hidden {
@@ -24,19 +24,6 @@
     background-repeat: no-repeat;
     border-radius: 1em;
     z-index: 0;
-  }
-
-  &::after {
-    content: ' ';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-image: url('~src/assets/images/monster/stats/standard_repeat.png');
-    background-position: top;
-    background-size: 100% auto;
-    background-repeat: repeat-y;
-    border-radius: 1em;
-    z-index: -1;
   }
 
   .name-container {
@@ -90,6 +77,10 @@
       height: auto;
       filter: var(--ghs-filter-white);
       transform: translateY(-50%);
+
+      &.catched {
+        filter: var(--ghs-filter-green) brightness(0.7);
+      }
     }
 
     .stat-effect {
@@ -100,7 +91,7 @@
       position: relative;
       top: calc(var(--ghs-unit) * -0.6);
       left: calc(var(--ghs-unit) * -0.3);
-      font-family: ghs-title;
+      font-family: var(--ghs-font-gh-title);
       color: var(--ghs-color-white);
       font-size: calc(var(--ghs-unit) * 4.5);
       line-height: calc(var(--ghs-unit) * 4);
@@ -121,6 +112,10 @@
 
       .catching {
         filter: var(--ghs-filter-gray);
+
+        &.catched {
+          filter: var(--ghs-filter-green);
+        }
       }
 
       .stat-effect {
@@ -187,7 +182,7 @@
     position: absolute;
     top: 0.2em;
     left: 0.7em;
-    font-family: "ghs-title";
+    font-family: var(--ghs-font-gh-title);
     font-size: 3em;
     text-shadow: var(--ghs-outline);
     color: var(--ghs-color-gray);
@@ -354,10 +349,6 @@
 
   &.bb::before {
     background-image: url('~src/assets/images/bb/monster/stats/bb-standard.png');
-  }
-
-  &.boss::after {
-    background-image: url('~src/assets/images/monster/stats/boss_repeat.png');
   }
 
   .extra {

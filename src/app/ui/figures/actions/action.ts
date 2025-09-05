@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { InteractiveAction } from 'src/app/game/businesslogic/ActionsManager';
 import { gameManager } from 'src/app/game/businesslogic/GameManager';
 import { SettingsManager, settingsManager } from 'src/app/game/businesslogic/SettingsManager';
+import { Character } from 'src/app/game/model/Character';
 import { EntityExpressionRegex, EntityValueFunction, EntityValueRegex } from 'src/app/game/model/Entity';
 import { Monster } from 'src/app/game/model/Monster';
 import { ObjectiveContainer } from 'src/app/game/model/ObjectiveContainer';
@@ -14,12 +15,15 @@ import { valueCalc } from '../../helper/valueCalc';
 
 export const ActionTypesIcons: ActionType[] = [ActionType.attack, ActionType.damage, ActionType.fly, ActionType.heal, ActionType.jump, ActionType.loot, ActionType.move, ActionType.range, ActionType.retaliate, ActionType.shield, ActionType.target, ActionType.teleport];
 
+export const ActionTypesHelper: ActionType[] = [ActionType.concatenation, ActionType.concatenationSpacer, ActionType.box, ActionType.boxFhSubActions, ActionType.card, ActionType.forceBox, ActionType.grid, ActionType.nonCalc];
+
 @Component({
+  standalone: false,
   selector: 'ghs-action',
   templateUrl: './action.html',
   styleUrls: ['./action.scss']
 })
-export class ActionComponent implements OnInit, OnDestroy {
+export class ActionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @Input() monster: Monster | undefined;
   @Input() monsterType: MonsterType | undefined;
@@ -27,6 +31,7 @@ export class ActionComponent implements OnInit, OnDestroy {
   @Input('action') origAction!: Action | undefined;
   @Input() relative: boolean = false;
   @Input() inline: boolean = false;
+  @Input() textBlack: boolean = false;
   @Input() right: boolean = false;
   @Input() highlight: boolean = false;
   @Input() interactiveAbilities: boolean = false;
@@ -36,28 +41,38 @@ export class ActionComponent implements OnInit, OnDestroy {
   @Input() hexSize!: number;
   @Input('index') actionIndex: string = "";
   @Input() style: 'gh' | 'fh' | false = false;
+  @Input() character: Character | undefined;
+  @Input() cardId: number | undefined;
+
+  @ViewChild('enhancementContainer') enhancementContainer: ElementRef | undefined;
 
   action!: Action | undefined;
+  normalValue: number | string = "";
+  eliteValue: number | string = "";
+  values: string[] = [];
+  specialActions: Action[] = [];
   subActions: Action[] = [];
   fhStyle: boolean = false;
   flying: boolean = false;
+  isInteractiveApplicableAction: boolean = false;
 
   settingsManager: SettingsManager = settingsManager;
   EntityValueFunction = EntityValueFunction;
 
   additionalSubActions: Action[] = [];
   elementActions: Action[] = [];
-  additionAttackSubActionTypes: ActionType[] = [ActionType.condition, ActionType.target, ActionType.pierce, ActionType.pull, ActionType.push, ActionType.swing, ActionType.area];
 
   ActionType = ActionType;
   ActionValueType = ActionValueType;
   MonsterType = MonsterType;
 
   hasAOE: boolean = false;
+  cardConcat: boolean = false;
 
   forceRelative: boolean = false;
 
   level: number = 0;
+  round: string = "";
 
   ngOnInit(): void {
     this.update();
@@ -74,6 +89,11 @@ export class ActionComponent implements OnInit, OnDestroy {
     if (this.uiChangeSubscription) {
       this.uiChangeSubscription.unsubscribe();
     }
+  }
+
+  ngAfterViewInit(): void {
+    // hacky enhancments in label texts
+    this.enhancmenetElementReplace();
   }
 
   update() {
@@ -102,7 +122,8 @@ export class ActionComponent implements OnInit, OnDestroy {
 
     this.updateSubActions();
     this.applyChallenges();
-    this.forceRelative = this.monster != undefined && !this.hasEntities();
+
+    this.forceRelative = !this.monster || !this.hasEntities();
     if (this.monster && !this.relative && !this.forceRelative && settingsManager.settings.calculate && this.action && (this.action.type == ActionType.shield || this.action.type == ActionType.retaliate) && this.action.valueType != ActionValueType.minus && this.action.subActions && this.action.subActions.find((subAction) => subAction.type == ActionType.specialTarget && !(subAction.value + '').startsWith('self'))) {
       this.forceRelative = true;
       this.action.valueType = ActionValueType.plus;
@@ -118,6 +139,21 @@ export class ActionComponent implements OnInit, OnDestroy {
     if (this.monster) {
       this.flying = this.monster.flying && (!this.monster.statEffect || this.monster.statEffect.flying != 'disabled') || this.monster.statEffect != undefined && this.monster.statEffect.flying == true;
     }
+
+    if (this.action) {
+      this.normalValue = this.getNormalValue();
+      this.eliteValue = this.getEliteValue();
+      this.values = this.getValues(this.action, true);
+      this.specialActions = this.getSpecial(this.action);
+    }
+
+    this.isInteractiveApplicableAction = this.interactiveAbilities && this.monster && this.monster.entities.some((entity) => this.origAction && gameManager.actionsManager.isInteractiveApplicableAction(entity, this.origAction, this.actionIndex)) || this.objective && this.objective.entities.some((entity) => this.origAction && gameManager.actionsManager.isInteractiveApplicableAction(entity, this.origAction, this.actionIndex)) || false;
+
+    if (this.enhancementContainer) {
+      this.enhancmenetElementReplace();
+    }
+
+    this.round = gameManager.game.round % 2 == 0 ? 'even' : 'odd';
   }
 
   hasEntities(type: MonsterType | string | undefined = undefined): boolean {
@@ -173,7 +209,10 @@ export class ActionComponent implements OnInit, OnDestroy {
     return this.getRange(MonsterType.elite);
   }
 
-  getValues(action: Action): string[] {
+  getValues(action: Action, force: boolean = false): string[] {
+    if (!force) {
+      return [...this.values];
+    }
     return gameManager.actionsManager.getValues(action);
   }
 
@@ -200,6 +239,10 @@ export class ActionComponent implements OnInit, OnDestroy {
       return "";
     }
 
+    if (ActionTypesHelper.indexOf(this.action.type) != -1) {
+      return this.action.value;
+    }
+
     if (settingsManager.settings.calculate && !this.relative && !this.forceRelative) {
       const stat = this.getStat(type);
       let statValue: number = 0;
@@ -218,7 +261,7 @@ export class ActionComponent implements OnInit, OnDestroy {
           } else {
             try {
               statValue = EntityValueFunction(stat.attack, this.level);
-            } catch {
+            } catch (e) {
               sign = false;
             }
           }
@@ -300,13 +343,13 @@ export class ActionComponent implements OnInit, OnDestroy {
       return;
     }
     this.elementActions = [];
-    if (settingsManager.settings.fhStyle && [ActionType.element, ActionType.concatenation, ActionType.box].indexOf(this.action.type) == -1) {
+    if (settingsManager.settings.fhStyle && [ActionType.element, ActionType.elementHalf, ...ActionTypesHelper].indexOf(this.action.type) == -1) {
       this.action.subActions.forEach((action) => {
-        if (action.type == ActionType.element) {
+        if (action.type == ActionType.element || action.type == ActionType.elementHalf) {
           this.elementActions.push(action);
         }
       });
-      this.action.subActions = this.action.subActions.filter((action) => action.type != ActionType.element);
+      this.action.subActions = this.action.subActions.filter((action) => action.type != ActionType.element && action.type != ActionType.elementHalf);
     }
 
     this.action.subActions = this.action.subActions.filter((action) => action.type != ActionType.nonCalc);
@@ -344,7 +387,7 @@ export class ActionComponent implements OnInit, OnDestroy {
         }
 
         if (stat.actions && this.monster.entities.some((monsterEntity) => gameManager.entityManager.isAlive(monsterEntity) && (monsterEntity.type == MonsterType.normal || monsterEntity.type == MonsterType.boss))) {
-          stat.actions.filter((statAction) => this.additionAttackSubActionTypes.indexOf(statAction.type) != -1).forEach((statAction) => {
+          stat.actions.filter((statAction) => this.additionAttackSubAction(statAction)).forEach((statAction) => {
             const newStatAction = new Action(statAction.type, statAction.value, statAction.valueType, statAction.subActions);
             if (this.action && !this.subActionExists(this.action.subActions, newStatAction) && !this.subActionExists(newSubActions, newStatAction)) {
               if (statAction.type != ActionType.area || this.action.subActions.every((subAction) => subAction.type != ActionType.area)) {
@@ -369,7 +412,7 @@ export class ActionComponent implements OnInit, OnDestroy {
         }
 
         if (eliteStat && eliteStat.actions && this.monster.entities.some((monsterEntity) => gameManager.entityManager.isAlive(monsterEntity) && monsterEntity.type == MonsterType.elite)) {
-          eliteStat.actions.filter((eliteAction) => this.additionAttackSubActionTypes.indexOf(eliteAction.type) != -1).forEach((eliteAction) => {
+          eliteStat.actions.filter((eliteAction) => this.additionAttackSubAction(eliteAction)).forEach((eliteAction) => {
             const newEliteAction = new Action(eliteAction.type, eliteAction.value, eliteAction.valueType, eliteAction.subActions);
             if (this.action && (!stat.actions || !this.subActionExists(stat.actions, newEliteAction, false) || !this.hasEntities(MonsterType.normal))) {
               if (this.monster && !this.monster.entities.some((monsterEntity) => gameManager.entityManager.isAlive(monsterEntity) && monsterEntity.type == MonsterType.normal)) {
@@ -509,6 +552,19 @@ export class ActionComponent implements OnInit, OnDestroy {
 
     this.subActions = this.action.subActions.filter((action) => !action.hidden);
     this.additionalSubActions = this.additionalSubActions.filter((action) => !action.hidden);
+    this.cardConcat = this.action.type == ActionType.concatenation && this.subActions.every((subAction) => subAction.type == ActionType.card || subAction.type == ActionType.concatenationSpacer);
+  }
+
+
+  additionAttackSubAction(action: Action): boolean {
+    if ([ActionType.condition, ActionType.target, ActionType.pierce, ActionType.pull, ActionType.push, ActionType.swing, ActionType.area].indexOf(action.type) != -1) {
+      return true;
+    }
+    if (settingsManager.settings.calculateAdvantageStats && action.type == ActionType.custom && action.value == '%game.custom.advantage%') {
+      return true;
+    }
+
+    return false;
   }
 
   subActionExists(additionalSubActions: Action[], subAction: Action, stackableCondition: boolean = true): boolean {
@@ -566,12 +622,8 @@ export class ActionComponent implements OnInit, OnDestroy {
     return this.interactiveActions.find((interactiveAction) => interactiveAction.index == this.actionIndex) != undefined || false;
   }
 
-  isInteractiveApplicableAction(): boolean {
-    return this.interactiveAbilities && this.monster && this.monster.entities.some((entity) => this.origAction && gameManager.actionsManager.isInteractiveApplicableAction(entity, this.origAction, this.actionIndex)) || this.objective && this.objective.entities.some((entity) => this.origAction && gameManager.actionsManager.isInteractiveApplicableAction(entity, this.origAction, this.actionIndex)) || false;
-  }
-
   toggleHighlight(event: MouseEvent | TouchEvent) {
-    if (this.isInteractiveApplicableAction()) {
+    if (this.isInteractiveApplicableAction) {
       if (this.highlightAction()) {
         this.interactiveActions = this.interactiveActions.filter((interactiveAction) => !interactiveAction.index.startsWith(this.actionIndex));
       } else if (this.origAction) {
@@ -609,5 +661,17 @@ export class ActionComponent implements OnInit, OnDestroy {
 
   onInteractiveActionsChange(change: InteractiveAction[]) {
     this.interactiveActionsChange.emit(change);
+  }
+
+  enhancmenetElementReplace() {
+    if (this.origAction && this.origAction.enhancementTypes && this.origAction.enhancementTypes.length && this.enhancementContainer) {
+      const enhancementElements = this.enhancementContainer.nativeElement.getElementsByClassName('placeholder-enhancement');
+      const ghsEnhancements = this.enhancementContainer.nativeElement.getElementsByTagName('ghs-action-enhancements');
+      for (let i = 0; i < ghsEnhancements.length; i++) {
+        if (enhancementElements[0] && enhancementElements[0].parentElement != ghsEnhancements[i].parentElement) {
+          enhancementElements[0].parentElement.replaceChild(ghsEnhancements[i], enhancementElements[0]);
+        }
+      }
+    }
   }
 }

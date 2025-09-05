@@ -34,6 +34,7 @@ export class ScenarioData implements Editional, Spoilable {
   random: boolean = false;
   solo: string | undefined;
   allyDeck: boolean = false;
+  eventType: string | undefined;
   lootDeckConfig: LootDeckConfig = {};
   parent: string | undefined;
   parentSections: string[][] = [];
@@ -42,10 +43,12 @@ export class ScenarioData implements Editional, Spoilable {
   rewards: ScenarioRewards | undefined;
   retirement: string = "";
   conclusion: boolean = false;
+  repeatable: boolean = false;
   named: boolean = false;
   hideIndex: boolean = false;
   complexity: number = 0;
   level: number | undefined;
+  overlays: ScenarioOverlay[] = [];
 
   // from Editional
   edition: string = "";
@@ -86,12 +89,14 @@ export class ScenarioData implements Editional, Spoilable {
       this.rewards = scenarioData.rewards;
       this.retirement = scenarioData.retirement;
       this.conclusion = scenarioData.conclusion;
+      this.repeatable = scenarioData.repeatable;
       this.edition = scenarioData.edition;
       this.spoiler = scenarioData.spoiler;
       this.named = scenarioData.named;
       this.hideIndex = scenarioData.hideIndex;
       this.complexity = scenarioData.complexity;
       this.level = scenarioData.level;
+      this.overlays = scenarioData.overlays;
     }
   }
 }
@@ -104,6 +109,7 @@ export class ScenarioRequirement {
   campaignSticker: string[] | undefined;
   puzzle: string[] | undefined;
   characters: string[] | undefined;
+  scenarios: string[][] | undefined;
 
 }
 
@@ -127,6 +133,7 @@ export class ScenarioRewards {
   chooseLocation: string[] = [];
   itemDesigns: string[] = [];
   events: string[] = [];
+  eventDecks: string[] = [];
   removeEvents: string[] = [];
   itemBlueprints: string[] = [];
   randomItemBlueprint: number = 0;
@@ -151,6 +158,11 @@ export class ScenarioRewards {
   ignoredBonus: string[] = [];
   overlaySticker: WorldMapOverlay | undefined = undefined;
   overlayCampaignSticker: WorldMapOverlay | undefined = undefined;
+  pet: string | undefined = undefined;
+  repeatScenario: boolean = false;
+  reputationFactions: string[] = [];
+  factionUnlock: string = "";
+  randomSideScenario: number = 0;
   hints: ScenarioRewardHints | undefined = undefined;
 
 }
@@ -174,6 +186,7 @@ export class ScenarioRewardHints {
   chooseLocation: string[] = [];
   itemDesigns: string[] = [];
   events: string[] = [];
+  eventDecks: string[] = [];
   removeEvents: string[] = [];
   itemBlueprints: string[] = [];
   randomItemBlueprint: string = "";
@@ -192,6 +205,9 @@ export class ScenarioRewardHints {
   chooseUnlockCharacter: string[] = [];
   overlaySticker: string = "";
   overlayCampaignSticker: string = "";
+  reputationFactions: string[] = [];
+  randomSideScenario: string = "";
+  pet: string = "";
 }
 
 export class ScenarioFinish {
@@ -213,5 +229,15 @@ export class ScenarioFinish {
   randomItems: (Identifier | undefined)[] = [];
   randomItemBlueprints: number[] = [];
   trials: boolean[] = [];
+
+}
+
+export class ScenarioOverlay {
+
+  type: "obstacle" | "difficultTerrain" | "hazardousTerrain" | "trap" | "treasure" | "loot" | undefined;
+  value: string = "";
+  count: number = 1;
+  values: (string | number | boolean)[] = [];
+  marker: string = "";
 
 }

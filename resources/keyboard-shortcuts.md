@@ -8,24 +8,29 @@ The following keyboard shortcuts are currently implemented:
 - <kbd>↑</kbd> | <kbd>+</kbd>: Zoom-In
 - <kbd>↓</kbd> | <kbd>-</kbd>: Zoom-Out
 - <kbd>CTRL</kbd> + <kbd>r</kbd>: reset zoom
+- <kbd>f</kbd>: Toggle Fullscreen
 - <kbd>↹</kbd>: toggle active figure when drawn / toggle initiative input when focused input
 - <kbd>n</kbd>: next round / draw
 - <kbd>m</kbd>: draw AM card (deck depending on active figure, monster deck when not active, disabled when **Draw**)
 - <kbd>a</kbd> like <kbd>m</kbd>, but draw with Advantage if enabled
 - <kbd>d</kbd> like <kbd>m<</kbd>, but draw with Disadvantage if enabled
-- <kbd>l</kbd>: draw from LootDeck
+- <kbd>l</kbd>: draw from LootDeck / Inc. Moneytokens for active Character
+- <kbd>SHIFT</kbd> + <kbd>l</kbd>: Dec. Moneytokens for active Character
 - <kbd>1-6</kbd>: toggle through element state
 - <kbd>h</kbd>: toggle *Hide absent figures*
 - <kbd>s</kbd>: select figure/standee for opening menu with number key (<kbd>0-9</kbd>)
 - <kbd>w</kbd>: select figure/standee for opening menu in fixed order with number key (<kbd>0-9</kbd>)
 - <kbd>x</kbd>: difficulty/level menu
+- <kbd>ALT</kbd> + <kbd>x</kbd>: Inc. XP for active Character
+- <kbd>SHIFT</kbd> + <kbd>X</kbd>: Dec. XP for active Character
 - <kbd>e</kbd>: scenario effects menu
-- <kbd>f</kbd>: (finish) scenario menu
+- <kbd>SHIFT</kbd> + <kbd>f</kbd>: (finish) scenario menu
 - <kbd>p</kbd>: open party sheet
 - <kbd>g</kbd>: open global map
 - <kbd>c</kbd>: open scenario chart
 - <kbd>SHIFT</kbd> + <kbd>H</kbd>: toggle *Display hand size and level*
 - <kbd>t</kbd>: toggle *Display traits*
+- <kbd>#</kbd>: toggle *Display player number*
 - <kbd>i</kbd>: toggle *Damage instead of HP*
 - <kbd>?</kbd>: show keyboard shortcuts
 

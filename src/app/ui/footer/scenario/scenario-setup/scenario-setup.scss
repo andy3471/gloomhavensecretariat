@@ -81,7 +81,7 @@
                     height: 160%;
                     transform: scale(0);
                     transform-origin: bottom left;
-                    transition: 120ms transform ease-in-out;
+                    transition: transform calc(var(--ghs-animation-speed) * 120ms) ease-in-out;
                     clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
                     color: var(--ghs-color-gray);
                     background-color: var(--ghs-color-gray);
@@ -199,7 +199,7 @@
                     position: absolute;
                     bottom: calc(var(--ghs-unit) * -0.5 * var(--ghs-dialog-factor));
                     right: calc(var(--ghs-unit) * -1 * var(--ghs-dialog-factor));
-                    font-family: ghs-title;
+                    font-family: var(--ghs-font-gh-title);
                     color: var(--ghs-color-white);
                     font-size: calc(var(--ghs-unit) * 9 * var(--ghs-text-factor));
                     line-height: calc(var(--ghs-unit) * 9 * var(--ghs-text-factor));

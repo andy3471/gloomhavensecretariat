@@ -8,13 +8,17 @@ import { Party } from "src/app/game/model/Party";
 import { Condition, ConditionName, ConditionType } from "src/app/game/model/data/Condition";
 import { BattleGoalSetupDialog } from "src/app/ui/figures/battlegoal/setup/battlegoal-setup";
 import { CharacterSheetDialog } from "src/app/ui/figures/character/dialogs/character-sheet-dialog";
+import { EnhancementDialogComponent } from "src/app/ui/figures/character/sheet/abilities/enhancements/enhancement-dialog";
 import { ItemsDialogComponent } from "src/app/ui/figures/items/dialog/items-dialog";
 import { PartySheetDialogComponent } from "src/app/ui/figures/party/party-sheet-dialog";
+import { PartyResourcesDialogComponent } from "src/app/ui/figures/party/resources/resources";
 import { WorldMapComponent } from "src/app/ui/figures/party/world-map/world-map";
 import { ScenarioChartDialogComponent } from "../../../figures/party/scenario-chart/scenario-chart";
+import { EventCardDeckComponent } from "src/app/ui/figures/event/deck/event-card-deck";
 
 
 @Component({
+    standalone: false,
     selector: 'ghs-campaign-menu',
     templateUrl: 'campaign.html',
     styleUrls: ['../menu.scss', 'campaign.scss']
@@ -53,7 +57,7 @@ export class CampaignMenuComponent implements OnInit {
             return 0;
         });
 
-        this.conditions = Object.values(ConditionName).map((name) => new Condition(name)).filter((condition) => condition.types.indexOf(ConditionType.hidden) == -1);
+        this.conditions = Object.values(ConditionName).map((name) => new Condition(name)).filter((condition) => condition.types.indexOf(ConditionType.hidden) == -1 && condition.types.indexOf(ConditionType.special) == -1);
         this.amConditions = Object.values(ConditionName).map((name) => new Condition(name)).filter((condition) => condition.types.indexOf(ConditionType.amDeck) != -1);
         this.editionConditions = gameManager.conditions(gameManager.game.edition, true).map((condition) => condition.name);
         this.worldMap = false;
@@ -72,6 +76,9 @@ export class CampaignMenuComponent implements OnInit {
                 settingsManager.set('theme', edition);
             } else {
                 settingsManager.set('theme', 'default');
+            }
+            if (edition == 'gh2e') {
+              settingsManager.set('fhStyle', true);
             }
         }
         gameManager.game.edition = edition;
@@ -142,6 +149,22 @@ export class CampaignMenuComponent implements OnInit {
         this.close.emit();
     }
 
+    openEnhancementDialog() {
+        this.dialog.open(EnhancementDialogComponent, {
+            panelClass: ['dialog']
+        });
+        this.close.emit();
+    }
+    openEventDeckSetup() {
+      this.dialog.open(EventCardDeckComponent, {
+        panelClass: ['dialog'],
+        data: {
+          edition: gameManager.game.edition
+        }
+      });
+      this.close.emit();
+    }
+
     openBattleGoalsSetup() {
         this.dialog.open(BattleGoalSetupDialog, {
             panelClass: ['dialog']
@@ -159,6 +182,12 @@ export class CampaignMenuComponent implements OnInit {
         this.close.emit();
     }
 
+    openResources() {
+        this.dialog.open(PartyResourcesDialogComponent, {
+            panelClass: ['dialog']
+        });
+        this.close.emit();
+    }
 
     addParty() {
         let party = new Party();

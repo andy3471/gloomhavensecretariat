@@ -14,6 +14,7 @@
     <div class="line" ghs-setting-menu="treasures" [requires]="['scenarioRooms']"></div>
     <div class="line" ghs-setting-menu="scenarioRules"></div>
     <div class="line" ghs-setting-menu="battleGoals"></div>
+    <div class="line" ghs-setting-menu="events" [requires]="['partySheet']"></div>
   </div>
 
   <div class="column">
@@ -66,6 +67,7 @@
       <div class="line" ghs-setting-menu="calculate" [requires]="['abilities']"></div>
       <div class="line" ghs-setting-menu="calculateStats" [requires]="['abilities']"></div>
       <div class="line" ghs-setting-menu="calculateShieldStats" [requires]="['abilities', 'calculateStats']"></div>
+      <div class="line" ghs-setting-menu="calculateAdvantageStats" [requires]="['abilities', 'calculateStats']"></div>
       <div class="line" ghs-setting-menu="abilityReveal" [requires]="['abilities']"></div>
       <div class="line" ghs-setting-menu="removeUnusedMonster"></div>
       <div class="line" ghs-setting-menu="addAllMonsters"></div>
@@ -212,7 +214,10 @@
     <div *ngIf="gameManager.challengesManager.available" class="line" ghs-setting-menu="fhChallenges"
       [disabled]="!gameManager.fhRules()"></div>
     <div *ngIf="gameManager.trialsManager.available" class="line" ghs-setting-menu="fhTrials"
-      [disabled]="!gameManager.fhRules()" [labelSuffix]="gameManager.trialsManager.favorsAvailable ? 'favors' : ''"></div>
+      [disabled]="!gameManager.fhRules()" [labelSuffix]="gameManager.trialsManager.favorsAvailable ? 'favors' : ''">
+    </div>
+    <div *ngIf="gameManager.buildingsManager.petsAvailable" class="line" ghs-setting-menu="fhPets"
+      [disabled]="!gameManager.fhRules()"></div>
   </div>
 
   <div class="column">
@@ -231,14 +236,25 @@
     <div class="line" ghs-setting-menu="alwaysFhAdvantage" [disabled]="gameManager.fhRules()"
       [requires]="['amAdvantage']" [checked]="settingsManager.settings.amAdvantage && gameManager.fhRules()"></div>
     <div *ngIf="settingsManager.settings.amAdvantage" class="line" ghs-setting-menu="amAdvantageHouseRule"
-      [disabled]="!gameManager.fhRules()" [requires]="['alwaysFhAdvantage']"></div>
+      [requires]="['amAdvantage', 'alwaysFhAdvantage']"></div>
     <div *ngIf="gameManager.challengesManager.available" class="line" ghs-setting-menu="fhChallengesApply"
       [disabled]="!gameManager.fhRules()" [requires]="['fhChallenges']"></div>
     <div *ngIf="gameManager.trialsManager.available" class="line" ghs-setting-menu="fhTrialsApply"
-      [disabled]="!gameManager.fhRules() || !gameManager.trialsManager.trialsEnabled && !gameManager.trialsManager.favorsEnabled" [requires]="['fhTrials']" [labelSuffix]="gameManager.trialsManager.favorsAvailable ? 'favors' : ''">
+      [disabled]="!gameManager.fhRules() || !gameManager.trialsManager.trialsEnabled && !gameManager.trialsManager.favorsEnabled"
+      [requires]="['fhTrials']" [labelSuffix]="gameManager.trialsManager.favorsAvailable ? 'favors' : ''">
     </div>
   </div>
 
+  <!-- GH2E -->
+  <ng-container *ngIf="gameManager.gh2eRules() && gameManager.imbuementManager.available">
+    <div class="separator"></div>
+
+    <div class="line title span" ghs-setting-title-menu="gh2eRules" [sync]="true"></div>
+
+    <div class="column">
+      <div class="line" *ngIf="gameManager.imbuementManager.available" ghs-setting-menu="gh2eImbuement"></div>
+    </div>
+  </ng-container>
 
   <ng-container *ngIf="gameManager.bbRules()">
     <div class="separator"></div>
@@ -263,14 +279,18 @@
 
   <div class="column">
     <div class="line" ghs-setting-menu="turnConfirmation" [requiresOne]="['expireConditions', 'applyConditions']"></div>
+    <div *ngIf="!settingsManager.settings.initiativeRequired" class="line" ghs-setting-menu="automaticFirstFigure"
+      [requires]="['!initiativeRequired']"></div>
     <div class="line" ghs-setting-menu="scenarioRulesAutoapply" [requires]="['scenarioRules']">
     </div>
     <div class="line" ghs-setting-menu="automaticUnlocking"></div>
     <div class="line" ghs-setting-menu="summons"></div>
-    <div class="line" ghs-setting-menu="lootDeck"></div>
+    <div class="line" ghs-setting-menu="eventsApply" [requires]="['events','partySheet']"></div>
+    <div class="line" ghs-setting-menu="eventsDraw" [requires]="['events','partySheet']"></div>
   </div>
 
   <div class="column">
+    <div class="line" ghs-setting-menu="lootDeck"></div>
     <div class="line" ghs-setting-menu="allyAttackModifierDeck"></div>
     <div class="line" ghs-setting-menu="monsters"></div>
     <div class="line" ghs-setting-menu="monsterAttackModifierDeck"></div>
@@ -289,6 +309,7 @@
     <div class="line" ghs-setting-menu="automaticAttackModifierFullscreen" [requires]="['portraitMode']"></div>
     <div class="line" ghs-setting-menu="characterSheetCompact" [requires]="['characterSheet']">
     </div>
+    <div class="line" ghs-setting-menu="eventsDrawReminder" [requires]="['!eventDraw']"></div>
   </div>
 
   <div class="column">
@@ -348,6 +369,8 @@
     <div class="line" ghs-setting-menu="portraitMode"></div>
     <div class="line" ghs-setting-menu="animations"></div>
     <div class="line" ghs-setting-menu="statAnimations"></div>
+    <div class="line" ghs-setting-menu="animationSpeed" type="range" [min]="0.3" [max]="2" [requires]="['animations']">
+    </div>
     <div class="line" ghs-setting-menu="barsize" type="range" [min]="0.1" [max]="2"></div>
     <div class="line" ghs-setting-menu="fontsize" type="range" [min]="0.1" [max]="2"></div>
   </div>
@@ -356,6 +379,7 @@
     <div class="line" ghs-setting-menu="hints"></div>
     <div class="line" ghs-setting-menu="tooltips"></div>
     <div class="line" ghs-setting-menu="backupHint"></div>
+    <div class="line" ghs-setting-menu="initiativeRoundConfirm" [requires]="['initiativeRequired']"></div>
     <div class="line" ghs-setting-menu="errata"></div>
     <div class="line" ghs-setting-menu="columns"></div>
     <div class="line" ghs-setting-menu="columnsForce" [requires]="['columns']"></div>
@@ -373,6 +397,13 @@
   <div class="column">
     <div class="line title" ghs-setting-title-menu="locale" [sync]="true"></div>
     <div ghs-setting-menu="locale" [values]="settingsManager.locales"></div>
+    <div class="line">
+      <a href="https://translate.gloomhaven-secretariat.de/" target="_blank" [ghs-tooltip]="'settings.locale.help.hint'"
+        [originY]="'top'" [overlayY]="'bottom'">
+        <img class="ghs-svg" src="./assets/images/hint.svg">&nbsp;
+        <span [ghs-label]="'settings.locale.help'"></span>
+      </a>
+    </div>
   </div>
 
   <div class="column">
@@ -383,8 +414,10 @@
     <div class="separator"></div>
 
     <div class="line" ghs-setting-menu="automaticTheme"></div>
+    <div class="line" ghs-setting-menu="characterFullView"></div>
     <div class="line" ghs-setting-menu="characterCompact" [disabled]="settingsManager.settings.theme  == 'modern'">
     </div>
+    <div class="line" ghs-setting-menu="playerNumber"></div>
     <div class="line" ghs-setting-menu="hideCharacterHP"></div>
     <div class="line" ghs-setting-menu="hideCharacterLoot"></div>
     <div class="line" ghs-setting-menu="hideCharacterXP"></div>

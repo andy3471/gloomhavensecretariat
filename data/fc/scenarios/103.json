@@ -10,19 +10,20 @@
     "gridLocation": "H-8"
   },
   "edition": "fc",
+  "eventType": "rift",
   "unlocks": [
     "110"
   ],
   "requirements": [
     {
       "global": [
-        "Knowledge is Power:2"
+        "knowledge-is-power:2"
       ]
     }
   ],
   "rewards": {
     "partyAchievements": [
-      "Guard Detail"
+      "guard-detail"
     ],
     "prosperity": 2,
     "events": [
@@ -31,10 +32,23 @@
   },
   "objectives": [
     {
-      "name": "Orchid caravan",
+      "name": "Orchid Caravan",
       "escort": true,
       "health": "2x(C+L)+3",
-      "marker": "a"
+      "marker": "a",
+      "actions": [
+        {
+          "type": "move",
+          "value": 2,
+          "subActions": [
+            {
+              "type": "custom",
+              "small": true,
+              "value": "%data.scenario.rules.fc.103.1%"
+            }
+          ]
+        }
+      ]
     }
   ],
   "rules": [

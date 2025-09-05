@@ -16,6 +16,7 @@ import { ObjectiveContainer } from "src/app/game/model/ObjectiveContainer";
 import { MonsterData } from "src/app/game/model/data/MonsterData";
 
 @Component({
+  standalone: false,
   selector: 'ghs-entities-menu-dialog',
   templateUrl: 'entities-menu-dialog.html',
   styleUrls: ['./entities-menu-dialog.scss']
@@ -69,7 +70,7 @@ export class EntitiesMenuDialogComponent {
 
   @HostListener('document:keydown', ['$event'])
   keyboardShortcuts(event: KeyboardEvent) {
-    if (!event.altKey && !event.metaKey && (!window.document.activeElement || window.document.activeElement.tagName != 'INPUT' && window.document.activeElement.tagName != 'SELECT' && window.document.activeElement.tagName != 'TEXTAREA')) {
+    if (settingsManager.settings.keyboardShortcuts && !event.altKey && !event.metaKey && (!window.document.activeElement || window.document.activeElement.tagName != 'INPUT' && window.document.activeElement.tagName != 'SELECT' && window.document.activeElement.tagName != 'TEXTAREA')) {
       if (!event.ctrlKey && !event.shiftKey && event.key === 'ArrowRight') {
         this.changeHealth(1);
         event.preventDefault();
@@ -192,7 +193,7 @@ export class EntitiesMenuDialogComponent {
 
       gameManager.stateManager.after();
       gameManager.uiChange.emit();
-    }, !settingsManager.settings.animations ? 0 : 1500);
+    }, settingsManager.settings.animations ? 1500 * settingsManager.settings.animationSpeed : 0);
 
     ghsDialogClosingHelper(this.dialogRef, true);
   }
@@ -333,7 +334,7 @@ export class EntitiesMenuDialogComponent {
           }
 
           gameManager.stateManager.after();
-        }, !settingsManager.settings.animations ? 0 : 1500);
+        }, settingsManager.settings.animations ? 1500 * settingsManager.settings.animationSpeed : 0);
       } else {
         gameManager.stateManager.after();
       }

@@ -10,13 +10,14 @@
     "gridLocation": "C-6"
   },
   "edition": "gh",
+  "eventType": "road",
   "unlocks": [
     "30",
     "32"
   ],
   "rewards": {
     "partyAchievements": [
-      "The Voice's Command"
+      "the-voices-command"
     ]
   },
   "monsters": [

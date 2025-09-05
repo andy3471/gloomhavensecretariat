@@ -8,10 +8,11 @@ import { SettingsManager, settingsManager } from 'src/app/game/businesslogic/Set
 import { Character } from 'src/app/game/model/Character';
 import { Action, ActionType } from 'src/app/game/model/data/Action';
 import { AttackModifierType } from 'src/app/game/model/data/AttackModifier';
+import { CharacterSpecialAction } from 'src/app/game/model/data/CharacterStat';
 import { ConditionType, EntityCondition } from 'src/app/game/model/data/Condition';
 import { EntityValueFunction } from 'src/app/game/model/Entity';
 import { GameState } from 'src/app/game/model/Game';
-import { SummonState } from 'src/app/game/model/Summon';
+import { Summon, SummonState } from 'src/app/game/model/Summon';
 import { ghsDefaultDialogPositions, ghsValueSign } from '../../helper/Static';
 import { AttackModiferDeckChange } from '../attackmodifier/attackmodifierdeck';
 import { AttackModifierDeckFullscreenComponent } from '../attackmodifier/attackmodifierdeck-fullscreen';
@@ -24,8 +25,10 @@ import { CharacterInitiativeDialogComponent } from './cards/initiative-dialog';
 import { CharacterSheetDialog } from './dialogs/character-sheet-dialog';
 import { CharacterLootCardsDialog } from './dialogs/loot-cards';
 import { CharacterSummonDialog } from './dialogs/summondialog';
+import { AbilityCardsDialogComponent } from './sheet/abilities/ability-cards-dialog';
 
 @Component({
+  standalone: false,
   selector: 'ghs-character',
   templateUrl: './character.html',
   styleUrls: ['./character.scss']
@@ -56,9 +59,15 @@ export class CharacterComponent implements OnInit, OnDestroy {
   token: number = 0;
   amAnimationDrawing: boolean = false;
   compact: boolean = false;
+  short: boolean = false;
+  shortMenu: boolean = false;
 
+  summons: Summon[] = [];
+  skullSpirits: Summon[] = [];
   summonCount: number = 0;
+  skullSpiritCount: number = 0;
   activeConditions: EntityCondition[] = [];
+  specialActions: CharacterSpecialAction[] = [];
 
   bb: boolean = false;
 
@@ -79,7 +88,10 @@ export class CharacterComponent implements OnInit, OnDestroy {
 
   update(): void {
     this.characterTitle = gameManager.characterManager.characterName(this.character);
-    this.summonCount = this.character.summons.filter((summon) => gameManager.entityManager.isAlive(summon)).length;
+    this.summons = this.character.summons.filter((summon) => summon.tags.indexOf('cs-skull-spirit') == -1);
+    this.skullSpirits = this.character.summons.filter((summon) => summon.tags.indexOf('cs-skull-spirit') != -1);
+    this.summonCount = this.summons.filter((summon) => gameManager.entityManager.isAlive(summon)).length;
+    this.skullSpiritCount = this.skullSpirits.filter((summon) => gameManager.entityManager.isAlive(summon)).length;
     this.activeConditions = gameManager.entityManager.activeConditions(this.character);
     this.character.immunities.forEach((immunity) => {
       if (!this.activeConditions.find((entityCondition) => entityCondition.name == immunity)) {
@@ -94,7 +106,10 @@ export class CharacterComponent implements OnInit, OnDestroy {
     }
 
     this.compact = settingsManager.settings.characterCompact && settingsManager.settings.theme != 'modern';
+    this.short = (!settingsManager.settings.abilities || !settingsManager.settings.stats) && settingsManager.settings.theme != 'modern';
+    this.shortMenu = false;
     this.bb = gameManager.bbRules() || this.character.bb;
+    this.specialActions = this.character.specialActions.filter((specialAction) => this.character.tags.indexOf(specialAction.name) != -1);
   }
 
   beforeAttackModifierDeck(change: AttackModiferDeckChange) {
@@ -135,7 +150,9 @@ export class CharacterComponent implements OnInit, OnDestroy {
 
     this.character.initiative = value;
     this.character.initiativeVisible = true;
-    this.character.longRest = false;
+    if (this.character.name != 'prism' || this.character.tags.indexOf('long_rest') == -1) {
+      this.character.longRest = false;
+    }
     if (value == 99) {
       this.character.longRest = true;
     }
@@ -156,9 +173,10 @@ export class CharacterComponent implements OnInit, OnDestroy {
       this.character.initiative = this.initiative;
       gameManager.stateManager.before("setInitiative", gameManager.characterManager.characterName(this.character), "" + value);
       this.character.initiative = value;
-      this.character.longRest = false;
       if (value == 99) {
         this.character.longRest = true;
+      } else if (!value || this.character.name != 'prism' || this.character.tags.indexOf('long_rest') == -1) {
+        this.character.longRest = false;
       }
       this.initiative = -1;
       if (this.character instanceof Character) {
@@ -175,7 +193,11 @@ export class CharacterComponent implements OnInit, OnDestroy {
     if (!this.character.absent) {
       if (gameManager.game.state == GameState.next && !this.character.exhausted && (!settingsManager.settings.initiativeRequired || this.character.initiative > 0)) {
         const activeSummon = this.character.summons.find((summon) => summon.active);
-        if (settingsManager.settings.activeSummons && this.character.active && activeSummon) {
+        const csSprits = this.character.summons.filter((summon) => summon.tags.indexOf('cs-skull-spirit') != -1);
+        if (settingsManager.settings.activeSummons && !activeSummon && this.character.active && csSprits.length && !csSprits.find((summon) => summon.active)) {
+          gameManager.stateManager.before("summonInactive", gameManager.characterManager.characterName(this.character), "data.summon." + csSprits[0].name);
+          csSprits.forEach((spirit) => spirit.tags.push('cs-skull-spirit-turn'));
+        } else if (settingsManager.settings.activeSummons && this.character.active && activeSummon) {
           gameManager.stateManager.before("summonInactive", gameManager.characterManager.characterName(this.character), "data.summon." + activeSummon.name);
         } else {
           gameManager.stateManager.before(this.character.active ? "unsetActive" : "setActive", gameManager.characterManager.characterName(this.character));
@@ -191,7 +213,7 @@ export class CharacterComponent implements OnInit, OnDestroy {
   nextIdentity(event: any): void {
     if (settingsManager.settings.characterIdentities && this.character.identities && this.character.identities.length > 1) {
 
-      let timeTokens = this.character.tags.find((tag) => tag === 'time_tokens') && this.character.primaryToken == 0;
+      let timeTokens = this.character.name == 'blinkblade' && this.character.tags.find((tag) => tag === 'time_tokens') && this.character.primaryToken == 0;
 
       if ((gameManager.game.state == GameState.next || gameManager.game.state == GameState.draw && this.character.identity == 0 && this.character.tokenValues[0] == 0) && timeTokens) {
         return;
@@ -202,12 +224,12 @@ export class CharacterComponent implements OnInit, OnDestroy {
         next = 0;
       }
 
-      gameManager.stateManager.before("nextIdentity", gameManager.characterManager.characterName(this.character, false, false, false), this.character.name, this.character.identities[this.character.identity], this.character.identities[next]);
+      gameManager.stateManager.before("nextIdentity", gameManager.characterManager.characterName(this.character, false, false, false), this.character.name, this.character.identities[this.character.identity], this.character.identities[next], this.character.edition);
       this.character.identity = next;
       gameManager.stateManager.after();
       event.preventDefault();
     } else {
-      this.openEntityMenu(event);
+      this.openEntityMenu();
     }
   }
 
@@ -230,7 +252,7 @@ export class CharacterComponent implements OnInit, OnDestroy {
   dragHpMove(value: number) {
     this.health = value;
     let maxHealth = EntityValueFunction(this.character.maxHealth);
-    if (this.character.tags.find((tag) => tag === 'overheal')) {
+    if (this.character.name == 'lightning' && this.character.tags.find((tag) => tag === 'unbridled-power')) {
       maxHealth = Math.max(maxHealth, 26);
     }
 
@@ -280,7 +302,7 @@ export class CharacterComponent implements OnInit, OnDestroy {
       this.token = - this.character.token;
     } else if (this.character.primaryToken >= 0 && this.character.tokenValues[this.character.primaryToken] + this.token < 0) {
       this.token = - this.character.tokenValues[this.character.primaryToken];
-    } else if (this.character.tags.find((tag) => tag === 'time_tokens') && this.character.primaryToken == 0 && this.character.tokenValues[0] + this.token > 5) {
+    } else if (this.character.name == 'blinkblade' && this.character.tags.find((tag) => ['time_tokens', 'resonance_token'].indexOf(tag) >= 0) && this.character.primaryToken == 0 && this.character.tokenValues[0] + this.token > 5) {
       this.token = 5 - this.character.tokenValues[this.character.primaryToken];
     }
   }
@@ -288,15 +310,15 @@ export class CharacterComponent implements OnInit, OnDestroy {
   dragTokenEnd(value: number) {
     if (this.token != 0) {
       if (this.character.primaryToken < 0) {
-        gameManager.stateManager.before("setCharacterToken", gameManager.characterManager.characterName(this.character), '' + (this.character.token + this.token));
+        gameManager.stateManager.before("setCharacterToken", gameManager.characterManager.characterName(this.character), (this.character.token + this.token));
         this.character.token += this.token;
         this.token = 0;
         gameManager.stateManager.after();
       } else {
-        gameManager.stateManager.before("setCharacterTokenValue", gameManager.characterManager.characterName(this.character), '%data.characterToken.' + this.character.name + '.' + this.character.tokens[this.character.primaryToken] + '%', '' + (this.character.token + this.token));
+        gameManager.stateManager.before("setCharacterTokenValue", gameManager.characterManager.characterName(this.character), '%data.characterToken.' + this.character.name + '.' + this.character.tokens[this.character.primaryToken] + '%', (this.character.token + this.token));
         this.character.tokenValues[this.character.primaryToken] += this.token;
 
-        if (this.character.tags.find((tag) => tag === 'time_tokens') && this.character.primaryToken == 0 && this.character.tokenValues[0] > 5) {
+        if (this.character.name == 'blinkblade' && this.character.tags.find((tag) => ['time_tokens', 'resonance_token'].indexOf(tag) >= 0) && this.character.primaryToken == 0 && this.character.tokenValues[0] > 5) {
           this.character.tokenValues[0] = 5;
         }
 
@@ -339,7 +361,7 @@ export class CharacterComponent implements OnInit, OnDestroy {
     this.token = 0;
   }
 
-  openEntityMenu(event: any): void {
+  openEntityMenu(): void {
     this.dialog.open(EntityMenuDialogComponent, {
       panelClass: ['dialog'],
       data: {
@@ -389,7 +411,11 @@ export class CharacterComponent implements OnInit, OnDestroy {
     if (immunityIndex != -1) {
       this.character.immunities.splice(immunityIndex, 1);
     }
-    gameManager.entityManager.removeCondition(this.character, this.character, entityCondition, entityCondition.permanent);
+    if (entityCondition.types.indexOf(ConditionType.stackable) && entityCondition.value > 1) {
+      entityCondition.value--;
+    } else {
+      gameManager.entityManager.removeCondition(this.character, this.character, entityCondition, entityCondition.permanent);
+    }
     gameManager.stateManager.after();
   }
 
@@ -414,7 +440,7 @@ export class CharacterComponent implements OnInit, OnDestroy {
       this.character.itemsVisible = !this.character.itemsVisible;
       gameManager.stateManager.saveLocal();
       gameManager.uiChange.emit();
-    } else if (this.character.progress.items.length == 0 && (force || !this.bb)) {
+    } else if ((this.character.progress.items.length == 0 || force) && !this.bb) {
       this.dialog.open(ItemsDialogComponent, {
         panelClass: ['dialog'],
         data: { edition: gameManager.game.edition, select: this.character, affordable: true }
@@ -428,14 +454,20 @@ export class CharacterComponent implements OnInit, OnDestroy {
   }
 
   characterFullView() {
-    gameManager.game.figures.forEach((figure) => {
-      if (figure instanceof Character) {
-        figure.fullview = false;
-      }
-    });
-    this.character.fullview = true;
-    gameManager.stateManager.saveLocal();
-    gameManager.uiChange.emit();
+    if (settingsManager.settings.characterFullView) {
+      gameManager.game.figures.forEach((figure) => {
+        if (figure instanceof Character) {
+          figure.fullview = false;
+        }
+      });
+      this.character.fullview = true;
+      gameManager.stateManager.saveLocal();
+      gameManager.uiChange.emit();
+    } else if (settingsManager.settings.characterSheet) {
+      this.openCharacterSheet();
+    } else {
+      this.openEntityMenu();
+    }
   }
 
 
@@ -544,33 +576,39 @@ export class CharacterComponent implements OnInit, OnDestroy {
   }
 
   removeSpecialAction(specialAction: string) {
-    gameManager.stateManager.before("removeSpecialTags", gameManager.characterManager.characterName(this.character), '%data.character.' + this.character.name + '.' + specialAction + '%');
+    gameManager.stateManager.before("removeSpecialTags", gameManager.characterManager.characterName(this.character), '%data.character.' + this.character.edition + '.' + this.character.name + '.' + specialAction + '%');
     this.character.tags = this.character.tags.filter((specialTag) => specialTag != specialAction);
 
-    if (this.character.name == 'lightning' && this.character.edition == 'gh' && specialAction == 'immune') {
+    if (this.character.name == 'lightning' && specialAction == 'careless-charge') {
       this.character.immunities = [];
     }
 
     if (this.character.name == 'boneshaper') {
-      if (specialAction == 'bone-dagger') {
-        this.character.summons.forEach((summon) => {
-          summon.attack = EntityValueFunction(summon.attack) - 1;
-        })
-      }
-      if (specialAction == 'solid-bones') {
+      if (specialAction == 'solid-bones' || specialAction == 'unholy-prowess') {
         this.character.summons.forEach((summon) => {
           if (summon.name === 'shambling-skeleton') {
             summon.maxHealth -= 1;
             if (summon.health > summon.maxHealth) {
               summon.health = summon.maxHealth;
             }
-            summon.movement -= 1;
-            summon.action = undefined;
+            if (specialAction == 'solid-bones') {
+              summon.movement -= 1;
+              summon.action = undefined;
+            }
           }
         })
       }
     }
 
     gameManager.stateManager.after();
+  }
+
+  openAbilityCards() {
+    if (gameManager.deckData(this.character, true).abilities.length > 0) {
+      this.dialog.open(AbilityCardsDialogComponent, {
+        panelClass: ['dialog'],
+        data: { character: this.character }
+      });
+    }
   }
 }

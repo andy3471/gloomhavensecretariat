@@ -11,6 +11,7 @@
   },
   "edition": "fh",
   "complexity": 2,
+  "eventType": "road",
   "unlocks": [
     "76"
   ],
@@ -20,6 +21,9 @@
         "friend-of-the-fish-king"
       ]
     }
+  ],
+  "blocks": [
+    "74B"
   ],
   "rewards": {
     "randomItemBlueprint": 1

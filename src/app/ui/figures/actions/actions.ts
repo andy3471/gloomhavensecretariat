@@ -3,12 +3,14 @@ import { Subscription } from "rxjs";
 import { InteractiveAction } from "src/app/game/businesslogic/ActionsManager";
 import { gameManager } from "src/app/game/businesslogic/GameManager";
 import { SettingsManager, settingsManager } from "src/app/game/businesslogic/SettingsManager";
+import { Character } from "src/app/game/model/Character";
 import { Monster } from "src/app/game/model/Monster";
 import { ObjectiveContainer } from "src/app/game/model/ObjectiveContainer";
 import { Action, ActionType, ActionValueType } from "src/app/game/model/data/Action";
 import { MonsterType } from "src/app/game/model/data/MonsterType";
 
 @Component({
+  standalone: false,
   selector: 'ghs-actions',
   templateUrl: './actions.html',
   styleUrls: ['./actions.scss']
@@ -21,6 +23,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
   @Input() actions!: Action[];
   @Input() relative: boolean = false;
   @Input() inline: boolean = false;
+  @Input() textBlack: boolean = false;
   @Input() right: boolean = false;
   @Input() statsCalculation: boolean = false;
   @Input() interactiveAbilities: boolean = false;
@@ -28,12 +31,14 @@ export class ActionsComponent implements OnInit, OnDestroy {
   @Output() interactiveActionsChange = new EventEmitter<InteractiveAction[]>();
   @Input() highlightActions: ActionType[] = [];
   @Input() hexSize!: number;
-  @Input() hint!: string | undefined;
   @Input('index') actionIndex: string = "";
   @Input() style: 'gh' | 'fh' | false = false;
   @Input() noDivider: boolean = false;
+  @Input() character: Character | undefined;
+  @Input() cardId: number | undefined;
 
   divider: boolean[] = [];
+  spacing: boolean[] = [];
 
   settingsManager: SettingsManager = settingsManager;
 
@@ -87,6 +92,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
     if (!this.noDivider && this.actions) {
       this.actions.forEach((action, index) => {
         this.divider[index] = this.calcDivider(action, index);
+        this.spacing[index] = this.calcSpacing(action, index);
       })
     }
 
@@ -101,7 +107,7 @@ export class ActionsComponent implements OnInit, OnDestroy {
       return false;
     }
 
-    if (action.type == ActionType.card) {
+    if (action.type == ActionType.card || action.type == ActionType.hint || action.type == ActionType.round) {
       return false;
     }
 
@@ -113,7 +119,19 @@ export class ActionsComponent implements OnInit, OnDestroy {
       return false;
     }
 
-    if (action.type == ActionType.concatenation && action.subActions.every((subAction) => subAction.type == ActionType.card || subAction.type == ActionType.element || subAction.type == ActionType.elementHalf)) {
+    if (action.type == ActionType.concatenation && action.subActions.every((subAction) => subAction.type == ActionType.card || subAction.type == ActionType.element || subAction.type == ActionType.elementHalf || subAction.type == ActionType.concatenationSpacer)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  calcSpacing(action: Action, index: number): boolean {
+    if (index < 1 || this.inline) {
+      return false;
+    }
+
+    if (this.actions[index - 1].type == ActionType.box || this.actions[index - 1].type == ActionType.round) {
       return false;
     }
 

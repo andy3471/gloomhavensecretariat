@@ -10,7 +10,7 @@
 
 ## Introduction
 
-*Gloomhaven Secretariat* is a **companion app** for Gloomhaven-based board games. The app supports all official editions, namely **Gloomhaven**, **Frosthaven**, **Jaws of the Lion**, **Forgotten Circles** and **Button & Bugs**, the community editions **The Crimson Scales** and **Trail of Ashes** as well as **Solo** scenarios and custom content.
+*Gloomhaven Secretariat* is a **companion app** for Gloomhaven-based board games. The app supports all official editions, namely **Gloomhaven**, **Frosthaven**, **Jaws of the Lion**, **Forgotten Circles**, **Gloomhaven 2nd Edition** and **Button & Bugs**, the community editions **The Crimson Scales** and **Trail of Ashes** as well as **Solo** scenarios and custom content.
 
 *GHS* is a complete replacement for the abandoned [Gloomhaven Helper](http://esotericsoftware.com/gloomhaven-helper) app (by [Esoteric Software®](http://esotericsoftware.com)), enhanced with more tracking and automation features. As a single-screen web application, *GHS* helps manage scenario play by tracking character and monster turns, automatically setting up monsters separately for each room or section, assisting with scenario-specific rules, attack modifiers, loot deck, and much more. *GHS* also tracks your progress on the Character, Party and Campaign sheets, allowing you to buy and equip items, loot treasures, apply all scenario rewards, register scenario unlocks and manage your outpost. For a more detailed feature list, including a comparison of some popular applications, see [Comparison of Companion Apps](./resources/app-comparison.md).
 
@@ -20,12 +20,12 @@ Since *GHS* is a web application, no installation is required and it runs in any
 
 An extensive settings menu ensures highly individual customization to suit all requirements. Almost every feature can be switched on/off or customized.
 
-*Gloomhaven Secretariat* is open-source software built with [Angular](https://angular.io/) and is open for the community to actively [contribute](#contributing) ideas, suggestions and of course feedback and bug fixes.
+*Gloomhaven Secretariat* is open-source software built with [Angular](https://angular.io/) and is open for the community to actively [contribute](#contributing) ideas, suggestions and of course feedback and bug fixes. You can also help [translating](#translating) the app.
 
 A basic user guide is available [online](https://help.gloomhaven-secretariat.de).
 
 > SPOILER WARNING:
-> The `label-spoiler` folder in the `data` folders, and therefore the final edition data files in the releases in the `./assets/data` folder, contain spoilers by including the appropriate label. 
+> The `label/spoiler` folder in the `data` folders, and therefore the final edition data files in the releases in the `./assets/data` folder, contain spoilers by including the appropriate label. 
 > 
 > [More information about spoilers in this repository](https://github.com/Lurkars/gloomhavensecretariat/discussions/103)
 
@@ -35,7 +35,7 @@ A basic user guide is available [online](https://help.gloomhaven-secretariat.de)
 
 ## Current Features
 
-- Base feature complete for GH, FH, JOTL, FC and CS (all need testing, so please [contribute](#contributing)!), for details see [Data Progression](./resources/data-progression.md)
+- Base feature complete for GH, FH, JOTL, FC and CS (all need testing, so please [contribute](#contributing)!)
 - Tracking:
   - **Initiative** sorting
   - **Health** automatic exhaust/dead, max values for each level
@@ -56,6 +56,7 @@ A basic user guide is available [online](https://help.gloomhaven-secretariat.de)
   - **Treasures**
   - **Character Items** (must be enabled in Settings!) manage state of items during a scenario 
   - **Battle Goals** (must be enabled in Settings!)
+  - **Event Decks** (not finished, but in progress)
 - Elimination of the following physical components
   - Monster ability cards
   - Monster stat cards
@@ -67,12 +68,13 @@ A basic user guide is available [online](https://help.gloomhaven-secretariat.de)
   - Character boards
   - Character sheets
   - Character attack modifier deck
+  - Event decks
   - Loot deck
   - Town guard deck
   - Party/Campaign sheet
   - Item Cards
   - Battle Goals
-  - Building deck (partly!)
+  - Building deck
   - Frosthaven Decks:
     <details>
       <summary>SPOILER WARNING: Building 81</summary>
@@ -86,7 +88,7 @@ A basic user guide is available [online](https://help.gloomhaven-secretariat.de)
     </details>
   - World Map
 - Other features:
-  - i18n support (currently en, de, fr and ko, more translations needed. Many thanks to the contributors of french and korean)
+  - i18n support (see [translating](#translating) for details)
   - PWA for installation on all devices!
   - Synchronise state (+ settings) with [GHS Server](https://github.com/Lurkars/ghs-server)
   - Manage permissions for different clients with [GHS Server](https://github.com/Lurkars/ghs-server)
@@ -104,7 +106,7 @@ A basic user guide is available [online](https://help.gloomhaven-secretariat.de)
     <details>
       <summary>SPOILER WARNING: <img src="./src/assets/images/character/icons/fh-boneshaper.svg" height="20px" style="filter:grayscale(1);"></summary>
 
-      > Bone Dagger: Add +1 Attack to all summons
+      > Unholy Prowess: Add +1 Heal to to all Shambling Skeletons
 
       > Solid Bones: Add +1 HP, +1 Move and Pierce 1 to all Shambling Skeletons
     </details>
@@ -118,19 +120,26 @@ A basic user guide is available [online](https://help.gloomhaven-secretariat.de)
     <details>
       <summary>SPOILER WARNING: <img src="./src/assets/images/character/icons/fh-kelp.svg" height="20px" style="filter:grayscale(1);"></summary>
 
-      > Perk: Start each scenario with 2 Trophy Tokens
+      > Perk 11: Start each scenario with 2 Trophy Tokens
     </details>
     <details>
       <summary>SPOILER WARNING: <img src="./src/assets/images/character/icons/fh-prism.svg" height="20px" style="filter:grayscale(1);"></summary>
 
       > Toggle Mode Token for summons (inactive if Mode Token set)
 
-      > Repair Drone: Heal 2 self at start of turn
+      > Repair Drone Mode: Heal 2 self at start of turn
+    </details>
+    <details>
+      <summary>SPOILER WARNING: <img src="./src/assets/images/character/icons/fh-shards.svg" height="20px" style="filter:grayscale(1);"></summary>
+
+      > Resonance Tokens: At the end of each of your turns, you gain one Resonance Token
+
+      > Perk 10: Start scenario with Brittle to gain 2 Resonance Tokens
     </details>
     <details>
       <summary>SPOILER WARNING: <img src="./src/assets/images/character/icons/fh-snowflake.svg" height="20px" style="filter:grayscale(1);"></summary>
 
-      > Perk: Muddle new revealed Monster
+      > Perk 9: Muddle new revealed Monster
     </details>
     <details>
       <summary>SPOILER WARNING: <img src="./src/assets/images/character/icons/jotl-demolitionist.svg" height="20px" style="filter:grayscale(1);"></summary>
@@ -140,14 +149,16 @@ A basic user guide is available [online](https://help.gloomhaven-secretariat.de)
     <details>
       <summary>SPOILER WARNING: <img src="./src/assets/images/character/icons/gh-lightning.svg" height="20px" style="filter:grayscale(1);"></summary>
 
-      > Enable overhealing up to 26 HP
+      > Blood Pact: Summer 1 damage at the start of each of your turns 
+
+      > Unbridled Power: Enable overhealing up to 26 HP
       
-      > Toggle immunity for all conditions
+      > Careless Charge: Toggle immunity for all conditions
     </details>
     <details>
       <summary>SPOILER WARNING: <img src="./src/assets/images/character/icons/gh-music-note.svg" height="20px" style="filter:grayscale(1);"></summary>
 
-      > Enable song to automatically gain 1 XP at start of turn
+      > Automatically gain 1 XP at start of turn for active song
     </details>
   - Random Dungeons
   - Scenario Flow Chart
@@ -168,11 +179,11 @@ A basic user guide is available [online](https://help.gloomhaven-secretariat.de)
 
 ### Planned next
 
-- Support for event cards (draw, manage, apply rewards)
+- Finish Event Deck Support
 
 ### Long term plans
 
-- Support for managing character ability cards
+- Finish all character ability cards
 
 ## Install
 
@@ -242,6 +253,12 @@ Pull requests are also welcome!
 > Please note: all files in the data subfolder will be automatically formatted and added to each commit. If you have made local changes to these files and do NOT want to commit those changes, please use the `--no-verify` parameter for your `git commit` and `git push` commands.
 
 Thanks to everyone who has already [contributed](https://github.com/Lurkars/gloomhavensecretariat/graphs/contributors), you're awesome!
+
+### Translating
+
+Latest, I am now trying to use [Weblate](https://translate.gloomhaven-secretariat.de/) as a translation tool. You can log in with your *GitHub* account to help translate the application.
+
+<img src="https://translate.gloomhaven-secretariat.de/widget/gloomhavensecretariat/multi-auto.svg" alt="Translation status" />
 
 ## Archive
 

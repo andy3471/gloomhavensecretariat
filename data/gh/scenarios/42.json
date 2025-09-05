@@ -10,6 +10,7 @@
     "gridLocation": "C-5"
   },
   "edition": "gh",
+  "eventType": "road",
   "requires": [
     [
       "30"
@@ -18,26 +19,25 @@
   "requirements": [
     {
       "global": [
-        "!The Voice Freed"
+        "!the-voice-freed"
       ],
       "party": [
-        "The Scepter and the Voice"
+        "the-scepter-and-the-voice"
       ]
     }
   ],
   "blocks": [
     "30",
     "32",
-    "33",
     "40",
     "41"
   ],
   "rewards": {
     "globalAchievements": [
-      "The Voice Silenced"
+      "the-voice-silenced"
     ],
     "lostPartyAchievements": [
-      "The Voice's Command"
+      "the-voices-command"
     ]
   },
   "monsters": [

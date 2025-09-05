@@ -15,6 +15,7 @@ import { Building } from "../buildings";
 
 
 @Component({
+  standalone: false,
     selector: 'ghs-buildings-upgrade-dialog',
     templateUrl: 'upgrade-dialog.html',
     styleUrls: ['./upgrade-dialog.scss']
@@ -32,8 +33,8 @@ export class BuildingUpgradeDialog implements OnInit {
     force: boolean;
     characters: Character[] = [];
     characterSpent: BuildingCosts[] = [];
-    fhSupportSpent: BuildingCosts = { "gold": 0, "hide": 0, "lumber": 0, "metal": 0, "prosperity": 0 };
-    spent: BuildingCosts = { "gold": 0, "hide": 0, "lumber": 0, "metal": 0, "prosperity": 0 };
+    fhSupportSpent: BuildingCosts = { "gold": 0, "hide": 0, "lumber": 0, "metal": 0, "prosperity": 0, "manual": 0 };
+    spent: BuildingCosts = { "gold": 0, "hide": 0, "lumber": 0, "metal": 0, "prosperity": 0, "manual": 0 };
     rewards: BuildingRewards | undefined;
     rewardsOnly: boolean;
     discount: boolean;
@@ -47,7 +48,7 @@ export class BuildingUpgradeDialog implements OnInit {
         this.rewardsOnly = this.action == 'rewards';
         this.discount = gameManager.game.party.buildings.find((buildingModel) => buildingModel.name == "carpenter" && buildingModel.level > 0 && buildingModel.state != 'wrecked') != undefined && !this.repair;
         if (!this.repair && this.building) {
-            this.costs = data.costs || { gold: 0, hide: 0, lumber: 0, metal: 0, prosperity: 0 };
+            this.costs = data.costs || { gold: 0, hide: 0, lumber: 0, metal: 0, prosperity: 0, manual: 0 };
             this.costs.gold = this.costs.gold || 0;
             this.costs.hide = this.costs.hide || 0;
             this.costs.lumber = this.costs.lumber || 0;
@@ -93,11 +94,11 @@ export class BuildingUpgradeDialog implements OnInit {
             }
 
         } else {
-            this.costs = { "gold": data.costs && data.costs.gold || 0, "hide": this.repair, "lumber": this.repair, "metal": this.repair, "prosperity": 0 }
+            this.costs = { "gold": data.costs && data.costs.gold || 0, "hide": this.repair, "lumber": this.repair, "metal": this.repair, "prosperity": 0, "manual": 0 }
         }
         this.characters = gameManager.game.figures.filter((figure) => figure instanceof Character).map((figure) => figure as Character);
         this.characters.forEach((character, index) => {
-            this.characterSpent[index] = { "gold": 0, "hide": 0, "lumber": 0, "metal": 0, "prosperity": 0 };
+            this.characterSpent[index] = { "gold": 0, "hide": 0, "lumber": 0, "metal": 0, "prosperity": 0, "manual": 0 };
         })
     }
 
@@ -119,7 +120,7 @@ export class BuildingUpgradeDialog implements OnInit {
         const section = gameManager.sectionData(edition || gameManager.currentEdition()).find((sectionData) => sectionData.index == index);
         if (this.rewardsOnly && section) {
             const conclusion = gameManager.buildingsManager.rewardSection(section);
-            const conclusions = gameManager.sectionData(section.edition).filter((sectionData) => sectionData.conclusion && !sectionData.parent && sectionData.parentSections && sectionData.parentSections.find((parentSections) => parentSections.length == 1 && parentSections.indexOf(section.index) != -1));
+            const conclusions = gameManager.sectionData(section.edition).filter((sectionData) => sectionData.conclusion && !sectionData.parent && sectionData.parentSections && sectionData.parentSections.find((parentSections) => parentSections.length == 1 && parentSections.indexOf(section.index) != -1) && gameManager.scenarioManager.getRequirements(sectionData).length == 0);
 
             if (conclusion || conclusions.length == 0) {
                 const scenario = new Scenario(conclusion || section);

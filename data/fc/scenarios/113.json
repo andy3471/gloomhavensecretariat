@@ -10,12 +10,13 @@
     "gridLocation": "H-16"
   },
   "edition": "fc",
+  "eventType": "rift",
   "unlocks": [
     "114"
   ],
   "rewards": {
     "globalAchievements": [
-      "A Peril Averted"
+      "a-peril-averted"
     ],
     "gold": 135,
     "prosperity": 1,

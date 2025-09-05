@@ -11,6 +11,7 @@
   },
   "edition": "fh",
   "complexity": 3,
+  "eventType": "road",
   "unlocks": [
     "130"
   ],
@@ -19,7 +20,7 @@
   ],
   "rewards": {
     "battleGoals": 1,
-    "custom": "Note the amount of remaining sun agates"
+    "custom": "%data.scenario.rewards.fh.129%"
   },
   "monsters": [
     "city-guard"

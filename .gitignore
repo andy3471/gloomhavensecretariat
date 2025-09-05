@@ -11,7 +11,6 @@
 npm-debug.log
 yarn-error.log
 .npm
-package-lock.json
 
 # IDEs and editors
 .idea/
@@ -40,7 +39,6 @@ package-lock.json
 /libpeerconnection.log
 testem.log
 /typings
-.browserslistrc
 .editorconfig
 
 # System files
@@ -49,7 +47,7 @@ Thumbs.db
 
 # ignore generated data files
 src/assets/data/*
-ghs-settings-default.json
+ghs-settings-default.json*
 
 # temporay local files
 .local

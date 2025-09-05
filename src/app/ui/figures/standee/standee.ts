@@ -1,24 +1,26 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { Overlay } from '@angular/cdk/overlay';
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { GameManager, gameManager } from 'src/app/game/businesslogic/GameManager';
 import { SettingsManager, settingsManager } from 'src/app/game/businesslogic/SettingsManager';
+import { Character } from 'src/app/game/model/Character';
+import { ActionHint } from 'src/app/game/model/data/Action';
 import { AttackModifierType } from 'src/app/game/model/data/AttackModifier';
 import { Condition, ConditionName, ConditionType, EntityCondition } from 'src/app/game/model/data/Condition';
+import { MonsterType } from 'src/app/game/model/data/MonsterType';
 import { EntityValueFunction } from 'src/app/game/model/Entity';
 import { Monster } from 'src/app/game/model/Monster';
 import { MonsterEntity } from 'src/app/game/model/MonsterEntity';
+import { ObjectiveContainer } from 'src/app/game/model/ObjectiveContainer';
+import { ObjectiveEntity } from 'src/app/game/model/ObjectiveEntity';
 import { Summon, SummonColor, SummonState } from 'src/app/game/model/Summon';
 import { ghsDefaultDialogPositions } from 'src/app/ui/helper/Static';
 import { EntityMenuDialogComponent } from '../entity-menu/entity-menu-dialog';
 import { MonsterNumberPickerDialog } from '../monster/dialogs/numberpicker-dialog';
-import { Subscription } from 'rxjs';
-import { ObjectiveEntity } from 'src/app/game/model/ObjectiveEntity';
-import { ObjectiveContainer } from 'src/app/game/model/ObjectiveContainer';
-import { ActionHint } from 'src/app/game/model/data/Action';
-import { Character } from 'src/app/game/model/Character';
 
 @Component({
+  standalone: false,
   selector: 'ghs-standee',
   templateUrl: './standee.html',
   styleUrls: ['./standee.scss']
@@ -37,6 +39,7 @@ export class StandeeComponent implements OnInit, OnDestroy {
   SummonColor = SummonColor;
   ConditionName = ConditionName;
   ConditionType = ConditionType;
+  MonsterType = MonsterType;
 
   health: number = 0;
   maxHp: number = 0;
@@ -102,7 +105,7 @@ export class StandeeComponent implements OnInit, OnDestroy {
 
     this.specialActionsMarker = [];
     this.entity.tags.forEach((tag) => {
-      if (this.figure instanceof Character && this.figure.specialActions.find((specialAction) => specialAction.name == tag && specialAction.summon)) {
+      if (this.figure instanceof Character && this.figure.name == 'prism' && this.figure.specialActions.find((specialAction) => specialAction.name == tag && specialAction.summon)) {
         if (tag == 'prism_mode') {
           this.specialActionsMarker.push('mode');
         }
@@ -148,11 +151,23 @@ export class StandeeComponent implements OnInit, OnDestroy {
 
   removeCondition(entityCondition: EntityCondition) {
     gameManager.stateManager.before(...gameManager.entityManager.undoInfos(this.entity, this.figure, "removeCondition"), entityCondition.name, this.entity instanceof MonsterEntity ? 'monster.' + this.entity.type + ' ' : '');
-    gameManager.entityManager.removeCondition(this.entity, this.figure, entityCondition, entityCondition.permanent);
+    if (entityCondition.types.indexOf(ConditionType.stackable) && entityCondition.value > 1) {
+      entityCondition.value--;
+    } else {
+      gameManager.entityManager.removeCondition(this.entity, this.figure, entityCondition, entityCondition.permanent);
+    }
     gameManager.stateManager.after();
   }
 
-  removeMarker(marker: string) {
+  removeMarker() {
+    if ((this.entity instanceof MonsterEntity || this.entity instanceof ObjectiveEntity) && this.entity.marker) {
+      gameManager.stateManager.before(...gameManager.entityManager.undoInfos(this.entity, this.figure, "removeEntityMarker"), this.marker);
+      this.entity.marker = "";
+      gameManager.stateManager.after();
+    }
+  }
+
+  removeCharacterMarker(marker: string) {
     const markerChar = new Character(gameManager.getCharacterData(marker), 1);
     const markerName = gameManager.characterManager.characterName(markerChar);
     const characterIcon = markerChar.name;

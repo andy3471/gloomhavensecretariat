@@ -16,11 +16,12 @@ import { AbilityDialogComponent } from './ui/figures/ability/ability-dialog';
 import { ActionComponent } from './ui/figures/actions/action';
 import { ActionsComponent } from './ui/figures/actions/actions';
 import { ActionHexComponent } from './ui/figures/actions/area/action-hex';
+import { ActionEnhancementsComponent } from './ui/figures/actions/enhancements/enhancements';
 import { InteractiveActionsComponent } from './ui/figures/actions/interactive/interactive-actions';
 import { ActionSummonComponent } from './ui/figures/actions/summon/action-summon';
 import { AttackModifierComponent } from './ui/figures/attackmodifier/attackmodifier';
 import { AttackModifierDrawComponent } from './ui/figures/attackmodifier/attackmodifier-draw';
-import { AttackModifierEffectsComponent } from './ui/figures/attackmodifier/attackmodifier-effects';
+import { AttackModifierEffectComponent } from './ui/figures/attackmodifier/attackmodifier-effect';
 import { AttackModifierDeckComponent } from './ui/figures/attackmodifier/attackmodifierdeck';
 import { AttackModifierDeckDialogComponent } from './ui/figures/attackmodifier/attackmodifierdeck-dialog';
 import { AttackModifierDeckFullscreenComponent } from './ui/figures/attackmodifier/attackmodifierdeck-fullscreen';
@@ -40,13 +41,10 @@ import { CharacterComponent } from './ui/figures/character/character';
 import { CharacterSheetDialog } from './ui/figures/character/dialogs/character-sheet-dialog';
 import { CharacterLootCardsDialog } from './ui/figures/character/dialogs/loot-cards';
 import { CharacterSummonDialog } from './ui/figures/character/dialogs/summondialog';
-import { EventEffectsDialog } from './ui/figures/character/event-effects/event-effects';
-import { EventRandomItemDialogComponent } from './ui/figures/character/event-effects/random-item/random-item-dialog';
-import { EventRandomScenarioDialogComponent } from './ui/figures/character/event-effects/random-scenario/random-scenario-dialog';
-import { FavorsComponent } from './ui/figures/character/event-effects/trials/favors';
 import { CharacterFullViewComponent } from './ui/figures/character/fullview/fullview';
 import { CharacterItemListComponent } from './ui/figures/character/item-list/item-list';
-import { AbilityCardsDialogComponent } from './ui/figures/character/sheet/ability-cards-dialog';
+import { AbilityCardsDialogComponent } from './ui/figures/character/sheet/abilities/ability-cards-dialog';
+import { EnhancementDialogComponent } from './ui/figures/character/sheet/abilities/enhancements/enhancement-dialog';
 import { CharacterSheetComponent } from './ui/figures/character/sheet/character-sheet';
 import { CharacterMoveResourcesDialog } from './ui/figures/character/sheet/move-resources';
 import { CharacterRetirementDialog } from './ui/figures/character/sheet/retirement-dialog';
@@ -56,12 +54,21 @@ import { EntitiesMenuDialogComponent } from './ui/figures/entities-menu/entities
 import { AdditionalAMSelectDialogComponent } from './ui/figures/entity-menu/additional-am-select/additional-am-select';
 import { EntityMenuDialogComponent } from './ui/figures/entity-menu/entity-menu-dialog';
 import { FigureErrorsComponent, FigureErrorsDialogComponent } from './ui/figures/errors/errors';
+import { EventEffectsDialog } from './ui/figures/event-effects/event-effects';
+import { FavorsComponent } from './ui/figures/event-effects/favors/favors';
+import { EventRandomItemDialogComponent } from './ui/figures/event-effects/random-item/random-item-dialog';
+import { EventRandomScenarioDialogComponent } from './ui/figures/event-effects/random-scenario/random-scenario-dialog';
+import { EventCardAttackComponent } from './ui/figures/event/attack/event-card-attack';
+import { EventCardConditionComponent } from './ui/figures/event/condition/event-card-condition';
+import { EventCardDeckComponent } from './ui/figures/event/deck/event-card-deck';
+import { EventCardDialogComponent } from './ui/figures/event/dialog/event-card-dialog';
+import { EventCardDrawComponent } from './ui/figures/event/draw/event-card-draw';
+import { EventCardEffectComponent } from './ui/figures/event/effect/event-card-effect';
 import { EventCardComponent } from './ui/figures/event/event-card';
-import { EventConditionLabelComponent } from './ui/figures/event/label/condition-label';
-import { EventRewardLabelComponent } from './ui/figures/event/label/reward-label';
 import { HealthbarComponent } from './ui/figures/healthbar/healthbar';
 import { ItemsBrewDialog } from './ui/figures/items/brew/brew';
 import { CharacterItemComponent } from './ui/figures/items/character/item-character';
+import { ItemDistillDialogComponent } from './ui/figures/items/character/item-distill';
 import { ItemsCharacterDialogComponent } from './ui/figures/items/character/items-character-dialog';
 import { ItemDialogComponent } from './ui/figures/items/dialog/item-dialog';
 import { ItemsDialogComponent } from './ui/figures/items/dialog/items-dialog';
@@ -84,6 +91,9 @@ import { MonsterStatsComponent } from './ui/figures/monster/stats/stats';
 import { MonsterStatsDialogComponent } from './ui/figures/monster/stats/stats-dialog';
 import { ObjectiveContainerComponent } from './ui/figures/objective-container/objective-container';
 import { PartyBuildingsComponent } from './ui/figures/party/buildings/buildings';
+import { GardenComponent } from './ui/figures/party/buildings/garden/garden';
+import { PetCardComponent } from './ui/figures/party/buildings/stables/pet-card/pet-card';
+import { StablesComponent } from './ui/figures/party/buildings/stables/stables';
 import { BuildingUpgradeDialog } from './ui/figures/party/buildings/upgrade-dialog/upgrade-dialog';
 import { PartySheetDialogComponent } from './ui/figures/party/party-sheet-dialog';
 import { ScenarioRequirementsComponent, ScenarioRequirementsDialogComponent } from './ui/figures/party/requirements/requirements';
@@ -106,6 +116,8 @@ import { LevelDialogComponent } from './ui/footer/level/level-dialog';
 import { ScenarioRulesDialogComponent } from './ui/footer/scenario-rules/dialog/scenario-rules-dialog';
 import { ScenarioRuleComponent } from './ui/footer/scenario-rules/scenario-rule';
 import { ScenarioRulesComponent } from './ui/footer/scenario-rules/scenario-rules';
+import { RandomMonsterCardComponent } from './ui/footer/scenario/dialog/random-monster-card/random-monster-card';
+import { RandomMonsterCardDialogComponent } from './ui/footer/scenario/dialog/random-monster-card/random-monster-card-dialog';
 import { ScenarioDialogComponent } from './ui/footer/scenario/dialog/scenario-dialog';
 import { StatsListComponent } from './ui/footer/scenario/dialog/stats-list/stats-list';
 import { ScenarioComponent } from './ui/footer/scenario/scenario';
@@ -140,6 +152,7 @@ import { GhsCeilPipe, GhsDurationLabelPipe, GhsFloorPipe, GhsMinZeroPipe, GhsRan
 import { ValueSignDirective } from './ui/helper/ValueSign';
 import { AutocompleteDirective } from './ui/helper/autocomplete';
 import { AutoscrollDirective, FigureAutoscrollDirective } from './ui/helper/autoscroll';
+import { ConfirmDialogComponent } from './ui/helper/confirm/confirm';
 import { KeyboardShortcuts } from './ui/helper/keyboard-shortcuts';
 import { GhsLabelDirective, GhsLabelElementDirective, GhsPlaceholderDirective } from './ui/helper/label';
 import { GhsNumberInput } from './ui/helper/number-input/number-input';
@@ -160,8 +173,10 @@ import { GhsErrorHandler } from './ui/tools/error-handler';
 import { EventCardsToolComponent } from './ui/tools/events/event-cards-tool';
 import { FeedbackToolComponent } from './ui/tools/feedback/feedback';
 import { FeedbackDialogComponent } from './ui/tools/feedback/feedback-dialog';
-import { AttackModifierStandaloneComponent } from './ui/tools/standalone/attackmodifier-standalone';
-import { LootDeckStandaloneComponent } from './ui/tools/standalone/loot-deck-standalone';
+import { RandomMonsterCardsToolComponent } from './ui/tools/random-monster-cards/random-monster-cards-tool';
+import { AttackModifierStandaloneComponent } from './ui/tools/standalone/attackmodifier/attackmodifier-standalone';
+import { InitiativeStandaloneComponent } from './ui/tools/standalone/initiative/initiative-standalone';
+import { LootDeckStandaloneComponent } from './ui/tools/standalone/loot-deck/loot-deck-standalone';
 import { TreasuresToolComponent } from './ui/tools/treasures/treasures-tool';
 
 
@@ -174,6 +189,7 @@ import { TreasuresToolComponent } from './ui/tools/treasures/treasures-tool';
     AbiltiesDialogComponent,
     AboutMenuComponent,
     ActionComponent,
+    ActionEnhancementsComponent,
     ActionHexComponent,
     ActionSummonComponent,
     ActionsComponent,
@@ -184,7 +200,7 @@ import { TreasuresToolComponent } from './ui/tools/treasures/treasures-tool';
     AttackModifierDeckDialogComponent,
     AttackModifierDeckFullscreenComponent,
     AttackModifierDrawComponent,
-    AttackModifierEffectsComponent,
+    AttackModifierEffectComponent,
     AttackModifierStandaloneComponent,
     AttackModifierToolComponent,
     AutocompleteDirective,
@@ -218,6 +234,7 @@ import { TreasuresToolComponent } from './ui/tools/treasures/treasures-tool';
     CharacterSummonDialog,
     ConditionHighlightAnimationDirective,
     ConditionsComponent,
+    ConfirmDialogComponent,
     DatamanagementMenuComponent,
     DeckEditorComponent,
     DecksToolComponent,
@@ -226,17 +243,22 @@ import { TreasuresToolComponent } from './ui/tools/treasures/treasures-tool';
     EditorActionDialogComponent,
     ElementComponent,
     ElementIconComponent,
+    EnhancementDialogComponent,
     EntitiesMenuDialogComponent,
     EntityAnimationDirective,
     EntityIndexKeyComponent,
     EntityMenuDialogComponent,
+    EventCardAttackComponent,
     EventCardComponent,
+    EventCardConditionComponent,
+    EventCardDeckComponent,
+    EventCardDialogComponent,
+    EventCardDrawComponent,
+    EventCardEffectComponent,
     EventCardsToolComponent,
-    EventConditionLabelComponent,
     EventEffectsDialog,
     EventRandomItemDialogComponent,
     EventRandomScenarioDialogComponent,
-    EventRewardLabelComponent,
     FavorsComponent,
     FeedbackDialogComponent,
     FeedbackToolComponent,
@@ -245,6 +267,7 @@ import { TreasuresToolComponent } from './ui/tools/treasures/treasures-tool';
     FigureErrorsDialogComponent,
     FooterComponent,
     GameClockDialogComponent,
+    GardenComponent,
     GhsCeilPipe,
     GhsDurationLabelPipe,
     GhsFloorPipe,
@@ -262,9 +285,11 @@ import { TreasuresToolComponent } from './ui/tools/treasures/treasures-tool';
     HealthbarComponent,
     HighlightConditionsComponent,
     HintDialogComponent,
+    InitiativeStandaloneComponent,
     InteractiveActionsComponent,
     ItemComponent,
     ItemDialogComponent,
+    ItemDistillDialogComponent,
     ItemsBrewDialog,
     ItemsCharacterDialogComponent,
     ItemsDialogComponent,
@@ -300,7 +325,11 @@ import { TreasuresToolComponent } from './ui/tools/treasures/treasures-tool';
     PartySheetDialogComponent,
     PartyWeekDialogComponent,
     PerkLabelComponent,
+    PetCardComponent,
     PointerInputDirective,
+    RandomMonsterCardComponent,
+    RandomMonsterCardDialogComponent,
+    RandomMonsterCardsToolComponent,
     ScenarioChartDialogComponent,
     ScenarioChartPopupDialog,
     ScenarioComponent,
@@ -322,6 +351,7 @@ import { TreasuresToolComponent } from './ui/tools/treasures/treasures-tool';
     SettingMenuTitleComponent,
     SettingsDebugMenuComponent,
     SettingsMenuComponent,
+    StablesComponent,
     StandeeComponent,
     StatisticsDialogComponent,
     StatsListComponent,

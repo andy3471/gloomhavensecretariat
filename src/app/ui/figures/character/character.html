@@ -7,13 +7,13 @@
     <img class="menu" src="./assets/images/up.svg">
   </span>
   <div class="summons" *ngIf="summonCount">
-    <ghs-standee *ngFor="let summon of character.summons" [figure]="character" [entity]="summon">
+    <ghs-standee *ngFor="let summon of summons" [figure]="character" [entity]="summon">
     </ghs-standee>
   </div>
 </div>
 
 <div class="character" [style.--ghs-character-color]="character.color"
-  [ngClass]="{'off' : character.off || character.exhausted || character.health <= 0  || character.absent, 'denied' : !gameManager.stateManager.characterPermissions[character.name + '|' + character.edition], 'absent' : character.absent, 'dimmed' : (bb || settingsManager.settings.characterSheet) && settingsManager.settings.characterAttackModifierDeck && character.attackModifierDeckVisible && !settingsManager.settings.characterAttackModifierDeckPermanent || settingsManager.settings.lootDeck && settingsManager.settings.applyLoot && character.lootCardsVisible, 'compact': compact, 'short': (!settingsManager.settings.abilities || !settingsManager.settings.stats) && settingsManager.settings.theme != 'modern', 'fh': settingsManager.settings.theme == 'fh', 'modern': settingsManager.settings.theme == 'modern', 'active-border' : character.active && (settingsManager.settings.theme == 'modern' || compact) }">
+  [ngClass]="{'off' : character.off || character.exhausted || character.health <= 0  || character.absent, 'denied' : !gameManager.stateManager.characterPermissions[character.name + '|' + character.edition], 'absent' : character.absent, 'dimmed' : (bb || settingsManager.settings.characterSheet) && settingsManager.settings.characterAttackModifierDeck && character.attackModifierDeckVisible && !settingsManager.settings.characterAttackModifierDeckPermanent || settingsManager.settings.lootDeck && settingsManager.settings.applyLoot && character.lootCardsVisible, 'compact': compact, 'short': short, 'menu': shortMenu, 'fh': settingsManager.settings.theme == 'fh', 'modern': settingsManager.settings.theme == 'modern', 'active-border' : character.active && (settingsManager.settings.theme == 'modern' || compact) }">
 
   <ghs-entity-index-key [entity]="character"></ghs-entity-index-key>
 
@@ -29,7 +29,7 @@
       [ngClass]="{'outer-denied' : gameManager.stateManager.permissions && !gameManager.stateManager.permissions.round && !gameManager.stateManager.characterPermissions[character.name + '|' + character.edition]}">
     </ghs-pointer-input>
 
-    <ghs-character-initiative class="initiative" [figure]="character"></ghs-character-initiative>
+    <ghs-character-initiative *ngIf="!short" class="initiative" [figure]="character"></ghs-character-initiative>
 
     <ghs-highlight-conditions [entity]="character" [figure]="character"></ghs-highlight-conditions>
 
@@ -57,122 +57,128 @@
 
   <div class="stats">
     <ng-container *ngIf="!character.absent">
-      <div class="entity-menu-container" ghs-pointer-input (singleClick)="openEntityMenu($event)"
+      <div class="entity-menu-container" ghs-pointer-input (singleClick)="openEntityMenu()"
         (doubleClick)="compact && openCharacterSheet()"></div>
       <div class="column col-1">
-        <div class="entity-menu-container" ghs-pointer-input (singleClick)="openEntityMenu($event)"
+        <div class="entity-menu-container" ghs-pointer-input (singleClick)="openEntityMenu()"
           (doubleClick)="compact && openCharacterSheet()"></div>
-        <span class="title-bar">
-          <span class="title" #characterName>
-            <span class="icon" ghs-pointer-input (dragMove)="dragTokenMove($event)" (dragEnd)="dragTokenEnd($event)"
-              (dragCancel)="dragCancel($event)" [relative]="true" [screenWidth]="true"
-              (singleClick)="nextIdentity($event)">
-              <img
-                [ngClass]="{'identities' : settingsManager.settings.characterIdentities &&  character.identities && character.identities.length > 1}"
-                [src]="character.identities.length == 0 || !settingsManager.settings.characterIdentities ? character.iconUrl : gameManager.characterManager.characterIdentityIcon(character.name, character.identity)" />
-            </span>
-
-            <ghs-character-initiative *ngIf="compact" [figure]="character"></ghs-character-initiative>
-            <span class="name" ghs-pointer-input (singleClick)="openEntityMenu($event)"
-              (doubleClick)="compact && openCharacterSheet()">
-              {{characterTitle}}
-              <img class="ghs-svg exhausted" *ngIf="character.exhausted" src="./assets/images/status/exhausted.svg" />
-            </span>
-          </span>
-
-          <span class="actions" *ngIf="settingsManager.settings.characterShieldRetaliate">
-            <span class="action" *ngIf="character.shield" ghs-pointer-input (singleClick)="openEntityMenu($event)"
-              (doubleClick)="removeShield()">
-              <ghs-action [action]="character.shield" [style]="'fh'"></ghs-action>
-            </span>
-            <span class="action" *ngFor="let retaliate of character.retaliate; let i = index;" ghs-pointer-input
-              (singleClick)="openEntityMenu($event)" (doubleClick)="removeRetaliate(i)">
-              <ghs-action [action]="retaliate" [style]="'fh'"></ghs-action>
-            </span>
-
-            <span class="action" *ngIf="character.shieldPersistent" ghs-pointer-input
-              (singleClick)="openEntityMenu($event)" (doubleClick)="removeShieldPersistent()">
-              <span class="action-overlay">
-                <span class="text-white" [ghs-label]="'%game.card.persistent%'"></span>
-              </span>
-              <ghs-action [action]="character.shieldPersistent" [style]="'fh'"></ghs-action>
-            </span>
-            <span class="action" *ngFor="let retaliatePersistent of character.retaliatePersistent; let i = index;"
-              ghs-pointer-input (singleClick)="openEntityMenu($event)" (doubleClick)="removeRetaliatePersistent(i)">
-              <span class="action-overlay">
-                <span class="text-white" [ghs-label]="'%game.card.persistent%'"></span>
-              </span>
-              <ghs-action [action]="retaliatePersistent" [style]="'fh'"></ghs-action>
-            </span>
-          </span>
-
-          <span class="token-container">
-            <span class="token" *ngIf="(character.token + (character.primaryToken < 0 ? token : 0)) > 0"
-              [ghs-label]="'%data.characterToken.' + character.name + '%'" ghs-pointer-input
-              (dragMove)="dragTokenMove($event)" (dragEnd)="dragTokenEnd($event)" (dragCancel)="dragCancel($event)"
-              [relative]="true" [screenWidth]="true" (singleClick)="nextIdentity($event)">></span>
-            <span class="token value" *ngIf="(character.token + (character.primaryToken < 0 ? token : 0)) > 1">
-              <span>x{{character.token + (character.primaryToken < 0 ? token : 0)}}</span>
-              </span>
-              <ng-container *ngFor="let addToken of character.tokens; let i = index;">
-                <span class="token" *ngIf="(character.tokenValues[i] + (character.primaryToken == i ? token : 0)) > 0"
-                  [ghs-label]="'%data.characterToken.' + character.name + '.' + addToken + '%'"></span>
-                <span class="token value"
-                  *ngIf="(character.tokenValues[i] + (character.primaryToken == i ? token : 0)) > 1">
-                  <span>x{{character.tokenValues[i]
-                    + (character.primaryToken == i ? token : 0)}}</span></span>
-              </ng-container>
-            </span>
-          </span>
-          <div class="status-bar">
-            <div class="health" *ngIf="!settingsManager.settings.hideCharacterHP" [ghs-label]="'game.health'"
-              [ghs-label-attribute]="'title'" ghs-pointer-input (dragMove)="dragHpMove($event)"
-              (dragEnd)="dragHpEnd($event)" (dragCancel)="dragCancel($event)" [relative]="true" [screenWidth]="true" [fastShift]="true"
-              (singleClick)="openEntityMenu($event)" (doubleClick)="toggleDamageHP()">
-              <img [ngClass]="{'damage' : settingsManager.settings.damageHP}"
-                [src]="'./assets/images/' + (settingsManager.settings.damageHP ? 'action/damage.svg' : 'status/health.svg')" />
-              <span *ngIf="!settingsManager.settings.damageHP">
-                {{(character.health + health) | ghsMinZero}}/{{character.maxHealth}}
-              </span>
-              <span *ngIf="settingsManager.settings.damageHP">
-                {{character.maxHealth}}/{{character.maxHealth - (character.health + health) | ghsMinZero}}
-              </span>
-              <span class="value-overlay" [value-sign]="health" [hideEmpty]="true"
-                [reverse]="settingsManager.settings.damageHP" [container]="true"></span>
-            </div>
-            <div class="markers">
-              <span class="marker" *ngFor="let marker of character.markers;" ghs-pointer-input
-                (doubleClick)="removeMarker(marker)">
-                <img [src]="gameManager.characterManager.characterIcon(marker)" />
-              </span>
-            </div>
-
-            <div class="conditions">
-              <span class="condition" *ngFor="let entityCondition of activeConditions; let index = index;"
-                ghs-pointer-input (doubleClick)="removeCondition(entityCondition)">
+        <ghs-character-initiative *ngIf="short" class="initiative" [figure]="character"></ghs-character-initiative>
+        <div class="bar-container">
+          <div class="entity-menu-container" ghs-pointer-input (singleClick)="openEntityMenu()"
+            (doubleClick)="compact && openCharacterSheet()"></div>
+          <span class="title-bar">
+            <span class="title" #characterName>
+              <span class="icon" ghs-pointer-input (dragMove)="dragTokenMove($event)" (dragEnd)="dragTokenEnd($event)"
+                (dragCancel)="dragCancel($event)" [relative]="true" [screenWidth]="true"
+                (singleClick)="nextIdentity($event)">
                 <img
-                  [src]="'./assets/images' + (settingsManager.settings.fhStyle ? '/fh' : '') + '/condition/' + entityCondition.name + '.svg'"
-                  [style.z-index]="index * 10 + entityCondition.value" />
-                <ng-container *ngIf="entityCondition.types.indexOf(ConditionType.stack) != -1">
-                  <img class="stack" *ngFor="let i of [] | ghsRange:(entityCondition.value - 1)"
-                    [style.z-index]="index * 10 + entityCondition.value - i - 1"
-                    [src]="'./assets/images' + (settingsManager.settings.fhStyle ? '/fh' : '') + '/condition/' + entityCondition.name + '.svg'" />
-                </ng-container>
-                <span class="value" [style.z-index]="index * 10 + entityCondition.value +1"
-                  *ngIf="entityCondition.types.indexOf(ConditionType.value) != -1 && entityCondition.types.indexOf(ConditionType.stack) == -1">{{entityCondition.value}}</span>
-                <span *ngIf="character.immunities.indexOf(entityCondition.name) != -1"
-                  class="condition immunity condition-overlay"
-                  [style.z-index]="index * 10 + entityCondition.value + 2"></span>
-                <span *ngIf="entityCondition.permanent" class="condition permanent condition-overlay"
-                  [style.z-index]="index * 10 + entityCondition.value + 3"></span>
+                  [ngClass]="{'identities' : settingsManager.settings.characterIdentities &&  character.identities && character.identities.length > 1}"
+                  [src]="character.identities.length == 0 || !settingsManager.settings.characterIdentities ? character.iconUrl : gameManager.characterManager.characterIdentityIcon(character.name, character.identity)" />
               </span>
+
+              <ghs-character-initiative *ngIf="compact" [figure]="character"></ghs-character-initiative>
+              <span class="name" ghs-pointer-input (singleClick)="openEntityMenu()"
+                (doubleClick)="compact && openCharacterSheet()">
+                {{characterTitle}}
+                <img class="ghs-svg exhausted" *ngIf="character.exhausted" src="./assets/images/status/exhausted.svg" />
+              </span>
+            </span>
+
+            <span class="actions" *ngIf="settingsManager.settings.characterShieldRetaliate">
+              <span class="action" *ngIf="character.shield" ghs-pointer-input (singleClick)="openEntityMenu()"
+                (doubleClick)="removeShield()">
+                <ghs-action [action]="character.shield" [style]="'fh'"></ghs-action>
+              </span>
+              <span class="action" *ngFor="let retaliate of character.retaliate; let i = index;" ghs-pointer-input
+                (singleClick)="openEntityMenu()" (doubleClick)="removeRetaliate(i)">
+                <ghs-action [action]="retaliate" [style]="'fh'"></ghs-action>
+              </span>
+
+              <span class="action" *ngIf="character.shieldPersistent" ghs-pointer-input (singleClick)="openEntityMenu()"
+                (doubleClick)="removeShieldPersistent()">
+                <span class="action-overlay">
+                  <span class="text-white" [ghs-label]="'%game.card.persistent%'"></span>
+                </span>
+                <ghs-action [action]="character.shieldPersistent" [style]="'fh'"></ghs-action>
+              </span>
+              <span class="action" *ngFor="let retaliatePersistent of character.retaliatePersistent; let i = index;"
+                ghs-pointer-input (singleClick)="openEntityMenu()" (doubleClick)="removeRetaliatePersistent(i)">
+                <span class="action-overlay">
+                  <span class="text-white" [ghs-label]="'%game.card.persistent%'"></span>
+                </span>
+                <ghs-action [action]="retaliatePersistent" [style]="'fh'"></ghs-action>
+              </span>
+            </span>
+
+            <span class="token-container">
+              <span class="token" *ngIf="(character.token + (character.primaryToken < 0 ? token : 0)) > 0"
+                [ghs-label]="'%data.characterToken.' + character.name + '%'" ghs-pointer-input
+                (dragMove)="dragTokenMove($event)" (dragEnd)="dragTokenEnd($event)" (dragCancel)="dragCancel($event)"
+                [relative]="true" [screenWidth]="true" (singleClick)="nextIdentity($event)">></span>
+              <span class="token value" *ngIf="(character.token + (character.primaryToken < 0 ? token : 0)) > 1">
+                <span>x{{character.token + (character.primaryToken < 0 ? token : 0)}}</span>
+                </span>
+                <ng-container *ngFor="let addToken of character.tokens; let i = index;">
+                  <span class="token" *ngIf="(character.tokenValues[i] + (character.primaryToken == i ? token : 0)) > 0"
+                    [ghs-label]="'%data.characterToken.' + character.name + '.' + addToken + '%'"></span>
+                  <span class="token value"
+                    *ngIf="(character.tokenValues[i] + (character.primaryToken == i ? token : 0)) > 1">
+                    <span>x{{character.tokenValues[i]
+                      + (character.primaryToken == i ? token : 0)}}</span></span>
+                </ng-container>
+              </span>
+            </span>
+            <div class="status-bar">
+              <div class="health" *ngIf="!settingsManager.settings.hideCharacterHP" [ghs-label]="'game.health'"
+                [ghs-label-attribute]="'title'" ghs-pointer-input (dragMove)="dragHpMove($event)"
+                (dragEnd)="dragHpEnd($event)" (dragCancel)="dragCancel($event)" [relative]="true" [screenWidth]="true"
+                [fastShift]="true" (singleClick)="openEntityMenu()" (doubleClick)="toggleDamageHP()">
+                <img [ngClass]="{'damage' : settingsManager.settings.damageHP}"
+                  [src]="'./assets/images/' + (settingsManager.settings.damageHP ? 'action/damage.svg' : 'status/health.svg')" />
+                <span *ngIf="!settingsManager.settings.damageHP">
+                  {{(character.health + health) | ghsMinZero}}/{{character.maxHealth}}
+                </span>
+                <span *ngIf="settingsManager.settings.damageHP">
+                  {{character.maxHealth}}/{{character.maxHealth - (character.health + health) | ghsMinZero}}
+                </span>
+                <span class="value-overlay" [value-sign]="health" [hideEmpty]="true"
+                  [reverse]="settingsManager.settings.damageHP" [container]="true"></span>
+              </div>
+              <div class="markers">
+                <span class="marker" *ngFor="let marker of character.markers;" ghs-pointer-input
+                  (doubleClick)="removeMarker(marker)">
+                  <img [src]="gameManager.characterManager.characterIcon(marker)" />
+                </span>
+              </div>
+
+              <div class="conditions">
+                <span class="condition" *ngFor="let entityCondition of activeConditions; let index = index;"
+                  ghs-pointer-input (doubleClick)="removeCondition(entityCondition)"
+                  [ngClass]="{'fh': settingsManager.settings.fhStyle}">
+                  <img
+                    [src]="'./assets/images' + (settingsManager.settings.fhStyle ? '/fh' : '') + '/condition/' + entityCondition.name + '.svg'"
+                    [style.z-index]="index * 10 + entityCondition.value" />
+                  <ng-container *ngIf="entityCondition.types.indexOf(ConditionType.stack) != -1">
+                    <img class="stack" *ngFor="let i of [] | ghsRange:(entityCondition.value - 1)"
+                      [style.z-index]="index * 10 + entityCondition.value - i - 1"
+                      [src]="'./assets/images' + (settingsManager.settings.fhStyle ? '/fh' : '') + '/condition/' + entityCondition.name + '.svg'" />
+                  </ng-container>
+                  <span class="value" [style.z-index]="index * 10 + entityCondition.value +1"
+                    *ngIf="entityCondition.types.indexOf(ConditionType.value) != -1 && entityCondition.types.indexOf(ConditionType.stack) == -1">{{entityCondition.value}}</span>
+                  <span *ngIf="character.immunities.indexOf(entityCondition.name) != -1"
+                    class="condition immunity condition-overlay"
+                    [style.z-index]="index * 10 + entityCondition.value + 2"></span>
+                  <span *ngIf="entityCondition.permanent" class="condition permanent condition-overlay"
+                    [style.z-index]="index * 10 + entityCondition.value + 3"></span>
+                </span>
+              </div>
             </div>
-          </div>
+        </div>
       </div>
     </ng-container>
 
     <ng-container *ngIf="character.absent">
-      <div *ngIf="character.absent" class="absent-menu" ghs-pointer-input (singleClick)="openEntityMenu($event)"
+      <div *ngIf="character.absent" class="absent-menu" ghs-pointer-input (singleClick)="openEntityMenu()"
         (doubleClick)="compact && openCharacterSheet()"></div>
       <div class="title absent" #characterName>
         <span class="icon">
@@ -186,11 +192,11 @@
     <span class="spacer"></span>
 
     <ng-container *ngIf="!character.absent">
-      <span class="spacer" ghs-pointer-input (singleClick)="openEntityMenu($event)"
+      <span class="spacer" ghs-pointer-input (singleClick)="openEntityMenu()"
         (doubleClick)="compact && openCharacterSheet()"></span>
 
       <div class="loot-cards-button"
-        *ngIf="!bb && settingsManager.settings.lootDeck && character.lootCards && character.lootCards.length > 0 && !settingsManager.settings.hideCharacterLoot"
+        *ngIf="!bb && settingsManager.settings.lootDeck && !!character.lootCards && character.lootCards.length > 0 && !settingsManager.settings.hideCharacterLoot"
         ghs-pointer-input (singleClick)="toggleLootCardsVisible()" [ngClass]="{'disabled': character.lootCardsVisible}">
         <img src="./assets/images/fh/loot-token.png" />
         <span class="badge">{{character.lootCards.length}}</span>
@@ -211,7 +217,7 @@
       </span>
 
       <div
-        *ngIf="!bb && gameManager.game.scenario && settingsManager.settings.battleGoals && (gameManager.roundManager.firstRound || settingsManager.settings.battleGoalsCharacter || !settingsManager.settings.characterSheet || !settingsManager.settings.characterAttackModifierDeck)"
+        *ngIf="!bb && !!gameManager.game.scenario && settingsManager.settings.battleGoals && (gameManager.roundManager.firstRound || settingsManager.settings.battleGoalsCharacter || !settingsManager.settings.characterSheet || !settingsManager.settings.characterAttackModifierDeck)"
         class="battlegoals-button" ghs-pointer-input (singleClick)="openBattleGoals()" [ghs-label]="'game.battleGoals'"
         [ghs-label-attribute]="'title'">
         <img
@@ -230,7 +236,7 @@
       <div class="bb-spacer" *ngIf="bb"></div>
 
       <div class="summon-dialog" *ngIf="!bb && settingsManager.settings.summons">
-        <div class="entity-menu-container" ghs-pointer-input (singleClick)="openEntityMenu($event)"
+        <div class="entity-menu-container" ghs-pointer-input (singleClick)="openEntityMenu()"
           (doubleClick)="compact && openCharacterSheet()"></div>
         <a #summonButton class="summon-dialog-button" ghs-pointer-input (singleClick)="openSummonDialog($event)"
           [ghs-label]="'summon'" [ghs-label-attribute]="'title'">
@@ -238,8 +244,15 @@
         </a>
       </div>
 
+      <div class="short-menu" *ngIf="compact && short">
+        <div class="entity-menu-container" ghs-pointer-input (singleClick)="openEntityMenu()"></div>
+        <a class="toggle-menu" ghs-pointer-input (singleClick)="shortMenu=!shortMenu">
+          <img class="ghs-svg" src="./assets/images/menu.svg">
+        </a>
+      </div>
+
       <div class="column col-2">
-        <div class="entity-menu-container" ghs-pointer-input (singleClick)="openEntityMenu($event)"
+        <div class="entity-menu-container" ghs-pointer-input (singleClick)="openEntityMenu()"
           (doubleClick)="compact && openCharacterSheet()"></div>
         <span class="experience" *ngIf="!bb && !settingsManager.settings.hideCharacterXP"
           [ghs-label]="'game.experience'" [ghs-label-attribute]="'title'" ghs-pointer-input
@@ -263,12 +276,13 @@
 
     <a *ngIf="!bb" class="character-sheet-button" [ghs-label]="'character.progress'" [ghs-label-attribute]="'title'"
       [ngClass]="{'hand-size-margin' : settingsManager.settings.characterHandSize}" ghs-pointer-input
-      (singleClick)="settingsManager.settings.characterSheet ? openCharacterSheet() : openEntityMenu($event)"
+      (singleClick)="settingsManager.settings.characterSheet ? openCharacterSheet() : openEntityMenu()"
       (doubleClick)="characterFullView()">
       <img [src]="character.iconUrl" />
     </a>
 
-    <div *ngIf="!character.bb && settingsManager.settings.characterHandSize && !character.absent" class="hand-size">
+    <div *ngIf="!character.bb && settingsManager.settings.characterHandSize && !character.absent" class="hand-size"
+      ghs-pointer-input (singleClick)="openEntityMenu()" (doubleClick)="openAbilityCards()">
       {{character.handSize}}
     </div>
 
@@ -281,8 +295,13 @@
       {{character.level}}
     </div>
 
+    <div *ngIf="!character.bb && settingsManager.settings.playerNumber" class="player-number">
+      #{{character.number}}
+    </div>
+
+
     <div *ngIf="settingsManager.settings.characterTraits && !character.absent && character.traits.length > 0"
-      class="character-traits" ghs-pointer-input (singleClick)="openEntityMenu($event)"
+      class="character-traits" ghs-pointer-input (singleClick)="openEntityMenu()"
       (doubleClick)="compact && openCharacterSheet()">
       <span class="icon"><img class="ghs-svg" src="./assets/images/fh/character/traits/trait.svg"></span>
       <ng-container *ngFor="let trait of character.traits; let i = index;">
@@ -294,17 +313,35 @@
     </div>
 
     <div class="special-actions" *ngIf="character.specialActions">
-      <div class="entity-menu-container" ghs-pointer-input (singleClick)="openEntityMenu($event)"
+      <div class="entity-menu-container" ghs-pointer-input (singleClick)="openEntityMenu()"
         (doubleClick)="compact && openCharacterSheet()"></div>
-      <ng-container *ngFor="let specialAction of character.specialActions">
-        <span *ngIf="character.tags.indexOf(specialAction.name) != -1" class="special-tag text-white"
-          [ghs-label]="'data.character.' + character.name + '.' + specialAction.name" ghs-pointer-input
-          (singleClick)="openEntityMenu($event)" (doubleClick)="removeSpecialAction(specialAction.name)"></span>
+      <ng-container *ngFor="let specialAction of specialActions; let i = index">
+        <span class="special-tag text-white"
+          [ghs-label]="'data.character.' + character.edition + '.' + character.name + '.' + specialAction.name"
+          ghs-pointer-input (singleClick)="openEntityMenu()" (doubleClick)="removeSpecialAction(specialAction.name)"
+          [ghs-tooltip]="'data.character.' + character.edition + '.' + character.name + '.' + specialAction.name + '.hint'"
+          [originY]="'top'" [overlayY]="'bottom'" [originX]="'center'" [overlayX]="'center'"></span>
+        <span class="separator" *ngIf="i < specialActions.length - 1 && specialActions.length > 1">|</span>
       </ng-container>
     </div>
   </div>
 
   <ghs-figure-errors [figure]="character"></ghs-figure-errors>
+</div>
+
+<div class="summons-container spirits" *ngIf="!character.absent && settingsManager.settings.summons"
+  [ngClass]="{'empty' : skullSpiritCount == 0, 'off' : character.off || character.exhausted || character.health <= 0 }">
+  <span class="spacer"></span>
+  <span class="entities-menu" [ngClass]="{'empty' : skullSpiritCount == 0, 'disabled' : skullSpiritCount < 2}"
+    [entityAnimation]="skullSpiritCount == 0" (click)="openEntitiesMenu($event)">
+    <img class="icon" [src]="character.iconUrl" />
+    <img class="menu" src="./assets/images/up.svg">
+  </span>
+  <div class="summons" *ngIf="skullSpiritCount">
+    <ghs-standee [ngClass]="{'active': summon.active}" *ngFor="let summon of skullSpirits" [figure]="character"
+      [entity]="summon">
+    </ghs-standee>
+  </div>
 </div>
 
 <div

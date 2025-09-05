@@ -10,14 +10,15 @@
     "gridLocation": "F-12"
   },
   "edition": "gh",
+  "eventType": "road",
   "unlocks": [
     "41"
   ],
   "requirements": [
     {
       "party": [
-        "The Voice's Command",
-        "The Voice's Treasure"
+        "the-voices-command",
+        "the-voices-treasure"
       ]
     }
   ],
@@ -26,7 +27,7 @@
   ],
   "rewards": {
     "globalAchievements": [
-      "Ancient Technology"
+      "ancient-technology"
     ]
   },
   "monsters": [

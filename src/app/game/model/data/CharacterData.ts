@@ -1,5 +1,6 @@
 import { AttackModifier } from "./AttackModifier";
 import { CharacterSpecialAction, CharacterStat } from "./CharacterStat";
+import { ConditionName } from "./Condition";
 import { Editional } from "./Editional";
 import { FigureError } from "./FigureError";
 import { Perk, PerkCard } from "./Perks";
@@ -36,6 +37,7 @@ export class CharacterData implements Editional, Spoilable {
   characterClass: CharacterClass | undefined;
   gender: CharacterGender = CharacterGender.unknown;
   identities: string[] = [];
+  defaultIdentity: number | undefined = undefined;
   tokens: string[] = [];
   primaryToken: number = -1;
   handSize: number | string = 0;
@@ -44,6 +46,7 @@ export class CharacterData implements Editional, Spoilable {
   traits: string[] = [];
   availableSummons: SummonData[] = [];
   specialActions: CharacterSpecialAction[] = [];
+  specialConditions: ConditionName[] = [];
 
   icon: string = '';
   iconUrl: string = '';
@@ -87,6 +90,7 @@ export class CharacterData implements Editional, Spoilable {
       this.characterClass = characterData.characterClass || undefined;
       this.gender = characterData.gender || CharacterGender.unknown;
       this.identities = characterData.identities || [];
+      this.defaultIdentity = characterData.defaultIdentity;
       this.tokens = characterData.tokens || [];
       this.primaryToken = characterData.primaryToken >= 0 ? characterData.primaryToken : -1;
       this.handSize = characterData.handSize || 0;
@@ -104,6 +108,7 @@ export class CharacterData implements Editional, Spoilable {
       this.marker = characterData.marker || false;
       this.spoiler = characterData.spoiler || false;
       this.specialActions = characterData.specialActions || [];
+      this.specialConditions = characterData.specialConditions || [];
       this.locked = characterData.locked || false;
       this.deck = characterData.deck || "";
       this.perkWarning = characterData.perkWarning;

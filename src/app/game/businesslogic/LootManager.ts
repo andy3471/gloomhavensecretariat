@@ -18,7 +18,7 @@ export class LootManager {
     this.game = game;
   }
 
-  drawCard(deck: LootDeck, character: Character | undefined): ItemData | undefined {
+  drawCard(deck: LootDeck, character: Character | undefined = undefined): ItemData | undefined {
     let result: ItemData | undefined = undefined;
     deck.current++;
     if (deck.current >= deck.cards.length) {
@@ -56,7 +56,7 @@ export class LootManager {
     if (gameManager.trialsManager.apply && gameManager.trialsManager.trialsEnabled) {
       const trialCharacter = this.game.figures.find((figure) => figure instanceof Character && figure != character && figure.progress.trial && figure.progress.trial.edition == 'fh' && figure.progress.trial.name == '351') as Character;
       if (trialCharacter) {
-        gameManager.entityManager.changeHealth(trialCharacter, trialCharacter, - Math.ceil(this.game.level / 3));
+        gameManager.entityManager.changeHealth(trialCharacter, trialCharacter, - Math.ceil(this.game.level / 3), true);
       }
     }
 
@@ -226,10 +226,7 @@ export class LootManager {
         if (reward.value && typeof reward.value === 'string' && reward.value.split('-').length > 1) {
           const section = reward.value.split('-')[0];
           const week = gameManager.game.party.weeks + (+reward.value.split('-')[1]);
-          if (!gameManager.game.party.weekSections[week]) {
-            gameManager.game.party.weekSections[week] = [];
-          }
-          gameManager.game.party.weekSections[week]?.push(section);
+          gameManager.game.party.weekSections[week] = [...(gameManager.game.party.weekSections[week] || []), section];
         }
         break;
       case TreasureRewardType.campaignSticker:
@@ -246,7 +243,7 @@ export class LootManager {
         if (typeof reward.value === 'number') {
           gameManager.game.lootDeck.active = true;
           for (let i = 0; i < reward.value; i++) {
-            this.drawCard(gameManager.game.lootDeck, character);
+            this.drawCard(gameManager.game.lootDeck);
           }
           gameManager.uiChange.emit();
         }
@@ -264,7 +261,7 @@ export class LootManager {
           let scenarioData = gameManager.scenarioManager.drawRandomScenario(edition);
           if (scenarioData) {
             gameManager.game.party.manualScenarios.push(new GameScenarioModel('' + scenarioData.index, scenarioData.edition, scenarioData.group));
-            result.push(scenarioData.index, 'data.scenario.' + scenarioData.name);
+            result.push(scenarioData.index, gameManager.scenarioManager.scenarioTitle(scenarioData));
           }
         }
         break;
@@ -273,7 +270,7 @@ export class LootManager {
           let sectionData = gameManager.scenarioManager.drawRandomScenarioSection(edition);
           if (sectionData) {
             gameManager.game.party.conclusions.push(new GameScenarioModel('' + sectionData.index, sectionData.edition, sectionData.group));
-            result.push(sectionData.index, 'data.section.' + sectionData.name, sectionData.unlocks ? sectionData.unlocks.map((unlock) => '%data.scenarioNumber:' + unlock + '%').join(', ') : '');
+            result.push(sectionData.index, gameManager.scenarioManager.scenarioTitle(sectionData, true), sectionData.unlocks ? sectionData.unlocks.map((unlock) => '%data.scenarioNumber:' + unlock + '%').join(', ') : '');
           }
         }
         break;

@@ -10,13 +10,14 @@
     "gridLocation": "M-19"
   },
   "edition": "fc",
+  "eventType": "rift",
   "unlocks": [
     "110"
   ],
   "requirements": [
     {
       "global": [
-        "Knowledge is Power:2"
+        "knowledge-is-power:2"
       ]
     }
   ],

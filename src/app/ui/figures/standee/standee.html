@@ -3,7 +3,7 @@
   [entityAnimation]="entity.dead">
   <div class="entity" [ngClass]="gameManager.isMonsterEntity(entity) ? gameManager.toMonsterEntity(entity).type : ''">
     <div #standee class="standee"
-      [ngClass]="{'monster-standee' : gameManager.isMonsterEntity(entity), 'objective-standee' : gameManager.isObjectiveEntity(entity), 'summon-standee' : gameManager.isSummon(entity)}">
+      [ngClass]="{'monster-standee' : gameManager.isMonsterEntity(entity), 'objective-standee' : gameManager.isObjectiveEntity(entity), 'summon-standee' : gameManager.isSummon(entity), 'bb-elite': gameManager.isMonster(figure) && gameManager.toMonster(figure).bb &&  gameManager.isMonsterEntity(entity) && gameManager.toMonsterEntity(entity).type == MonsterType.elite}">
 
       <div class="sheet" *ngIf="gameManager.isSummon(entity) && gameManager.toSummon(entity).active">
         <ghs-summon-sheet [summon]="gameManager.toSummon(entity)"></ghs-summon-sheet>
@@ -42,8 +42,6 @@
             {{maxHp}}/{{((maxHp - entity.health + health) | ghsMinZero)}}
           </span>
           <span *ngIf="!maxHp">-</span>
-          <span class="value-overlay" [value-sign]="health" [hideEmpty]="true"
-            [reverse]="settingsManager.settings.damageHP" [container]="true"></span>
         </span>
     </div>
 
@@ -64,10 +62,10 @@
 
 
     <div class="markers">
-      <span *ngIf="marker" class="placeholder placeholder-marker"
+      <span *ngIf="marker" class="placeholder placeholder-marker" ghs-pointer-input (doubleClick)="removeMarker()"
         [ghs-label]="'%game.mapMarker.' + marker + '%'"></span>
       <span class="marker" *ngFor="let marker of entity.markers;" ghs-pointer-input
-        (doubleClick)="removeMarker(marker)">
+        (doubleClick)="removeCharacterMarker(marker)">
         <img [src]="gameManager.characterManager.characterIcon(marker)" />
       </span>
     </div>
@@ -76,7 +74,7 @@
 
     <div class="conditions">
       <span class="condition-container" *ngFor="let entityCondition of activeConditions; let index = index;"
-        [ngClass]="{'center' : (gameManager.isMonsterEntity(entity) && gameManager.toMonsterEntity(entity).summon == SummonState.false || gameManager.isSummon(entity) || gameManager.isObjectiveEntity(entity)) && ((activeConditions).length % 2) == 1 && (activeConditions).length == index + 1, 'expired' : entityCondition.expired}">
+        [ngClass]="{'center' : (gameManager.isMonsterEntity(entity) && gameManager.toMonsterEntity(entity).summon == SummonState.false || gameManager.isSummon(entity) || gameManager.isObjectiveEntity(entity)) && ((activeConditions).length % 2) == 1 && (activeConditions).length == index + 1, 'expired' : entityCondition.expired, 'fh': settingsManager.settings.fhStyle}">
         <span class="condition" ghs-pointer-input (doubleClick)="removeCondition(entityCondition)">
           <img
             [src]="'./assets/images' + (settingsManager.settings.fhStyle ? '/fh' : '') + '/condition/' + entityCondition.name + '.svg'"
@@ -104,6 +102,8 @@
         </span>
       </span>
     </div>
+    <span class="value-overlay" [value-sign]="health" [hideEmpty]="true" [reverse]="settingsManager.settings.damageHP"
+      [container]="true"></span>
     <ghs-healthbar [entity]="entity" [diff]="health"></ghs-healthbar>
     <ghs-entity-index-key [entity]="entity"></ghs-entity-index-key>
   </div>

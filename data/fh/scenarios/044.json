@@ -11,6 +11,7 @@
   },
   "edition": "fh",
   "complexity": 2,
+  "eventType": "road",
   "forcedLinks": [
     "58",
     "59"
@@ -35,7 +36,7 @@
       "actions": [
         {
           "type": "custom",
-          "value": "When destroyed, all monsters within %game.action.range%2 suffer trap damage"
+          "value": "%data.scenario.rules.fh.44%"
         }
       ]
     }

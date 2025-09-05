@@ -12,6 +12,7 @@ import { ghsShuffleArray } from "src/app/ui/helper/Static";
 import { ScenarioChartDialogComponent } from "../../../figures/party/scenario-chart/scenario-chart";
 
 @Component({
+  standalone: false,
   selector: 'ghs-scenario-menu',
   templateUrl: 'scenario.html',
   styleUrls: ['../menu.scss', 'scenario.scss']
@@ -97,7 +98,7 @@ export class ScenarioMenuComponent implements OnInit, OnDestroy {
 
     model = { edition: this.edition, group: group, filterSuccess: filterSuccess, includeSpoiler: includeSpoiler, all: all, scenarios: [] };
 
-    model.scenarios = gameManager.scenarioManager.scenarioData(this.edition, all).filter((scenarioData) => scenarioData.group == group && (includeSpoiler || (!scenarioData.spoiler || gameManager.game.unlockedCharacters.indexOf(scenarioData.name) != -1 || scenarioData.solo && gameManager.game.unlockedCharacters.indexOf(scenarioData.solo) != -1)) && (!filterSuccess || !gameManager.scenarioManager.isSuccess(scenarioData) && !gameManager.scenarioManager.isBlocked(scenarioData))).sort(gameManager.scenarioManager.sortScenarios).map((scenarioData) => new ScenarioCache(scenarioData, gameManager.scenarioManager.isSuccess(scenarioData), gameManager.scenarioManager.isBlocked(scenarioData), gameManager.scenarioManager.isLocked(scenarioData)));
+    model.scenarios = gameManager.scenarioManager.scenarioData(this.edition, all).filter((scenarioData) => scenarioData.group == group && (includeSpoiler || (!scenarioData.spoiler || gameManager.game.unlockedCharacters.indexOf(scenarioData.edition + ':' + scenarioData.name) != -1 || scenarioData.solo && gameManager.game.unlockedCharacters.indexOf(scenarioData.edition + ':' + scenarioData.solo) != -1)) && (!filterSuccess || !gameManager.scenarioManager.isSuccess(scenarioData) && !gameManager.scenarioManager.isBlocked(scenarioData))).sort(gameManager.scenarioManager.sortScenarios).map((scenarioData) => new ScenarioCache(scenarioData, gameManager.scenarioManager.isSuccess(scenarioData), gameManager.scenarioManager.isBlocked(scenarioData), gameManager.scenarioManager.isLocked(scenarioData)));
 
     this.scenarioCache.push(model);
 
@@ -173,50 +174,48 @@ export class ScenarioMenuComponent implements OnInit, OnDestroy {
   }
 
   manualScenario(input: HTMLInputElement, group: string | undefined) {
-    const editionData = gameManager.editionData.find((editionData) => editionData.edition == this.edition);
     input.classList.add('error');
-    if (editionData) {
-      let numbers: string[] = input.value.split(',');
-      numbers.forEach((number) => number.trim());
-      input.value.split(',').forEach((number) => {
-        const scenarioData = editionData.scenarios.find((scenarioData) => scenarioData.index == number.trim() && scenarioData.group == group);
-        if (scenarioData) {
+    const scenarios: ScenarioData[] = gameManager.scenarioData(this.edition).filter((scenarioData) => scenarioData.group == group);
+    let numbers: string[] = input.value.split(',');
+    numbers.forEach((number) => number.trim());
+    input.value.split(',').forEach((number) => {
+      const scenarioData = scenarios.find((scenarioData) => scenarioData.index == number.trim() && scenarioData.group == group);
+      if (scenarioData) {
+        if (!this.scenarios(group).find((scenarioCache) => scenarioCache.edition == scenarioData.edition && scenarioCache.group == scenarioData.group && scenarioCache.index == scenarioData.index)) {
+          gameManager.stateManager.before("addManualScenario", ...gameManager.scenarioManager.scenarioUndoArgs(new Scenario(scenarioData)));
+          gameManager.game.party.manualScenarios.push(new GameScenarioModel(scenarioData.index, scenarioData.edition, scenarioData.group));
+          gameManager.stateManager.after();
+        }
+        numbers = numbers.filter((value) => value.trim() != number);
+      } else if (scenarios.find((scenarioData) => scenarioData.index.substring(0, scenarioData.index.length - 1) == number.trim() && scenarioData.index.substring(scenarioData.index.length - 1).match(/[A-B]/) && scenarioData.group == group)) {
+        scenarios.filter((scenarioData) => scenarioData.index.substring(0, scenarioData.index.length - 1) == number.trim() && scenarioData.index.substring(scenarioData.index.length - 1).match(/[A-B]/) && scenarioData.group == group).forEach((scenarioData) => {
           if (!this.scenarios(group).find((scenarioCache) => scenarioCache.edition == scenarioData.edition && scenarioCache.group == scenarioData.group && scenarioCache.index == scenarioData.index)) {
             gameManager.stateManager.before("addManualScenario", ...gameManager.scenarioManager.scenarioUndoArgs(new Scenario(scenarioData)));
             gameManager.game.party.manualScenarios.push(new GameScenarioModel(scenarioData.index, scenarioData.edition, scenarioData.group));
             gameManager.stateManager.after();
           }
-          numbers = numbers.filter((value) => value.trim() != number);
-        } else if (editionData.scenarios.find((scenarioData) => scenarioData.index.substring(0, scenarioData.index.length - 1) == number.trim() && scenarioData.index.substring(scenarioData.index.length - 1).match(/[A-B]/) && scenarioData.group == group)) {
-          editionData.scenarios.filter((scenarioData) => scenarioData.index.substring(0, scenarioData.index.length - 1) == number.trim() && scenarioData.index.substring(scenarioData.index.length - 1).match(/[A-B]/) && scenarioData.group == group).forEach((scenarioData) => {
-            if (!this.scenarios(group).find((scenarioCache) => scenarioCache.edition == scenarioData.edition && scenarioCache.group == scenarioData.group && scenarioCache.index == scenarioData.index)) {
-              gameManager.stateManager.before("addManualScenario", ...gameManager.scenarioManager.scenarioUndoArgs(new Scenario(scenarioData)));
-              gameManager.game.party.manualScenarios.push(new GameScenarioModel(scenarioData.index, scenarioData.edition, scenarioData.group));
-              gameManager.stateManager.after();
-            }
-          })
-          numbers = numbers.filter((value) => value.trim() != number);
+        })
+        numbers = numbers.filter((value) => value.trim() != number);
 
-        }
-      })
-
-      if (numbers.length == 0) {
-        input.classList.remove('error');
-        input.value = "";
-      } else {
-        input.value = numbers.join(',');
       }
+    })
 
-      this.scenarioCache = [];
+    if (numbers.length == 0) {
+      input.classList.remove('error');
+      input.value = "";
+    } else {
+      input.value = numbers.join(',');
     }
+
+    this.scenarioCache = [];
   }
 
   hasSpoilers(group: string | undefined): boolean {
-    return this.scenarios(group, true).some((scenarioData) => scenarioData.spoiler && (!scenarioData.solo && gameManager.game.unlockedCharacters.indexOf(scenarioData.name) == -1 || scenarioData.solo && gameManager.game.unlockedCharacters.indexOf(scenarioData.solo) == -1))
+    return this.scenarios(group, true).some((scenarioData) => scenarioData.spoiler && (!scenarioData.solo && gameManager.game.unlockedCharacters.indexOf(scenarioData.edition + ':' + scenarioData.name) == -1 || scenarioData.solo && gameManager.game.unlockedCharacters.indexOf(scenarioData.edition + ':' + scenarioData.solo) == -1))
   }
 
   notSpoiled(group: string | undefined): Spoilable[] {
-    return this.scenarios(group, true).filter((scenarioData) => scenarioData.spoiler && (gameManager.game.unlockedCharacters.indexOf(scenarioData.name) == -1 || scenarioData.solo && gameManager.game.unlockedCharacters.indexOf(scenarioData.solo) == -1)).map((scenarioData) => scenarioData.solo && new SpoilableMock(scenarioData.solo) || new SpoilableMock(scenarioData.name));
+    return this.scenarios(group, true).filter((scenarioData) => scenarioData.spoiler && (gameManager.game.unlockedCharacters.indexOf(scenarioData.edition + ':' + scenarioData.name) == -1 || scenarioData.solo && gameManager.game.unlockedCharacters.indexOf(scenarioData.edition + ':' + scenarioData.solo) == -1)).map((scenarioData) => scenarioData.solo && new SpoilableMock(scenarioData.solo) || new SpoilableMock(scenarioData.name));
   }
 
   toggleCampaignMode() {

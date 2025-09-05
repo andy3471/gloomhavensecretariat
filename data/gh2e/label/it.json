@@ -1,0 +1,26 @@
+{
+  "character": {
+    "gh2e": {
+      "cragheart": "Cuore di Roccia",
+      "mindthief": "Ladro Mentale",
+      "spellweaver": "Tessimagie",
+      "tinkerer": "Inventore"
+    }
+  },
+  "monster": {
+    "city-archer": "Arciere Cittadino",
+    "deep-terror": "Terrore delle Profondità",
+    "frost-demon": "Demone del Gelo",
+    "hound": "Mastino",
+    "inox-archer": "Inox Arciere",
+    "jekserah": "Jekserah",
+    "savvas-icestorm": "Savvas Tempesta Glaciale"
+  },
+  "section": {
+    "title": {
+      "gh2e": {
+        "randomMonsterCard-558": "Selvaggio"
+      }
+    }
+  }
+}

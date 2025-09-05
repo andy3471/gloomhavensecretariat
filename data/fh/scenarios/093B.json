@@ -11,6 +11,10 @@
   },
   "edition": "fh",
   "complexity": 2,
+  "eventType": "road",
+  "blocks": [
+    "93A"
+  ],
   "rewards": {
     "itemBlueprints": [
       "79"

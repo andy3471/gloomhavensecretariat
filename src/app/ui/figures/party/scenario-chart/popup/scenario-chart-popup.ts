@@ -10,6 +10,7 @@ import { ScenarioConclusionComponent } from "src/app/ui/footer/scenario/scenario
 import { ghsDialogClosingHelper } from "src/app/ui/helper/Static";
 
 @Component({
+  standalone: false,
     selector: 'ghs-scneario-chart-popup',
     templateUrl: 'scenario-chart-popup.html',
     styleUrls: ['./scenario-chart-popup.scss']
@@ -123,7 +124,7 @@ export class ScenarioChartPopupDialog {
 
     addSuccess() {
         const conclusions = gameManager.sectionData(this.scenario.edition).filter((sectionData) =>
-            sectionData.edition == this.scenario.edition && sectionData.parent == this.scenario.index && sectionData.group == this.scenario.group && sectionData.conclusion);
+            sectionData.edition == this.scenario.edition && sectionData.parent == this.scenario.index && sectionData.group == this.scenario.group && sectionData.conclusion && gameManager.scenarioManager.getRequirements(sectionData).length == 0);
         if (conclusions.length == 0) {
             this.addSuccessIntern();
         } else {
@@ -142,7 +143,7 @@ export class ScenarioChartPopupDialog {
 
     addSuccessIntern(conclusionSection: ScenarioData | undefined = undefined) {
         gameManager.stateManager.before("finishScenario.success", ...gameManager.scenarioManager.scenarioUndoArgs(new Scenario(this.scenario)));
-        gameManager.scenarioManager.finishScenario(new Scenario(this.scenario), true, conclusionSection, false, undefined, false, gameManager.game.party.campaignMode && this.countFinished() == 0, true);
+        gameManager.scenarioManager.finishScenario(new Scenario(this.scenario), true, conclusionSection, false, false, false, gameManager.game.party.campaignMode && this.countFinished() == 0, true);
         gameManager.stateManager.after();
         this.update();
     }

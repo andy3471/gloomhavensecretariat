@@ -9,6 +9,7 @@
     "gridLocation": "K-8"
   },
   "edition": "gh",
+  "eventType": "road",
   "unlocks": [
     "31",
     "35",
@@ -25,18 +26,18 @@
   "requirements": [
     {
       "party": [
-        "A Demon's Errand"
+        "a-demons-errand"
       ]
     },
     {
       "party": [
-        "Following Clues"
+        "following-clues"
       ]
     }
   ],
   "rewards": {
     "globalAchievements": [
-      "Artifact: Recovered"
+      "artifact-recovered"
     ]
   },
   "monsters": [

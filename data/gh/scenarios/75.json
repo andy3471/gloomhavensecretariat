@@ -10,10 +10,11 @@
     "gridLocation": "G-12"
   },
   "edition": "gh",
+  "eventType": "road",
   "requirements": [
     {
       "party": [
-        "Grave Job"
+        "grave-job"
       ]
     }
   ],

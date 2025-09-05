@@ -4,11 +4,11 @@ import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { GameManager, gameManager } from "src/app/game/businesslogic/GameManager";
 import { SettingsManager, settingsManager } from "src/app/game/businesslogic/SettingsManager";
+import { Character } from "src/app/game/model/Character";
 import { Ability } from "src/app/game/model/data/Ability";
 import { Action, ActionType, ActionValueType } from "src/app/game/model/data/Action";
-import { Character } from "src/app/game/model/Character";
-import { CharacterStat } from "src/app/game/model/data/CharacterStat";
 import { CharacterData } from "src/app/game/model/data/CharacterData";
+import { CharacterStat } from "src/app/game/model/data/CharacterStat";
 import { DeckData } from "src/app/game/model/data/DeckData";
 import { Monster } from "src/app/game/model/Monster";
 import { environment } from "src/environments/environment";
@@ -62,6 +62,7 @@ export function compactAction(action: any) {
 }
 
 @Component({
+    standalone: false,
     selector: 'ghs-deck-editor',
     templateUrl: './deck.html',
     styleUrls: ['../editor.scss', './deck.scss']
@@ -80,10 +81,13 @@ export class DeckEditorComponent implements OnInit {
     ActionValueType = ActionValueType;
     encodeURIComponent = encodeURIComponent;
     deckData: DeckData;
+    decksData: DeckData[] = [];
+    editions: string[] = [];
     deckError: any;
+    abilityColor: string = "#aaaaaa";
 
     constructor(private dialog: Dialog, private route: ActivatedRoute, private router: Router) {
-        this.deckData = new DeckData("", [], "");
+        this.deckData = new DeckData();
         this.deckData.abilities.push(new Ability());
     }
 
@@ -96,9 +100,12 @@ export class DeckEditorComponent implements OnInit {
             this.deckData.character = true;
         }
         this.deckDataToJson();
+        this.updateDecksData();
         this.inputDeckData.nativeElement.addEventListener('change', (event: any) => {
             this.deckDataFromJson();
         });
+
+        this.editions = gameManager.editions(true);
 
         this.route.queryParams.subscribe({
             next: (queryParams) => {
@@ -110,7 +117,7 @@ export class DeckEditorComponent implements OnInit {
                 }
 
                 if (queryParams['deck']) {
-                    const deckData = this.decksData().find((deckData) => deckData.name == queryParams['deck']);
+                    const deckData = this.decksData.find((deckData) => deckData.name == queryParams['deck']);
                     if (deckData) {
                         this.deckData = deckData;
                         this.deckDataToJson();
@@ -135,10 +142,11 @@ export class DeckEditorComponent implements OnInit {
                 queryParams: { edition: this.edition || undefined, monster: this.monster && this.monster.name || undefined, character: this.character && this.character.name || undefined, deck: this.deckData.name || undefined },
                 queryParamsHandling: 'merge'
             });
+        this.updateDecksData();
     }
 
-    decksData(): DeckData[] {
-        return gameManager.decksData(this.edition).filter((deckData) => {
+    updateDecksData() {
+        this.decksData = gameManager.decksData(this.edition).filter((deckData) => {
             if (this.character) {
                 return deckData.character;
             } else if (this.monster) {
@@ -208,7 +216,7 @@ export class DeckEditorComponent implements OnInit {
                 this.deckData = JSON.parse(this.inputDeckData.nativeElement.value);
                 return;
             } catch (e) {
-                this.deckData = new DeckData("", [], "");
+                this.deckData = new DeckData();
                 this.deckData.abilities.push(new Ability());
                 this.deckError = e;
             }
@@ -260,7 +268,7 @@ export class DeckEditorComponent implements OnInit {
         ability.actions.push(action);
         const dialog = this.dialog.open(EditorActionDialogComponent, {
             panelClass: ['dialog'],
-            data: { action: action }
+            data: { action: action, character: this.getCharacter(), cardId: ability.cardId }
         });
 
         dialog.closed.subscribe({
@@ -276,7 +284,7 @@ export class DeckEditorComponent implements OnInit {
     editAbilityAction(ability: Ability, action: Action) {
         const dialog = this.dialog.open(EditorActionDialogComponent, {
             panelClass: ['dialog'],
-            data: { action: action }
+            data: { action: action, character: this.getCharacter(), cardId: ability.cardId }
         });
 
         dialog.closed.subscribe({
@@ -302,7 +310,7 @@ export class DeckEditorComponent implements OnInit {
         ability.bottomActions.push(action);
         const dialog = this.dialog.open(EditorActionDialogComponent, {
             panelClass: ['dialog'],
-            data: { action: action }
+            data: { action: action, character: this.getCharacter(), cardId: ability.cardId }
         });
 
         dialog.closed.subscribe({
@@ -318,7 +326,7 @@ export class DeckEditorComponent implements OnInit {
     editAbilityActionBottom(ability: Ability, action: Action) {
         const dialog = this.dialog.open(EditorActionDialogComponent, {
             panelClass: ['dialog'],
-            data: { action: action }
+            data: { action: action, character: this.getCharacter(), cardId: ability.cardId }
         });
 
         dialog.closed.subscribe({
@@ -372,6 +380,10 @@ export class DeckEditorComponent implements OnInit {
             for (let i = 0; i < 9; i++) {
                 characterData.stats.push(new CharacterStat(i, i));
             }
+            characterData.color = this.abilityColor;
+            if (this.edition) {
+                characterData.edition = this.edition;
+            }
             return new Character(characterData, 1);
         }
 
@@ -381,13 +393,13 @@ export class DeckEditorComponent implements OnInit {
     loadDeckData(event: any) {
         const index = +event.target.value;
         if (index == -1) {
-            this.deckData = new DeckData("", [], "");
+            this.deckData = new DeckData();
             this.deckData.abilities.push(new Ability());
             if (this.character) {
                 this.deckData.character = true;
             }
         } else {
-            this.deckData = this.decksData()[index];
+            this.deckData = this.decksData[index];
         }
         this.deckDataToJson();
         this.updateQueryParams();

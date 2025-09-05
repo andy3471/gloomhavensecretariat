@@ -9,7 +9,7 @@
         [max]="spawn.manualMax || ''">
     </ng-container>
   </div>
-  <div class="objective-spawns" *ngIf="rule.objectiveSpawns && rule.objectiveSpawns.length > 0">
+  <div class="objective-spawns" *ngIf="!!rule.objectiveSpawns && rule.objectiveSpawns.length > 0">
     <ng-container *ngFor="let spawn of rule.objectiveSpawns; let i = index">
       <span class="and" *ngIf="i > 0" [ghs-label]="'and'"></span>
       <span class="text-white text"
@@ -19,7 +19,7 @@
         [max]="spawn.manualMax || ''" [value]="EntityValueFunction(spawn.count || 1)">
     </ng-container>
   </div>
-  <div class="elements" *ngIf="rule.elements && rule.elements.length > 0">
+  <div class="elements" *ngIf="!!rule.elements && rule.elements.length > 0">
     <ng-container *ngFor="let element of rule.elements; let i = index">
       <span class="and" *ngIf="i > 0">,</span>
       <span class="element">
@@ -46,9 +46,9 @@
         <img class="ghs-svg" src="./assets/images/lock.svg">
         <span class="text-white" *ngIf="!sectionData.conclusion"
           [ghs-label]="(sectionData.marker ? 'scenario.rules.addSectionMarker' : 'scenario.rules.addSection') + (sectionData.hideIndex ? '' : 'Index')"
-          [ghs-label-args]="[sectionData.index, 'data.section.' + sectionData.name, sectionData.marker || '']"></span>
+          [ghs-label-args]="[sectionData.index, gameManager.scenarioManager.scenarioTitle(sectionData,true), sectionData.marker || '']"></span>
         <span class="text-white" *ngIf="sectionData.conclusion" [ghs-label]=" 'scenario.rules.finishWithConclusion'"
-          [ghs-label-args]="[sectionData.index, 'data.section.' + sectionData.name, sectionData.marker || '']"></span>
+          [ghs-label-args]="[sectionData.index, gameManager.scenarioManager.scenarioTitle(sectionData,true), sectionData.marker || '']"></span>
       </span>
     </ng-container>
   </div>
@@ -56,7 +56,7 @@
     <ng-container *ngFor="let figureRule of figureRules();">
       <span class="figure">
         <span class="text-white" [ghs-label]="'scenario.rules.figures.' + figureRule.type"
-          [ghs-label-args]="[figureNames(figureRule), figureRule.value || '', (settingsManager.settings.calculate && (figureRule.type == 'damage' && figureRule.value && figureRule.value.indexOf('H') == -1 || (figureRule.type == 'setHp' || figureRule.type == 'heal') && figureRule.value && figureRule.value.indexOf('H') == -1)) ? '' + EntityValueFunction(figureRule.value || '') : (figureRule.value || ''), (figureRule.type == 'amAdd' || figureRule.type == 'amRemove') ? figureRule.value.split(':')[0] : '', (figureRule.type == 'amAdd' || figureRule.type == 'amRemove' || figureRule.type == 'transfer' && figureRule.value && figureRule.value.split(':').length > 1) ? figureRule.value.split(':')[1] : '', figureRule.type == 'transferEntities' && figureRule.identifier && figureRule.identifier.number ? figureRule.identifier.number : '']"></span>
+          [ghs-label-args]="[figureNames(figureRule), figureRule.value || '', (settingsManager.settings.calculate && (figureRule.type == 'damage' && figureRule.value && figureRule.value.indexOf('H') == -1 || (figureRule.type == 'setHp' || figureRule.type == 'heal') && figureRule.value && figureRule.value.indexOf('H') == -1)) ? EntityValueFunction(figureRule.value || '') : (figureRule.value || ''), (figureRule.type == 'amAdd' || figureRule.type == 'amRemove') ? figureRule.value.split(':')[0] : '', (figureRule.type == 'amAdd' || figureRule.type == 'amRemove' || figureRule.type == 'transfer' && figureRule.value && figureRule.value.split(':').length > 1) ? figureRule.value.split(':')[1] : '', figureRule.type == 'transferEntities' && figureRule.identifier && figureRule.identifier.number ? figureRule.identifier.number : '']"></span>
         <span *ngIf="figureRule.scenarioEffect" class="text-white">
           <span [ghs-label]="'scenario.rules.figures.scenarioEffect'"></span>
         </span>
@@ -66,15 +66,15 @@
   <div class="random-dungeon" *ngIf="rule.randomDungeon">
     <p *ngIf="rule.randomDungeon.dungeonCount" class="text-white"
       [ghs-label]="'scenario.rules.randomDungeon.dungeon' + (rule.randomDungeon.dungeonCards && rule.randomDungeon.dungeonCards.length ? '.cards' : '')"
-      [ghs-label-args]="['' + rule.randomDungeon.dungeonCount, randomDungeonsDungeonLabel().toString()]">
+      [ghs-label-args]="[rule.randomDungeon.dungeonCount, randomDungeonsDungeonLabel().toString()]">
     </p>
     <br *ngIf="rule.randomDungeon.dungeonCount && rule.randomDungeon.monsterCount">
     <p *ngIf="rule.randomDungeon.monsterCount" class="text-white"
       [ghs-label]="'scenario.rules.randomDungeon.monster' + (rule.randomDungeon.monsterCards && rule.randomDungeon.monsterCards.length ? '.cards' : '')"
-      [ghs-label-args]="['' + rule.randomDungeon.monsterCount, randomDungeonsMonsterLabel(rule).toString()]">
+      [ghs-label-args]="[rule.randomDungeon.monsterCount, randomDungeonsMonsterLabel(rule).toString()]">
     </p>
   </div>
-  <div class="stat-effects" *ngIf="rule.statEffects && rule.statEffects.length">
+  <div class="stat-effects" *ngIf="!!rule.statEffects && rule.statEffects.length">
     <div class="text text-white" *ngFor="let statEffectRule of rule.statEffects" [ghs-label]="statEffectRule.note">
     </div>
   </div>

@@ -11,6 +11,7 @@ import { Action, ActionType, ActionValueType } from "src/app/game/model/data/Act
 import { Element, ElementState } from "src/app/game/model/data/Element";
 
 @Component({
+  standalone: false,
     selector: 'ghs-interactive-actions',
     templateUrl: './interactive-actions.html',
     styleUrls: ['./interactive-actions.scss']
@@ -182,7 +183,7 @@ export class InteractiveActionsComponent implements OnInit, OnDestroy {
                     })
                     this.update();
                     gameManager.stateManager.after();
-                }, !settingsManager.settings.animations ? 0 : 1500)
+                }, settingsManager.settings.animations ? 1500 * settingsManager.settings.animationSpeed : 0)
             }
 
             if (after) {

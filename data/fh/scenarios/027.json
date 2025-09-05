@@ -11,6 +11,7 @@
   },
   "edition": "fh",
   "complexity": 2,
+  "eventType": "road",
   "requirements": [
     {
       "campaignSticker": [
@@ -38,7 +39,7 @@
       "actions": [
         {
           "type": "custom",
-          "value": "When destroyed, the destroying character may return all their taken cards to their hand"
+          "value": "%data.scenario.rules.fh.27%"
         }
       ]
     }

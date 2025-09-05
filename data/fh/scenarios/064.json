@@ -11,6 +11,7 @@
   },
   "edition": "fh",
   "complexity": 3,
+  "eventType": "road",
   "rewards": {
     "prosperity": 3,
     "battleGoals": 3,
@@ -98,7 +99,7 @@
       "objectiveSpawns": [
         {
           "objective": {
-            "index": 2,
+            "id": 2,
             "name": "Militia"
           },
           "count": "2",
@@ -125,7 +126,7 @@
       "objectiveSpawns": [
         {
           "objective": {
-            "index": 2,
+            "id": 2,
             "name": "Militia"
           },
           "manual": true,

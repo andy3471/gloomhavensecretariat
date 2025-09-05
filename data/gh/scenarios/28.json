@@ -10,6 +10,7 @@
     "gridLocation": "E-4"
   },
   "edition": "gh",
+  "eventType": "road",
   "unlocks": [
     "29"
   ],
@@ -21,7 +22,7 @@
   "requirements": [
     {
       "party": [
-        "Dark Bounty"
+        "dark-bounty"
       ]
     }
   ],
@@ -30,7 +31,7 @@
   ],
   "rewards": {
     "partyAchievements": [
-      "An Invitation"
+      "an-invitation"
     ]
   },
   "monsters": [

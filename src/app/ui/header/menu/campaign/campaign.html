@@ -14,6 +14,9 @@
                 (change)="setEdition(edition)">
             <span [ghs-label]="'data.edition.' + edition"></span>
         </label>
+        <div *ngIf="edition == 'fh' && gameManager.game.edition == edition" class="fh-second-edition">
+            <div ghs-setting-menu="fhSecondEdition"></div>
+        </div>
     </div>
     <div class="line separator ">
         <label
@@ -29,19 +32,27 @@
         <label><span [ghs-label]="'campaign'"></span></label>
     </div>
 
-    <div class="line span" *ngIf="settingsManager.settings.partySheet && !gameManager.bbRules()">
+    <div class="line" *ngIf="settingsManager.settings.partySheet && !gameManager.bbRules()">
         <a tabclick (click)="openPartySheet()" [ghs-label]="'campaign.party'"></a>
     </div>
 
-    <div class="line span" *ngIf="settingsManager.settings.partySheet && !gameManager.bbRules()">
+    <div class="line" *ngIf="settingsManager.settings.partySheet && gameManager.fhRules()">
+        <a tabclick (click)="openResources()" [ghs-label]="'campaign.resources'"></a>
+    </div>
+
+    <div class="line" *ngIf="settingsManager.settings.partySheet && !gameManager.bbRules()">
         <a tabclick (click)="openCampaignSheet()" [ghs-label]="'campaign.sheet'"></a>
     </div>
 
-    <div class="line span" *ngIf="worldMap">
+    <div class="line" *ngIf="worldMap">
         <a tabclick (click)="openMap()" [ghs-label]="'campaign.map'"></a>
     </div>
 
-    <div class="line span" *ngIf="(settingsManager.settings.characterSheet || settingsManager.settings.characterItems)">
+    <div class="line">
+        <a tabclick (click)="openFlowChart()" [ghs-label]="'scenario.chart'"></a>
+    </div>
+
+    <div class="line" *ngIf="(settingsManager.settings.characterSheet || settingsManager.settings.characterItems)">
         <a tabclick (click)="openItems()" [ghs-label]="'campaign.items'"></a>
     </div>
 
@@ -50,8 +61,9 @@
         <a tabclick (click)="openBattleGoalsSetup()" [ghs-label]="'campaign.battleGoals'"></a>
     </div>
 
-    <div class="line span">
-        <a tabclick (click)="openFlowChart()" [ghs-label]="'scenario.chart'"></a>
+    <div class="line"
+        *ngIf="settingsManager.settings.partySheet && settingsManager.settings.events && gameManager.game.edition && !gameManager.bbRules()">
+        <a tabclick (click)="openEventDeckSetup()" [ghs-label]="'game.events.deck.setup'"></a>
     </div>
 
     <div class="line title span"
@@ -72,6 +84,10 @@
             </a>
         </div>
     </ng-container>
+
+    <div class="line span">
+        <a tabclick (click)="openEnhancementDialog()" [ghs-label]="'campaign.enhancements'"></a>
+    </div>
 
     <div class="line title span">
         <label><span [ghs-label]="'edition.conditions'"></span></label>
@@ -112,7 +128,7 @@
             <label>
                 <span [ghs-label]="'campaign.campaignManagement'"></span>
             </label>
-            <ng-container *ngIf="gameManager.game.scenario">
+            <ng-container *ngIf="!!gameManager.game.scenario">
                 <img src="./assets/images/hint.svg" class="hint-trigger ghs-svg">
                 <span class="hint">
                     <span class="text" [ghs-label]="'campaign.campaignManagement.hint'"></span>
@@ -130,7 +146,7 @@
         <label *ngIf="gameManager.game.party == party">
             <input tabclick type="checkbox" checked="true" disabled="disabled">
             <input type="text" [value]="party.name" (change)="setName($event)"
-                [ghs-label]="'campaign.campaignManagement.name'" [ghs-label-args]="['' + party.id]"
+                [ghs-label]="'campaign.campaignManagement.name'" [ghs-label-args]="[party.id]"
                 [ghs-label-attribute]="'placeholder'">
         </label>
         <span class="spacer"></span>

@@ -7,6 +7,7 @@ import { ghsValueSign } from "../../helper/Static";
 
 
 @Component({
+  standalone: false,
     selector: 'ghs-level-dialog',
     templateUrl: './level-dialog.html',
     styleUrls: ['./level-dialog.scss']
@@ -58,7 +59,7 @@ export class LevelDialogComponent implements OnInit, OnDestroy {
     }
 
     setBbMonsterDifficutly(level: number) {
-        gameManager.stateManager.before("updateLevelAdjustmentBb", '' + level);
+        gameManager.stateManager.before("updateLevelAdjustmentBb", level);
         gameManager.game.levelAdjustment = level - 2;
         const editionData = gameManager.editionData.find((editionData) => editionData.edition == 'bb' && editionData.monsterAmTables && editionData.monsterAmTables.length);
         if (editionData) {
@@ -104,7 +105,7 @@ export class LevelDialogComponent implements OnInit, OnDestroy {
     }
 
     setPlayerCount(playerCount: number) {
-        gameManager.stateManager.before("updateManualPlayerCount", '' + playerCount);
+        gameManager.stateManager.before("updateManualPlayerCount", playerCount);
         gameManager.game.playerCount = playerCount;
         if (gameManager.game.levelCalculation) {
             gameManager.levelManager.calculateScenarioLevel();
@@ -130,6 +131,10 @@ export class LevelDialogComponent implements OnInit, OnDestroy {
         this.experience = gameManager.levelManager.experience();
         this.loot = gameManager.levelManager.loot();
         this.hazardousTerrain = gameManager.levelManager.terrain();
+
+        if (gameManager.trialsManager.activeFavor('fh', 'wealth')) {
+            this.loot += gameManager.trialsManager.activeFavor('fh', 'wealth');
+        }
     }
 }
 
