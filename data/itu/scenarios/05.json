@@ -13,6 +13,38 @@
     "sun-demon",
     "vermling-scout"
   ],
+  "rules": [
+    {
+      "round": "R > 3 && R % 2 == 0",
+      "start": true,
+      "spawns": [
+        {
+          "monster": {
+            "name": "vermling-scout",
+            "player2": "normal",
+            "player3": "elite",
+            "player4": "elite"
+          },
+          "marker": "d"
+        }
+      ]
+    },
+    {
+      "round": "R > 3 && R % 2 == 1",
+      "start": true,
+      "spawns": [
+        {
+          "monster": {
+            "name": "vermling-scout",
+            "player2": "normal",
+            "player3": "normal",
+            "player4": "elite"
+          },
+          "marker": "d"
+        }
+      ]
+    }
+  ],
   "rooms": [
     {
       "roomNumber": 1,
@@ -51,7 +83,6 @@
     {
       "roomNumber": 2,
       "ref": "D1a",
-      "initial": true,
       "rooms": [
         3
       ],
@@ -103,7 +134,6 @@
     {
       "roomNumber": 3,
       "ref": "C1a",
-      "initial": true,
       "rooms": [],
       "monster": [
         {
