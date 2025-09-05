@@ -1,20 +1,76 @@
 {
   "index": "4",
-  "name": "TODO",
+  "name": "Unlikely Allies",
   "flowChartGroup": "itu",
   "edition": "itu",
   "unlocks": [
     "5"
   ],
-  "rewards": {},
-  "monsters": [],
+  "rewards": {
+    "battleGoals": 1,
+    "items": [
+      "106-gh"
+    ],
+    "custom": "%data.scenario.rewards.itu.004%"
+  },
+  "monsters": [
+    "giant-viper",
+    "vermling-scout"
+  ],
+  "objectives": [
+    {
+      "name": "Totem",
+      "health": "Cx18",
+      "marker": "f"
+    }
+  ],
   "rooms": [
     {
       "roomNumber": 1,
       "ref": "itu4-1",
       "initial": true,
       "rooms": [],
-      "monster": []
+      "monster": [
+        {
+          "name": "vermling-scout",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "vermling-scout",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "vermling-scout",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "vermling-scout",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "vermling-scout",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "vermling-scout",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "normal"
+        }
+      ],
+      "objectives": [
+        1
+      ]
     }
   ]
 }

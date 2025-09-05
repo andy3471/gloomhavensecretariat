@@ -13,10 +13,18 @@
     }
   },
   "scenario": {
+    "rewards": {
+      "itu": {
+        "004": "2 experience each for each Vermling alive"
+      }
+    },
     "title": {
-      "1": "Just Another Night",
-      "2": "A Quatryl Scorned",
-      "3": "Unreliable Medicine"
+      "itu": {
+        "1": "Just Another Night",
+        "2": "A Quatryl Scorned",
+        "3": "Unreliable Medicine",
+        "4": "Unlikely Allies"
+      }
     }
   }
 }
