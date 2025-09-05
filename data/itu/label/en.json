@@ -8,8 +8,15 @@
   "custom": {
     "itu": {
       "flowChartGroup": {
-        "itu": "Into the Unkown"
+        "itu": "Into the Unknown"
       }
+    }
+  },
+  "scenario": {
+    "title": {
+      "1": "Just Another Night",
+      "2": "A Quatryl Scorned",
+      "3": "Unreliable Medicine"
     }
   }
 }
