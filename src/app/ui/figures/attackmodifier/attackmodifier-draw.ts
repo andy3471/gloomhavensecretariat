@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 
 
 @Component({
+  standalone: false,
   selector: 'ghs-attackmodifier-draw',
   templateUrl: './attackmodifier-draw.html',
   styleUrls: ['./attackmodifier-draw.scss']
@@ -120,6 +121,6 @@ export class AttackModifierDrawComponent implements OnInit, OnDestroy, OnChanges
           this.queue = 0;
         }
       }
-    }, !settingsManager.settings.animations ? 0 : 2500);
+    }, settingsManager.settings.animations ? 2500 * settingsManager.settings.animationSpeed : 0);
   }
 }

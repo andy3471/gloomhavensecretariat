@@ -10,6 +10,7 @@
     "gridLocation": "B-11"
   },
   "edition": "gh",
+  "eventType": "road",
   "unlocks": [
     "15",
     "46"
@@ -19,7 +20,7 @@
   ],
   "rewards": {
     "partyAchievements": [
-      "Across the Divide"
+      "across-the-divide"
     ],
     "experience": 10
   },

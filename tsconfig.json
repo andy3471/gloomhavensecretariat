@@ -11,6 +11,7 @@
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "resolveJsonModule": true,
+    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "declaration": false,
     "downlevelIteration": true,
@@ -18,7 +19,7 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "ES2022",
-    "module": "ES2022",
+    "module": "ESNext",
     "lib": [
       "ES2022",
       "dom"

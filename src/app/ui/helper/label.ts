@@ -2,15 +2,14 @@ import { Directive, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChang
 import { Subscription } from "rxjs";
 import { gameManager } from "src/app/game/businesslogic/GameManager";
 import { settingsManager } from "src/app/game/businesslogic/SettingsManager";
-import { ActionHex } from "src/app/game/model/ActionHex";
-import { Character } from "src/app/game/model/Character";
+import { ActionHex, ActionHexFromString } from "src/app/game/model/ActionHex";
 import { ActionType } from "src/app/game/model/data/Action";
-import { AttackModifierValueType } from "src/app/game/model/data/AttackModifier";
+import { additionalTownGuardAttackModifier, AttackModifierValueType } from "src/app/game/model/data/AttackModifier";
 import { Condition, ConditionType } from "src/app/game/model/data/Condition";
 import { EntityValueFunction, EntityValueRegex, EntityValueRegexExtended } from "src/app/game/model/Entity";
 import { ActionTypesIcons } from "../figures/actions/action";
 
-export const ghsLabelRegex = /\%((\w+|\.|\-|\:|\,|\+|\(|\)|\||\_|\[|\]|\||\{|\}|\$|\\|\/|\%U+200B)+)\%/;
+export const ghsLabelRegex = /\%((\w+|\s|\.|\-|\:|\,|\+|\(|\)|\||\_|\[|\]|\||\{|\}|\$|\\|\/|\%U+200B)+)\%/;
 
 export const applyPlaceholder = function (value: string, placeholder: string[] = [], relative: boolean = false, style: 'gh' | 'fh' | false = false): string {
   const fh = !style && settingsManager.settings.fhStyle || style == 'fh';
@@ -47,7 +46,7 @@ export const applyPlaceholder = function (value: string, placeholder: string[] =
           image += '<span class="value">' + value + '</span>';
         }
         image += '</span>';
-        replace = '<span class="placeholder-condition">' + (fh ? '&nbsp;' : settingsManager.getLabel('game.condition.' + condition.name, [value ? value : ''])) + image + '</span>';
+        replace = '<span class="placeholder-condition' + (fh ? ' fh' : '') + '">' + (fh ? '&#8203;' : settingsManager.getLabel('game.condition.' + condition.name, [value ? value : ''])) + image + '</span>';
       } else if (type == "conditionIcon" || type == "immunityIcon") {
         let condition = new Condition(split[2]);
         image = '<span class="condition-icon' + (type == "immunityIcon" ? ' immunity' : '') + '">';
@@ -59,12 +58,17 @@ export const applyPlaceholder = function (value: string, placeholder: string[] =
           image += '<span class="value">' + value + '</span>';
         }
         image += '</span>';
-        replace = '<span class="placeholder-condition">&nbsp;' + image + '</span>';
+        replace = '<span class="placeholder-condition">&#8203;' + image + '</span>';
       } else if (type == "action" && split.length == 3 && !split[2].startsWith('specialTarget') && !split[2].startsWith('summon') && !split[2].startsWith('area')) {
         split.splice(0, 1);
         const ghsSvg = ActionTypesIcons.indexOf(split[split.length - 1] as ActionType) != -1;
         image = '<img  src="./assets/images/' + (fh ? 'fh/' : '') + split.join('/') + '.svg" class="icon' + (ghsSvg ? ' ghs-svg' : '') + '">';
-        replace = '&nbsp;<span class="placeholder-action">' + (fh ? '&nbsp;' : settingsManager.getLabel(label)) + image + value + '</span>';
+        replace = '&#8203;<span class="placeholder-action">' + (fh ? '&#8203;' : settingsManager.getLabel(label)) + image + value + '</span>';
+      } else if (type == "actionIcon" && split.length == 3 && !split[2].startsWith('specialTarget') && !split[2].startsWith('summon') && !split[2].startsWith('area')) {
+        split.splice(0, 1);
+        const ghsSvg = ActionTypesIcons.indexOf(split[split.length - 1] as ActionType) != -1;
+        image = '<img  src="./assets/images/' + (fh ? 'fh/action/' : 'action/') + split[split.length - 1] + '.svg" class="icon' + (ghsSvg ? ' ghs-svg' : '') + '">';
+        replace = '&#8203;<span class="placeholder-action">&#8203;' + image + value + '</span>';
       } else if (type == "element") {
         let element = split[2];
         if (element == "consume") {
@@ -90,7 +94,7 @@ export const applyPlaceholder = function (value: string, placeholder: string[] =
         }
 
         value.split('|').forEach((hexValue) => {
-          const hex: ActionHex | null = ActionHex.fromString(hexValue);
+          const hex: ActionHex | null = ActionHexFromString(hexValue);
           if (hex != null) {
             replace += '<span class="hex" style="grid-column-start : ' + (hex.x * 2 + 1 + (hex.y % 2)) + ';grid-column-end:' + (hex.x * 2 + 3 + (hex.y % 2)) + ';grid-row-start:' + (hex.y + 1) + ';grid-row-end:' + (hex.y + 1) + '"><img src="./assets/images/action/hex/' + hex.type + '.svg"></span>';
           }
@@ -106,8 +110,12 @@ export const applyPlaceholder = function (value: string, placeholder: string[] =
         image = '<img  src="./assets/images/items/' + split[2] + '/' + split[3] + '.svg" class="icon ghs-svg">';
         replace = '<span class="placeholder-item-slot">' + image + value + '</span>';
       } else if (prefix == "game" && type == "itemFh" && split.length == 3) {
-        const itemId: number = +split[2];
-        replace = '<span class="placeholder-item-fh">' + '<span class="value">' + (itemId < 100 ? '0' : '') + (itemId < 10 ? '0' : '') + itemId + '</span></span>';
+        if (split[2] == 'random') {
+          replace = '<span class="placeholder-item-fh"><span class="value"><img src="./assets/images/fh/loot/random_item.svg"></span></span>';
+        } else {
+          const itemId: number = +split[2];
+          replace = '<span class="placeholder-item-fh">' + '<span class="value">' + (itemId < 100 ? '0' : '') + (itemId < 10 ? '0' : '') + itemId + '</span></span>';
+        }
       } else if (type == "card" && split.length == 3) {
         let card = split[2]
         let cardValue = "";
@@ -120,6 +128,16 @@ export const applyPlaceholder = function (value: string, placeholder: string[] =
       } else if (type == "attackmodifier" && split.length == 3) {
         image = '<img  src="./assets/images' + (fh ? '/fh' : '') + '/attackmodifier/icons/' + split[2] + '.png" class="icon">';
         replace = '<span class="placeholder-attackmodifier">' + image + '</span>';
+      } else if (type == "townGuardAM" && value) {
+
+        const townGuardAM = additionalTownGuardAttackModifier.find((am) => am.id == value);
+        if (townGuardAM) {
+          const effect = townGuardAM.effects.find((effect) => effect.type == 'custom' && effect.icon);
+          const effectImage = effect != undefined ? '<img  src="./assets/images/action/custom/' + effect.value + '.svg" class="icon">' : "";
+          const amImage = '<span class="townguard-attackmodifier"><img src="./assets/images/fh/attackmodifier/icons/' + townGuardAM.valueType + '.png" class="icon"><span class="value">' + (townGuardAM.value >= 0 ? '+' : '') + townGuardAM.value + '</span></span>';
+          const rollingImage = townGuardAM.rolling ? '<img  src="./assets/images/attackmodifier/rolling.svg" class="icon">' : "";
+          replace = '<span class="placeholder-townguard-attackmodifier">' + effectImage + amImage + rollingImage + '</span>';
+        }
       } else if (type == "experience") {
         image = '<img  src="./assets/images/experience.svg" class="icon ghs-svg">';
         replace = '<span class="placeholder-experience">' + image + (value ? '<span class="value">' + value + '</span>' : '') + '</span>';
@@ -193,7 +211,7 @@ export const applyPlaceholder = function (value: string, placeholder: string[] =
         replace = '<span class="damage">' + settingsManager.getLabel('game.damage', [value]) + '</span>';
       } else if (fh && type == "damage") {
         image = '<img  src="./assets/images/fh/action/damage.svg" class="icon ghs-svg">';
-        replace = '<span class="damage">&nbsp;' + image + value + '</span>';
+        replace = '<span class="damage">&#8203;' + image + value + '</span>';
       } else if (type == "loot" && split.length == 4) {
         image = '<img  src="./assets/images/' + split[3] + '-player.svg" class="icon">';
         replace = '<span class="placeholder-player">' + image + '</span>';
@@ -203,6 +221,9 @@ export const applyPlaceholder = function (value: string, placeholder: string[] =
       } else if (type == "section" && value) {
         image = '<img src="./assets/images/fh/party/section.svg" class="icon ghs-svg">';
         replace = '<span class="placeholder-section">' + image + value + '</span>';
+      } else if (type == "gh2eFaction" && value) {
+        image = '<img src="./assets/images/gh2e/faction/' + value + '.svg" class="icon ghs-svg">';
+        replace = '<span class="placeholder-faction">' + image + '</span>';
       } else if (type == "checkmark") {
         replace = '<span class="placeholder-checkmark"><img src="./assets/images/check.svg" class="icon ghs-svg"></span>';
       } else if (type == "itemSlot" && value) {
@@ -226,9 +247,24 @@ export const applyPlaceholder = function (value: string, placeholder: string[] =
       } else if (type == "gameIcon" && value) {
         image = '<img src="./assets/images/' + value + '.svg" class="icon ghs-svg">';
         replace = '<span class="placeholder-game-icon">' + image + '</span>';
-      } else if (type == "trait" && value) {
+      } else if (type == "trait") {
         image = '<img src="./assets/images/fh/character/traits/trait.svg" class="icon ghs-svg">';
-        replace = '<span class="placeholder-trait">' + image + settingsManager.getLabel('data.character.traits.' + value) + '</span>';
+        replace = '<span class="placeholder-trait">' + image + (value ? settingsManager.getLabel('data.character.traits.' + value) : '') + '</span>';
+      } else if (type == "checkbox") {
+        replace = '<span class="placeholder-checkbox"></span>';
+      } else if (type == "eventCard" && value) {
+        replace = '<span class="placeholder-action"><img src="./assets/images/eventcards/' + value + '.svg" class="icon ghs-svg"></span>';
+      } else if (type == "eventCheckbox" && value) {
+        replace = '<span class="event-checkbox">' + value + '</span>';
+      } else if (type == "valueSign" && value) {
+        replace = '<span class="value-sign">' + (+value > -1 ? '+' : '') + value + '</span>';
+      } else if (type == "enhancement" && split.length == 3) {
+        if (!fh || split[2] === 'any') {
+          image = '<img class="enhancement-icon" src="./assets/images/character/abilities/enhancements/circle.svg">';
+        } else {
+          image = '<img class="enhancement-icon" src="./assets/images/fh/character/abilities/enhancements/' + split[2] + '.svg">';
+        }
+        replace = '<span class="placeholder-enhancement">' + image + '</span>';
       } else {
         let labelArgs = label.split(':').splice(1).map((arg) =>
           applyPlaceholder(settingsManager.getLabel(arg), placeholder, relative));
@@ -291,15 +327,17 @@ export const applyValueCalc = function (value: string, relative: boolean): strin
 }
 
 @Directive({
+  standalone: false,
   selector: '[ghs-label]'
 })
 export class GhsLabelDirective implements OnInit, OnDestroy, OnChanges {
 
   @Input('ghs-label') value!: string | number;
-  @Input('ghs-label-args') args: string[] = [];
+  @Input('ghs-label-args') args: (string | number | boolean)[] = [];
   @Input('ghs-label-args-replace') argLabel: boolean = true;
   @Input('ghs-label-empty') empty: boolean = true;
   @Input('ghs-label-attribute') attribute: string = "";
+  @Input('slice') slice: number[] = [];
   @Input('relative') relative: boolean = false;
   @Input('style') style: 'gh' | 'fh' | false = false;
 
@@ -308,6 +346,7 @@ export class GhsLabelDirective implements OnInit, OnDestroy, OnChanges {
   private locale: string;
   private calc: boolean = false;
   private fhStyle: boolean = false;
+  private valueChange: string | number = "";
 
   constructor(private el: ElementRef) {
     el.nativeElement.classList.add('placeholder');
@@ -319,19 +358,20 @@ export class GhsLabelDirective implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit(): void {
-    this.uiChangeSubscription =
-      gameManager.uiChange.subscribe({
-        next: () => {
-          if (this.locale != settingsManager.settings.locale || this.C != gameManager.game.figures.filter((figure) => figure instanceof Character).length || this.L != gameManager.game.level || (this.fhStyle != settingsManager.settings.fhStyle) || this.calc != settingsManager.settings.calculate) {
-            this.C = Math.max(2, gameManager.characterManager.characterCount());
-            this.L = gameManager.game.level;
-            this.locale = settingsManager.settings.locale;
-            this.calc = settingsManager.settings.calculate;
-            this.fhStyle = settingsManager.settings.fhStyle;
-            this.apply();
-          }
+    this.uiChangeSubscription = gameManager.uiChange.subscribe({
+      next: () => {
+        const count = Math.max(2, gameManager.characterManager.characterCount());
+        if (this.locale != settingsManager.settings.locale || this.C != count || this.L != gameManager.game.level || (this.fhStyle != settingsManager.settings.fhStyle) || this.calc != settingsManager.settings.calculate || this.valueChange != this.value) {
+          this.C = count;
+          this.L = gameManager.game.level;
+          this.locale = settingsManager.settings.locale;
+          this.calc = settingsManager.settings.calculate;
+          this.fhStyle = settingsManager.settings.fhStyle;
+          this.valueChange = this.value;
+          this.apply();
         }
-      });
+      }
+    });
     this.apply();
   }
 
@@ -351,12 +391,19 @@ export class GhsLabelDirective implements OnInit, OnDestroy, OnChanges {
   }
 
   apply(): void {
-    let args = this.args || [];
+    let args: string[] = this.args.map((arg) => '' + arg) || [];
     if (this.argLabel) {
       args = args.map((arg) => applyPlaceholder(settingsManager.getLabel(arg, [], false, this.empty), [], this.relative, this.style));
     }
 
-    const value = typeof this.value === 'number' ? this.value : (this.value && applyPlaceholder(settingsManager.getLabel(this.value, args, false, this.empty), args, this.relative, this.style) || "");
+    let value = typeof this.value === 'number' ? this.value : (this.value && applyPlaceholder(settingsManager.getLabel(this.value, args, false, this.empty), args, this.relative, this.style) || "");
+
+    if (typeof value === 'string' && this.slice.length == 1) {
+      value = value.slice(this.slice[0]);
+    } else if (typeof value === 'string' && this.slice.length == 2) {
+      value = value.slice(this.slice[0], this.slice[1]);
+    }
+
     if (this.attribute) {
       this.el.nativeElement.setAttribute(this.attribute, value);
     } else {
@@ -366,6 +413,7 @@ export class GhsLabelDirective implements OnInit, OnDestroy, OnChanges {
 }
 
 @Directive({
+  standalone: false,
   selector: '[ghs-label-element]'
 })
 export class GhsLabelElementDirective implements OnInit {
@@ -391,6 +439,7 @@ export class GhsLabelElementDirective implements OnInit {
 }
 
 @Directive({
+  standalone: false,
   selector: '[ghs-placeholder]'
 })
 export class GhsPlaceholderDirective implements OnInit, OnChanges {

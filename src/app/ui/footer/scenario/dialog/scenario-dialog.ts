@@ -6,17 +6,19 @@ import { Scenario } from "src/app/game/model/Scenario";
 import { EditionData } from "src/app/game/model/data/EditionData";
 import { RoomData } from "src/app/game/model/data/RoomData";
 import { ScenarioData } from "src/app/game/model/data/ScenarioData";
+import { EventEffectsDialog } from "src/app/ui/figures/event-effects/event-effects";
+import { FavorsComponent } from "src/app/ui/figures/event-effects/favors/favors";
 import { ghsDialogClosingHelper } from "src/app/ui/helper/Static";
-import { EventEffectsDialog } from "../../../figures/character/event-effects/event-effects";
+import { ScenarioRulesDialogComponent } from "../../scenario-rules/dialog/scenario-rules-dialog";
 import { ScenarioConclusionComponent } from "../scenario-conclusion/scenario-conclusion";
 import { ScenarioSetupComponent } from "../scenario-setup/scenario-setup";
 import { SectionDialogComponent } from "../section/section-dialog";
 import { ScenarioSummaryComponent } from "../summary/scenario-summary";
 import { ScenarioTreasuresDialogComponent } from "../treasures/treasures-dialog";
-import { ScenarioRulesDialogComponent } from "../../scenario-rules/dialog/scenario-rules-dialog";
-import { FavorsComponent } from "src/app/ui/figures/character/event-effects/trials/favors";
+import { RandomMonsterCardDialogComponent } from "./random-monster-card/random-monster-card-dialog";
 
 @Component({
+    standalone: false,
     selector: 'ghs-scenario-dialog',
     templateUrl: './scenario-dialog.html',
     styleUrls: ['./scenario-dialog.scss']
@@ -42,7 +44,7 @@ export class ScenarioDialogComponent {
     finishScenario(success: boolean) {
         this.close();
         const conclusions = gameManager.scenarioManager.availableSections(true).filter((sectionData) =>
-            sectionData.edition == this.scenario.edition && sectionData.parent == this.scenario.index && sectionData.group == this.scenario.group && sectionData.conclusion);
+            sectionData.edition == this.scenario.edition && sectionData.parent == this.scenario.index && sectionData.group == this.scenario.group && sectionData.conclusion && gameManager.scenarioManager.getRequirements(sectionData).length == 0);
         if (conclusions.length < 2 || !success) {
             this.dialog.open(ScenarioSummaryComponent, {
                 panelClass: ['dialog'],
@@ -113,7 +115,7 @@ export class ScenarioDialogComponent {
             console.error("Could not find edition data!");
             return;
         }
-        gameManager.stateManager.before(roomData.marker ? "openRoomMarker" : "openRoom", this.scenario.index, "data.scenario." + this.scenario.name, '' + roomData.ref, roomData.marker || '');
+        gameManager.stateManager.before(roomData.marker ? "openRoomMarker" : "openRoom", this.scenario.index, gameManager.scenarioManager.scenarioTitle(this.scenario), roomData.ref, roomData.marker || '');
         gameManager.scenarioManager.openRoom(roomData, this.scenario, false);
         gameManager.stateManager.after();
         this.setupComponent && this.setupComponent.updateMonster();
@@ -139,7 +141,19 @@ export class ScenarioDialogComponent {
         })
     }
 
+    openRandomMonsterCard(sectionData: ScenarioData) {
+        if (sectionData.group == 'randomMonsterCard') {
+            this.dialog.open(RandomMonsterCardDialogComponent, {
+                panelClass: ['fullscreen-panel'],
+                disableClose: true,
+                data: sectionData
+            })
+        }
+    }
+
     close() {
         ghsDialogClosingHelper(this.dialogRef);
     }
+
+
 }

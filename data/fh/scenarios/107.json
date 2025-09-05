@@ -11,6 +11,7 @@
   },
   "edition": "fh",
   "complexity": 2,
+  "eventType": "road",
   "random": true,
   "requirements": [
     {
@@ -32,8 +33,7 @@
   "rooms": [
     {
       "roomNumber": 1,
-      "initial": true,
-      "monster": []
+      "initial": true
     }
   ]
 }

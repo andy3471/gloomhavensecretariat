@@ -10,6 +10,7 @@
     "gridLocation": "C-12"
   },
   "edition": "gh",
+  "eventType": "road",
   "unlocks": [
     "20"
   ],
@@ -22,8 +23,8 @@
   "requirements": [
     {
       "global": [
-        "The Power of Enhancement",
-        "The Merchant Flees"
+        "the-power-of-enhancement",
+        "the-merchant-flees"
       ]
     }
   ],
@@ -152,6 +153,7 @@
       "roomNumber": 5,
       "ref": "F1b",
       "rooms": [
+        3,
         6
       ],
       "treasures": [
@@ -176,6 +178,9 @@
     {
       "roomNumber": 6,
       "ref": "D2b",
+      "rooms": [
+        5
+      ],
       "treasures": [
         "G"
       ],

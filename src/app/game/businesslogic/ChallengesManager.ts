@@ -145,7 +145,7 @@ export class ChallengesManager {
                     this.game.monsterAttackModifierDeck.cards = this.game.monsterAttackModifierDeck.cards.filter((attackModifier) => attackModifier.type != AttackModifierType.plus0);
                     break;
                 case 1503:
-                    const characters: CharacterData[] = gameManager.charactersData('fh').filter((characterData) => (!characterData.spoiler || this.game.unlockedCharacters.indexOf(characterData.name) != -1) && !this.game.figures.find((figure) => figure instanceof Character && figure.edition == characterData.edition && figure.name == characterData.name));
+                    const characters: CharacterData[] = gameManager.charactersData('fh').filter((characterData) => (!characterData.spoiler || this.game.unlockedCharacters.indexOf(characterData.edition + ':' + characterData.name) != -1) && !this.game.figures.find((figure) => figure instanceof Character && figure.edition == characterData.edition && figure.name == characterData.name));
                     if (characters.length) {
                         const characterData = characters[Math.floor(Math.random() * characters.length)];
                         let attackModifiers = gameManager.attackModifierManager.perkCards(characterData);
@@ -232,7 +232,8 @@ export class ChallengesManager {
         if (card.edition == 'fh') {
             switch (card.cardId) {
                 case 1526:
-                    if (this.game.figures.filter((figure) => figure instanceof Monster).map((monster) => monster.entities.filter((entity) => gameManager.entityManager.isAlive(entity)).length).reduce((a, b) => a + b) < gameManager.characterManager.characterCount()) {
+                    const entities = this.game.figures.filter((figure) => figure instanceof Monster).map((monster) => monster.entities.filter((entity) => gameManager.entityManager.isAlive(entity)).length);
+                    if (entities.length && entities.reduce((a, b) => a + b) < gameManager.characterManager.characterCount()) {
                         this.game.figures.forEach((figure) => {
                             if (figure instanceof Monster) {
                                 figure.entities.forEach((entity) => {

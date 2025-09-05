@@ -6,16 +6,16 @@ import { Game, GameState } from "../model/Game";
 import { Monster } from "../model/Monster";
 import { ObjectiveContainer } from "../model/ObjectiveContainer";
 import { Summon, SummonColor, SummonState } from "../model/Summon";
+import { Action, ActionType } from "../model/data/Action";
 import { CharacterData } from "../model/data/CharacterData";
 import { CharacterStat } from "../model/data/CharacterStat";
 import { Condition, ConditionName } from "../model/data/Condition";
+import { Enhancement } from "../model/data/Enhancement";
 import { ItemData } from "../model/data/ItemData";
 import { PersonalQuest } from "../model/data/PersonalQuest";
 import { SummonData } from "../model/data/SummonData";
 import { gameManager } from "./GameManager";
 import { settingsManager } from "./SettingsManager";
-import { EntityValueFunction } from "../model/Entity";
-import { Action, ActionType } from "../model/data/Action";
 
 export class CharacterManager {
 
@@ -26,8 +26,14 @@ export class CharacterManager {
     this.game = game;
   }
 
-  characterIcon(character: string): string {
-    const characterData = gameManager.getCharacterData(character);
+  characterIcon(character: CharacterData | string): string {
+    let characterData: CharacterData;
+    if (character instanceof CharacterData) {
+      characterData = character;
+    } else {
+      characterData = gameManager.getCharacterData(character);
+    }
+
     if (characterData.iconUrl) {
       return characterData.iconUrl;
     }
@@ -49,21 +55,21 @@ export class CharacterManager {
   }
 
   characterName(character: Character, full: boolean = false, icon: boolean = false, identity: boolean = true): string {
-    let name = settingsManager.getLabel('data.character.' + character.name);
+    let name = settingsManager.getLabel('data.character.' + character.edition + '.' + character.name);
     let hasTitle = false;
     if (identity && character.identities.length > 0 && settingsManager.settings.characterIdentities) {
       if (character.title && character.title.split('|')[character.identity] && character.title.split('|')[character.identity]) {
         name = character.title.split('|')[character.identity];
         hasTitle = true;
       } else if (settingsManager.settings.characterIdentityHint && !full) {
-        name += " (" + settingsManager.getLabel('data.character.' + character.name + '.' + character.identities[character.identity]) + ")"
+        name += " (" + settingsManager.getLabel('data.character.' + character.edition + '.' + character.name + '.' + character.identities[character.identity]) + ")"
       }
     } else if (character.title) {
       name = character.title;
       hasTitle = true;
     }
     if (full && hasTitle) {
-      name += " (" + settingsManager.getLabel('data.character.' + character.name) + ")";
+      name += " (" + settingsManager.getLabel('data.character.' + character.edition + '.' + character.name) + ")";
     }
 
     if (icon) {
@@ -100,8 +106,8 @@ export class CharacterManager {
     return './assets/images/character/thumbnail/' + characterData.edition + '-' + characterData.name + '.png';
   }
 
-  characterCount(): number {
-    if (this.game.playerCount > 0) {
+  characterCount(figuresOnly: boolean = false): number {
+    if (!figuresOnly && this.game.playerCount > 0) {
       return this.game.playerCount;
     }
 
@@ -141,6 +147,8 @@ export class CharacterManager {
       this.game.figures.push(character);
       gameManager.addEntityCount(character);
 
+      this.previousEnhancements(character, gameManager.enhancementsManager.temporary);
+
       if (this.game.state == GameState.next) {
         gameManager.attackModifierManager.shuffleModifiers(character.attackModifierDeck);
       }
@@ -153,10 +161,27 @@ export class CharacterManager {
   }
 
   removeCharacter(character: Character, retirement: boolean = false) {
-    this.game.figures.splice(this.game.figures.indexOf(character), 1);
+    const index = this.game.figures.indexOf(character);
+    if (index == -1) {
+      return;
+    }
+    this.game.figures.splice(index, 1);
 
     if (retirement && settingsManager.settings.applyRetirement) {
-      gameManager.game.party.prosperity += gameManager.fhRules() ? 2 : 1;
+      gameManager.game.party.prosperity += gameManager.fhRules(true) ? 2 : 1;
+
+      if (settingsManager.settings.events) {
+        if (character.retireEvent) {
+          character.retireEvent.split('|').forEach((retireEvent) => {
+            if (retireEvent.split(':').length > 1) {
+              gameManager.eventCardManager.addEvent(retireEvent.split(':')[0], retireEvent.split(':')[1], true)
+            } else {
+              gameManager.eventCardManager.addEvent('city', retireEvent, true);
+              gameManager.eventCardManager.addEvent('road', retireEvent, true);
+            }
+          })
+        }
+      }
     }
 
     if (character.marker) {
@@ -184,20 +209,25 @@ export class CharacterManager {
 
   addSummon(character: Character, summon: Summon) {
     character.summons = character.summons.filter((value) => value.name != summon.name || value.number != summon.number || value.color != summon.color);
+
+    if (character.edition == 'cs' && character.name == 'skull' && summon.cardId && character.availableSummons.find((s) => s.cardId == summon.cardId)) {
+      summon.tags.push('cs-skull-spirit');
+      summon.state = SummonState.true;
+    }
+
     character.summons.push(summon);
 
     if (character.name == 'boneshaper') {
-      if (character.tags.indexOf('bone-dagger') != -1) {
-        summon.attack = EntityValueFunction(summon.attack) + 1;
-      }
-      if (character.tags.indexOf('solid-bones') != -1) {
+      if (character.tags.indexOf('solid-bones') != -1 || character.tags.indexOf('unholy-prowess') != -1) {
         if (summon.name === 'shambling-skeleton') {
           summon.maxHealth += 1;
           if (summon.health == summon.maxHealth - 1) {
             summon.health = summon.maxHealth;
           }
-          summon.movement += 1;
-          summon.action = new Action(ActionType.pierce, 1);
+          if (character.tags.indexOf('solid-bones') != -1) {
+            summon.movement += 1;
+            summon.action = new Action(ActionType.pierce, 1);
+          }
         }
       }
     }
@@ -303,13 +333,13 @@ export class CharacterManager {
 
   itemEffect(itemData: ItemData): boolean {
     if (itemData.edition == 'gh') {
-      return [16, 38, 52, 101, 103, 108].indexOf(itemData.id) != -1;
+      return typeof itemData.id === 'number' && [16, 38, 52, 101, 103, 108].indexOf(itemData.id) != -1;
     } else if (itemData.edition == 'cs') {
-      return [157, 71].indexOf(itemData.id) != -1;
+      return typeof itemData.id === 'number' && [157, 71].indexOf(itemData.id) != -1;
     } else if (itemData.edition == 'toa') {
-      return [101, 107].indexOf(itemData.id) != -1;
+      return typeof itemData.id === 'number' && [101, 107].indexOf(itemData.id) != -1;
     } else if (itemData.edition == 'fh') {
-      return [3, 11, 41, 60, 132, 138, 178].indexOf(itemData.id) != -1;
+      return typeof itemData.id === 'number' && [3, 11, 41, 60, 132, 138, 178].indexOf(itemData.id) != -1;
     }
     return false;
   }
@@ -355,7 +385,7 @@ export class CharacterManager {
           }
         });
 
-        if (figure instanceof Character && figure.tags.find((tag) => tag === 'time_tokens') && figure.primaryToken == 0) {
+        if (figure instanceof Character && figure.name == 'blinkblade' && figure.tags.find((tag) => tag === 'time_tokens') && figure.primaryToken == 0) {
           figure.identity = 0;
         }
 
@@ -387,7 +417,7 @@ export class CharacterManager {
           figure.off = false;
         }
 
-        if (figure.tags.find((tag) => tag === 'time_tokens') && figure.primaryToken == 0) {
+        if (figure.name == 'blinkblade' && figure.tags.find((tag) => tag === 'time_tokens') && figure.primaryToken == 0) {
           if (figure.identity == 0 && figure.tokenValues[0] < 2) {
             figure.tokenValues[0] += 1;
           } else if (figure.identity == 1) {
@@ -399,11 +429,71 @@ export class CharacterManager {
             }
           }
         }
+
+        if (gameManager.trialsManager.apply && gameManager.trialsManager.trialsEnabled && settingsManager.settings.battleGoals && figure.progress.trial && figure.progress.trial.edition == 'fh' && figure.progress.trial.name == '356' && figure.tags.indexOf('trial-fh-356') != -1) {
+          figure.tags.splice(figure.tags.indexOf('trial-fh-356'), 1);
+        }
       }
     })
   }
 
   personalQuestByCard(edition: string, cardId: string): PersonalQuest | undefined {
     return gameManager.editionData.filter((editionData) => editionData.edition == edition || gameManager.editionExtensions(edition).indexOf(editionData.edition) != -1).flatMap((editionData) => editionData.personalQuests).find((pq) => pq.cardId == cardId || pq.altId == cardId || pq.altId == '0' + cardId);
+  }
+
+  previousEnhancements(character: Character, temporary: boolean) {
+    if (character.progress.enhancements) {
+      character.progress.enhancements = character.progress.enhancements.filter((e) => !e.inherited);
+    } else {
+      character.progress.enhancements = [];
+    }
+    if (!temporary) {
+      const previousCharacters = gameManager.game.party.retirements.filter((model) => model.edition == character.edition && model.name == character.name);
+      previousCharacters.forEach((previousCharacter) => {
+        if (previousCharacter && previousCharacter.progress && previousCharacter.progress.enhancements) {
+          character.progress.enhancements.push(...previousCharacter.progress.enhancements.filter((e) => !e.inherited).map((e) => new Enhancement(e.cardId, e.actionIndex, e.index, e.action, true)));
+        }
+      })
+
+      character.progress.enhancements = character.progress.enhancements.filter((e, index, self) => {
+        const first = self.find((o) => o.cardId == e.cardId && o.actionIndex == e.actionIndex && o.index == e.index);
+        return !first || index === self.indexOf(first);
+      });
+    }
+
+    // wipSpecial
+    character.progress.enhancements.filter((e) => e.actionIndex.indexOf('custom') != -1).forEach((e) => {
+      const card = gameManager.deckData(character).abilities.find((a) => a.cardId == e.cardId);
+      if (card) {
+        const mapping = this.enhancementMapping(e.actionIndex.indexOf('bottom') == -1 ? card.actions : card.bottomActions || [], e.actionIndex.indexOf('bottom') == -1 ? '' : 'bottom');
+        if (mapping.length && mapping[e.index]) {
+          e.actionIndex = mapping[e.index];
+          e.index = e.index - mapping.indexOf(e.actionIndex);
+        }
+      }
+    });
+  }
+
+  enhancementMapping(actions: Action[], parentIndex: string): string[] {
+    let mapping: string[] = [];
+    actions.forEach((action, index) => {
+      if (action.type != ActionType.custom || action.value != '%character.abilities.wip%') {
+        const actionId = (parentIndex ? parentIndex + '-' : '') + index;
+        if (action.enhancementTypes) {
+          action.enhancementTypes.forEach((t) => {
+            mapping.push(actionId);
+          })
+        }
+        if (action.subActions) {
+          mapping.push(...this.enhancementMapping(action.subActions, actionId));
+        }
+      }
+    })
+
+    return mapping;
+  }
+
+  getActiveCharacters(): Character[] {
+    return this.game.figures.filter((figure) => figure instanceof Character && gameManager.gameplayFigure(figure) && !figure.absent).map((figure) => figure as Character);
   }
 }

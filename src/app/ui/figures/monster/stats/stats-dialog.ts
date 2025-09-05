@@ -8,6 +8,7 @@ import { StatsListComponent } from "src/app/ui/footer/scenario/dialog/stats-list
 import { MonsterStatDialogComponent } from "./stat-dialog";
 
 @Component({
+  standalone: false,
   selector: 'ghs-monster-stats-popup',
   templateUrl: './stats-dialog.html',
   styleUrls: ['./stats-dialog.scss']
@@ -19,12 +20,14 @@ export class MonsterStatsDialogComponent {
   monsters: Monster[] = [];
   edition: string = "";
   EntityValueFunction = EntityValueFunction;
+  dormant: boolean = false;
 
   constructor(@Inject(DIALOG_DATA) public monster: Monster, public dialogRef: DialogRef, private dialog: Dialog) {
     this.levels.forEach((level) => {
       this.monsters.push(this.getMonsterForLevel(level));
     })
     this.edition = gameManager.getEdition(this.monster);
+    this.dormant = this.monster.entities.every((e) => e.dormant);
   }
 
   getMonsterForLevel(level: number): Monster {
@@ -43,7 +46,14 @@ export class MonsterStatsDialogComponent {
     gameManager.stateManager.after();
   }
 
-  toggleallied() {
+  toggleDormant() {
+    gameManager.stateManager.before(this.dormant ? "unsetDormant" : "setDormant", "data.monster." + this.monster.name);
+    this.dormant = !this.dormant;
+    this.monster.entities.forEach((e) => e.dormant = this.dormant);
+    gameManager.stateManager.after();
+  }
+
+  toggleAllied() {
     gameManager.stateManager.before(this.monster.isAllied ? "unsetAllied" : "setAllied", "data.monster." + this.monster.name);
     this.monster.isAllied = !this.monster.isAllied;
     gameManager.stateManager.after();

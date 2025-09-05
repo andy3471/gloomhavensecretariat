@@ -1,18 +1,21 @@
 import { DIALOG_DATA, Dialog, DialogRef } from "@angular/cdk/dialog";
 import { AfterViewInit, Component, HostListener, Inject, ViewEncapsulation } from "@angular/core";
 import L, { ImageOverlay, LatLngBounds, LatLngBoundsLiteral } from 'leaflet';
+import { Subscription } from "rxjs";
 import { GameManager, gameManager } from "src/app/game/businesslogic/GameManager";
 import { SettingsManager, settingsManager } from "src/app/game/businesslogic/SettingsManager";
 import { BuildingData } from "src/app/game/model/data/BuildingData";
 import { ScenarioData } from "src/app/game/model/data/ScenarioData";
 import { WorldMapCoordinates } from "src/app/game/model/data/WorldMap";
+import { Scenario } from "src/app/game/model/Scenario";
 import { ScenarioChartPopupDialog } from "src/app/ui/figures/party/scenario-chart/popup/scenario-chart-popup";
 import { ScenarioChartDialogComponent } from "src/app/ui/figures/party/scenario-chart/scenario-chart";
+import { ScenarioSummaryComponent } from "src/app/ui/footer/scenario/summary/scenario-summary";
 import { ghsDialogClosingHelper } from "src/app/ui/helper/Static";
 import { PartySheetDialogComponent } from "../party-sheet-dialog";
-import { Subscription } from "rxjs";
 
 @Component({
+    standalone: false,
     selector: 'ghs-world-map',
     templateUrl: './world-map.html',
     styleUrls: ['./world-map.scss',],
@@ -107,7 +110,9 @@ export class WorldMapComponent implements AfterViewInit {
 
     updateMap() {
         this.update();
-        this.map.remove();
+        if (this.map) {
+            this.map.remove();
+        }
         this.ngAfterViewInit();
     }
 
@@ -210,7 +215,7 @@ export class WorldMapComponent implements AfterViewInit {
                 }
             })
 
-            this.conclusions.forEach((sectionData) => {
+            this.conclusions.forEach((sectionData, i) => {
                 const success = gameManager.game.party.conclusions.find((model) => model.edition == sectionData.edition && model.index == sectionData.index && model.group == sectionData.group);
 
                 if (!gameManager.game.party.campaignMode || success) {
@@ -223,6 +228,22 @@ export class WorldMapComponent implements AfterViewInit {
                         if (element) {
                             element.classList.add('building');
                         }
+
+                        overlayCampaignSticker.on('click', () => {
+                            const conclusion: ScenarioData = this.conclusions[i];
+                            let scenarioData: ScenarioData | undefined;
+                            if (conclusion.parent) {
+                                scenarioData = gameManager.scenarioData(conclusion.edition).find((scenarioData) => scenarioData.edition == conclusion.edition && scenarioData.group == conclusion.group && scenarioData.index == conclusion.parent);
+                            }
+                            this.dialog.open(ScenarioSummaryComponent, {
+                                panelClass: ['dialog'],
+                                data: {
+                                    scenario: new Scenario(scenarioData || conclusion),
+                                    conclusion: conclusion,
+                                    conclusionOnly: true
+                                }
+                            });
+                        });
                     }
 
                     if (sectionData.rewards && sectionData.rewards.overlaySticker) {
@@ -244,7 +265,7 @@ export class WorldMapComponent implements AfterViewInit {
                     if (buildingData.coordinates && buildingData.coordinates.length) {
                         const overlayData = buildingData.coordinates[level || 0];
                         if (overlayData) {
-                            const imageName = overlayData.image || buildingData.edition + '-' + (buildingData.id ? buildingData.id + '-' : '') + buildingData.name + (buildingData.upgrades.length || buildingData.manualUpgrades ? '-' + (level != undefined ? level : '0') : '');
+                            const imageName = overlayData.image || buildingData.edition + '-' + (buildingData.id ? buildingData.id + '-' : '') + buildingData.name + (buildingData.upgrades.length ? '-' + (level != undefined ? level : '0') : '');
                             const overlayBuilding: ImageOverlay = this.placeOverlay('./assets/images/world-map/' + buildingData.edition + '/buildings/' + imageName + '.png', overlayData, height, -1);
                             overlayBuilding.addTo(this.map);
                             const element = overlayBuilding.getElement();
@@ -327,7 +348,7 @@ export class WorldMapComponent implements AfterViewInit {
 
     @HostListener('document:keydown', ['$event'])
     keyboardShortcuts(event: KeyboardEvent) {
-        if (!this.campaignSheet) {
+        if (settingsManager.settings.keyboardShortcuts && !this.campaignSheet) {
             if (!event.ctrlKey && !event.shiftKey && event.key.toLowerCase() === 'p' && settingsManager.settings.partySheet) {
                 this.openCampaignSheet();
                 event.stopPropagation();

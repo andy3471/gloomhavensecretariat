@@ -6,12 +6,12 @@
   "requirements": [
     {
       "party": [
-        "Oaks Alliance"
+        "oaks-alliance"
       ]
     }
   ],
   "rewards": {
-    "custom": "During the next visit to Gloomhaven, donations to the Sanctuary cost 0 gold."
+    "custom": "%data.scenario.rewards.cs.49%"
   },
   "monsters": [
     "inox-archer",

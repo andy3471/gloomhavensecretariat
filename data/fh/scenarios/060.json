@@ -12,6 +12,7 @@
   },
   "edition": "fh",
   "complexity": 2,
+  "eventType": "boat",
   "requirements": [
     {
       "buildings": [
@@ -32,7 +33,7 @@
       "summer-outpost:SO-48",
       "boat:B-17"
     ],
-    "custom": "Remove all %game.action.custom.fh-lurkers% events from all outpost event decks",
+    "custom": "%data.scenario.rewards.fh.remove-lurkers%",
     "morale": 2,
     "campaignSticker": [
       "crown-united"

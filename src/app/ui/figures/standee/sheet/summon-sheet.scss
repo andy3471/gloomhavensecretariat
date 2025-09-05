@@ -7,16 +7,43 @@
     background-repeat: no-repeat;
     text-shadow: none;
 
-    .name {
-        font-size: 1.3em;
+    .summon-label {
+        font-family: var(--ghs-font-text);
+    }
+
+    .thumbnail {
         position: absolute;
-        top: 0;
-        left: 10%;
-        width: 90%;
+        width: 15%;
+        height: 53%;
+        top: 11%;
+        left: 0;
+        overflow: hidden;
+
+        img {
+            position: absolute;
+            width: 127%;
+            height: auto;
+            top: 2%;
+            right: 7%;
+            border-radius: 100%;
+        }
+    }
+
+    .name {
+        font-size: 1.1em;
+        letter-spacing: -0.04em;
+        position: absolute;
+        top: 6%;
+        left: 14%;
+        width: 86%;
         height: 34%;
         display: flex;
         justify-content: center;
         align-items: center;
+
+        .summon-label {
+            font-family: var(--ghs-font-normal);
+        }
 
         .flying {
             display: flex;
@@ -33,10 +60,6 @@
         }
     }
 
-    .summon-label {
-        font-family: var(--ghs-font-text);
-    }
-
     .grid {
         display: grid;
         grid-template-columns: 45% 25% 30%;
@@ -49,7 +72,7 @@
 
         .item {
             display: grid;
-            grid-template-columns: 1fr 0.5fr 1.5fr;
+            grid-template-columns: 1fr 0.5fr 1.5fr 1.5fr;
             justify-content: flex-start;
             align-items: center;
 
@@ -64,6 +87,20 @@
             :nth-child(3) {
                 justify-self: start;
             }
+
+            :nth-child(4) {
+                justify-self: start;
+            }
+
+            .placeholder {
+                display: flex;
+                align-items: baseline;
+                height: 100%;
+            }
+
+            ghs-action-enhancements {
+                margin-left: -25%;
+            }
         }
 
         .health,
@@ -76,6 +113,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            font-size: 0.85em;
+
+            &.xs {
+                font-size: 0.75em;
+            }
         }
 
         .action {
@@ -115,6 +157,29 @@
 
     &.fh {
         background-image: url('~src/assets/images/fh/character/abilities/character-ability-summon1.png');
+
+        .thumbnail {
+            top: 24%;
+            width: 3.7em;
+            height: 4em;
+            clip-path: polygon(0em 0em, 3em 0em, 3.7em 2em, 3em 4em, 0em 4em);
+            background-color: var(--ghs-ability-color);
+
+            .thumbnail-border {
+                position: absolute;
+                top: 0.1em;
+                left: 0.1em;
+                width: 3.7em;
+                height: 4em;
+                clip-path: polygon(0em 0em, 2.8em 0em, 3.5em 1.8em, 2.8em 3.8em, 0em 3.8em);
+
+                img {
+                    left: -1.4em;
+                    top: -0.3em;
+                    width: 155%;
+                }
+            }
+        }
 
         .grid {
             top: 38%;

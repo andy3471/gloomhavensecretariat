@@ -11,8 +11,9 @@
   },
   "edition": "fh",
   "complexity": 2,
+  "eventType": "road",
   "rewards": {
-    "custom": "\"Aesther Outpost\" quest complete",
+    "custom": "%data.scenario.rewards.fh.068%",
     "calendarSection": [
       "133.1-2"
     ]

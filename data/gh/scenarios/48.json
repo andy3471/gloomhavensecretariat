@@ -10,6 +10,7 @@
     "gridLocation": "E-1"
   },
   "edition": "gh",
+  "eventType": "road",
   "unlocks": [
     "51"
   ],
@@ -21,13 +22,13 @@
   "requirements": [
     {
       "party": [
-        "Redthorn's Aid"
+        "redthorns-aid"
       ]
     }
   ],
   "rewards": {
     "globalAchievements": [
-      "End of Corruption"
+      "end-of-corruption"
     ]
   },
   "monsters": [

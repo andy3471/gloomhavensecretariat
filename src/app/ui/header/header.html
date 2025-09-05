@@ -5,7 +5,7 @@
       <img class="ghs-svg" src="./assets/images/menu.svg">
     </a>
   </div>
-  <ng-container *ngIf="!standalone">
+  <ng-container *ngIf="!standalone || connection">
     <img *ngIf="gameManager.stateManager.serverError" src="./assets/images/warning.svg"
       [ghs-tooltip]="gameManager.stateManager.serverError" class="ghs-svg server-connection closed"
       [ghs-label]="'server.error'" [ghs-label-attribute]="'title'">
@@ -34,7 +34,9 @@
           [ghs-label]="'server.disconnected'" [ghs-label-attribute]="'title'">
       </a>
     </ng-container>
+  </ng-container>
 
+  <ng-container *ngIf="!standalone">
     <img src="./assets/images/shuffle.svg" class="server-connection syncing" *ngIf="syncing()">
     <span class="game-server"
       *ngIf="!syncing() && gameManager.stateManager.wsState() != -99 && gameManager.game.server">°</span>
@@ -72,12 +74,17 @@
       </ng-container>
     </div>
     <span class="spacer"></span>
-    <div *ngIf="!gameManager.bbRules() && gameManager.game.scenario && gameManager.characterManager.characterCount() > 0" class="event-effects"
-      (click)="openEventEffects()">
+    <div
+      *ngIf="!gameManager.bbRules() && !!gameManager.game.scenario && (gameManager.characterManager.characterCount(true) > 0 || settingsManager.settings.partySheet)"
+      class="event-effects" (click)="openEventEffects()">
       <img class="ghs-svg"
         [src]="'./assets/images/event' + (gameManager.game.round > 0 || gameManager.game.state == GameState.next ? '-effects' : '') + '.svg'">
     </div>
-    <ghs-party-sheet #partySheet *ngIf="!gameManager.bbRules() && settingsManager.settings.partySheet"></ghs-party-sheet>
+    <ghs-party-sheet #partySheet
+      *ngIf="!gameManager.bbRules() && settingsManager.settings.partySheet"></ghs-party-sheet>
+    <div *ngIf="gameManager.buildingsManager.petsEnabled" class="pets" (click)="openPets()">
+      <img class="ghs-svg" src="./assets/images/fh/catching.svg">
+    </div>
     <div *ngIf="settingsManager.settings.gameClock" class="game-clock" ghs-pointer-input
       (singleClick)="openGameClockDialog()" (doubleClick)="toggleGameClock()"
       [ghs-tooltip]="'duration.gameClock.' + (lastGameClockTimestamp && !lastGameClockTimestamp.clockOut ? (currentGameClock == overallGameClock ?  'running' : 'runningTotal') : (overallGameClock ? 'paused': 'off'))"

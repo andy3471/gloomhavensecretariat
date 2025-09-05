@@ -10,6 +10,7 @@
     "gridLocation": "E-3"
   },
   "edition": "gh",
+  "eventType": "road",
   "requires": [
     [
       "28"
@@ -18,13 +19,13 @@
   "requirements": [
     {
       "party": [
-        "An Invitation"
+        "an-invitation"
       ]
     }
   ],
   "rewards": {
     "globalAchievements": [
-      "The Edge of Darkness"
+      "the-edge-of-darkness"
     ],
     "experience": 15
   },

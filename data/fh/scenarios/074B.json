@@ -11,8 +11,12 @@
   },
   "edition": "fh",
   "complexity": 2,
+  "eventType": "road",
   "unlocks": [
     "75"
+  ],
+  "blocks": [
+    "74A"
   ],
   "rewards": {
     "randomItemBlueprint": 1

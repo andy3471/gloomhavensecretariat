@@ -10,6 +10,7 @@
     "gridLocation": "C-7"
   },
   "edition": "gh",
+  "eventType": "road",
   "unlocks": [
     "21",
     "22"
@@ -17,7 +18,7 @@
   "requirements": [
     {
       "global": [
-        "!The Rift Neutralized"
+        "!the-rift-neutralized"
       ]
     }
   ],
@@ -26,7 +27,7 @@
   ],
   "rewards": {
     "partyAchievements": [
-      "A Demon's Errand"
+      "a-demons-errand"
     ]
   },
   "monsters": [

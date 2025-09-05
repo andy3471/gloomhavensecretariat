@@ -3,6 +3,7 @@ import { Subscription } from "rxjs";
 import { InteractiveAction } from "src/app/game/businesslogic/ActionsManager";
 import { gameManager } from "src/app/game/businesslogic/GameManager";
 import { SettingsManager, settingsManager } from "src/app/game/businesslogic/SettingsManager";
+import { Character } from "src/app/game/model/Character";
 import { Entity, EntityValueFunction } from "src/app/game/model/Entity";
 import { Monster } from "src/app/game/model/Monster";
 import { MonsterEntity } from "src/app/game/model/MonsterEntity";
@@ -15,6 +16,7 @@ import { MonsterSpawnData, ObjectiveSpawnData } from "src/app/game/model/data/Sc
 import { SummonData } from "src/app/game/model/data/SummonData";
 
 @Component({
+  standalone: false,
   selector: 'ghs-action-summon',
   templateUrl: './action-summon.html',
   styleUrls: ['./action-summon.scss']
@@ -25,6 +27,7 @@ export class ActionSummonComponent implements OnChanges, OnDestroy {
   @Input() monsterType: MonsterType | undefined;
   @Input() objective: ObjectiveContainer | undefined;
   @Input() action!: Action;
+  @Input() textBlack: boolean = false;
   @Input() right: boolean = false;
   @Input('spawn') isSpawn: boolean = false;
   @Input() additional: boolean = false;
@@ -33,6 +36,8 @@ export class ActionSummonComponent implements OnChanges, OnDestroy {
   @Output() interactiveActionsChange = new EventEmitter<InteractiveAction[]>();
   @Input('index') actionIndex: string = "";
   @Input() style: 'gh' | 'fh' | false = false;
+  @Input() character: Character | undefined;
+  @Input() cardId: number | undefined;
   spawners: Entity[] = [];
   monsters: MonsterSpawnData[] = [];
   objectives: ObjectiveSpawnData[] = [];
@@ -87,6 +92,14 @@ export class ActionSummonComponent implements OnChanges, OnDestroy {
     this.type = undefined;
     if (this.action.value == 'summonData' || this.action.value == 'summonDataItem') {
       this.summonData = this.action.valueObject as SummonData;
+      if (!this.summonData.edition) {
+        if (this.character && this.cardId) {
+          this.summonData.edition = this.character.edition;
+        } else if (this.monster) {
+          this.summonData.edition = this.monster.edition;
+        }
+      }
+      this.action.small = true;
     }
   }
 

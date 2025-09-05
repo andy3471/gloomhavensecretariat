@@ -11,6 +11,7 @@ import { Action, ActionHint, ActionType, ActionValueType } from "../model/data/A
 import { AttackModifier, AttackModifierType } from "../model/data/AttackModifier";
 import { Condition, ConditionName } from "../model/data/Condition";
 import { Element, ElementModel, ElementState } from "../model/data/Element";
+import { AdditionalIdentifier } from "../model/data/Identifier";
 import { MonsterType } from "../model/data/MonsterType";
 import { MonsterSpawnData, ObjectiveSpawnData } from "../model/data/ScenarioRule";
 import { gameManager } from "./GameManager";
@@ -227,14 +228,15 @@ export class ActionsManager {
     }
 
     isInteractiveAction(action: Action): boolean {
-        const selfSubAction = action.subActions && action.subActions.length == 1 && action.subActions.find((subAction) => subAction.type == ActionType.specialTarget && ('' + subAction.value).startsWith('self')) != undefined || false;
+        const selfSubAction = action.subActions && action.subActions.find((subAction) => subAction.type == ActionType.specialTarget && ('' + subAction.value).startsWith('self'));
+        const hasSelfSubAction = selfSubAction != undefined;
         switch (action.type) {
             case ActionType.heal:
-                return selfSubAction;
+                return hasSelfSubAction && action.subActions.every((subAction) => subAction == selfSubAction || subAction.type == ActionType.condition);
             case ActionType.condition:
-                return selfSubAction;
+                return hasSelfSubAction && action.subActions.length == 1;
             case ActionType.sufferDamage:
-                return !action.subActions || action.subActions.length == 0 || selfSubAction;
+                return !action.subActions || action.subActions.length == 0 || hasSelfSubAction && action.subActions.length == 1;
             case ActionType.switchType:
             case ActionType.element:
                 return true;
@@ -261,7 +263,7 @@ export class ActionsManager {
             case ActionType.element:
                 const values = this.getValues(action);
                 if (!action.valueType || action.valueType == ActionValueType.plus || action.valueType == ActionValueType.fixed) {
-                    return gameManager.game.elementBoard.some((element) => (action.value == Element.wild || values.indexOf(element.type) != -1) && (element.state == ElementState.inert || element.state == ElementState.waning || element.state == ElementState.consumed));
+                    return gameManager.game.elementBoard.some((element) => (action.value == Element.wild || values.indexOf(element.type) != -1) && (element.state == ElementState.inert || element.state == ElementState.waning || element.state == ElementState.consumed  || element.state == ElementState.partlyConsumed));
                 } else if (action.valueType == ActionValueType.minus) {
                     let elements = this.getElementsToConsume(action);
                     if (elements.length == values.length) {
@@ -329,6 +331,21 @@ export class ActionsManager {
         return action.type == ActionType.monsterType && entity instanceof MonsterEntity && entity.type == (action.value as MonsterType);
     }
 
+    isMultiTarget(action: Action, includeHex: boolean = true): boolean {
+        let result = action.type == ActionType.target && EntityValueFunction(action.value) > 1 || this.isMultiTargetSpecial(action) || includeHex && action.type == ActionType.area;
+
+        return result || action.subActions && action.subActions.some((subAction) => this.isMultiTarget(subAction, includeHex));
+    }
+
+    isMultiTargetSpecial(action: Action): boolean {
+        return action.type == ActionType.specialTarget && typeof action.value === 'string' &&
+            (action.value.toLowerCase().indexOf('allies') != -1 ||
+                action.value.toLowerCase().indexOf('enemies') != -1 ||
+                action.value.toLowerCase().indexOf('figures') != -1 ||
+                action.value.toLowerCase().indexOf('targets') != -1 ||
+                action.value == 'all');
+    }
+
     applyInteractiveAction(entity: Entity, figure: Figure, interactiveAction: InteractiveAction, additionalValues: string[] = [], force: boolean = false) {
         const action = interactiveAction.action;
         const index = interactiveAction.index;
@@ -345,7 +362,12 @@ export class ActionsManager {
             case ActionType.heal:
                 const heal = EntityValueFunction(action.value, figure.level);
                 entity.health += heal;
-                gameManager.entityManager.addCondition(entity,figure, new Condition(ConditionName.heal, heal));
+                gameManager.entityManager.addCondition(entity, figure, new Condition(ConditionName.heal, heal));
+                if (action.subActions) {
+                    action.subActions.filter((subAction) => subAction.type == ActionType.condition).forEach((subAction) => {
+                        gameManager.entityManager.addCondition(entity, figure, new Condition('' + subAction.value));
+                    })
+                }
                 gameManager.entityManager.applyCondition(entity, figure, ConditionName.heal, true);
                 break;
             case ActionType.condition:
@@ -355,7 +377,7 @@ export class ActionsManager {
                         gameManager.attackModifierManager.addModifier(am, new AttackModifier(action.value == 'bless' ? AttackModifierType.bless : AttackModifierType.curse));
                     }
                 } else {
-                    gameManager.entityManager.addCondition(entity,figure, new Condition('' + action.value));
+                    gameManager.entityManager.addCondition(entity, figure, new Condition('' + action.value));
                 }
                 break;
             case ActionType.sufferDamage:
@@ -363,9 +385,9 @@ export class ActionsManager {
                 if (entity.health <= 0) {
                     entity.health = 0;
                 }
-                if (figure instanceof Monster && entity instanceof MonsterEntity && entity.health == 0) {
+                if (figure instanceof Monster && entity instanceof MonsterEntity && entity.health <= 0) {
                     entity.dead = true;
-                } else if (figure instanceof ObjectiveContainer && entity instanceof ObjectiveEntity && entity.health == 0) {
+                } else if (figure instanceof ObjectiveContainer && entity instanceof ObjectiveEntity && entity.health <= 0) {
                     entity.dead = true;
                 }
                 break;
@@ -385,6 +407,14 @@ export class ActionsManager {
                 }
                 break;
             case ActionType.element:
+                if (figure instanceof Monster) {
+                    // interactive element action only apply once per monster
+                    figure.entities.forEach((monsterEntity) => {
+                        if (monsterEntity != entity) {
+                            monsterEntity.tags.push(tag);
+                        }
+                    })
+                }
                 if (action.valueType == ActionValueType.minus) {
                     let elements: Element[] = this.getValues(action).map((value) => value as Element);
                     let toConsume: Element[] = this.getElementsToConsume(action).map((value) => value.type);
@@ -468,7 +498,7 @@ export class ActionsManager {
                 for (let spawn of objectiveSpawns) {
                     if (figure instanceof Monster) {
                         const count: number = !spawn.count ? 1 : EntityValueFunction(spawn.count);
-                        const objectiveContainer = gameManager.objectiveManager.addObjective(spawn.objective, spawn.objective.name, figure ? gameManager.additionalIdentifier(figure) : undefined);
+                        const objectiveContainer = gameManager.game.figures.find((f) => f instanceof ObjectiveContainer && gameManager.additionalIdentifier(figure).equals(f.objectiveId as AdditionalIdentifier)) as ObjectiveContainer || gameManager.objectiveManager.addObjective(spawn.objective, spawn.objective.name, gameManager.additionalIdentifier(figure));
                         if (count > 1) {
                             for (let i = 0; i < count; i++) {
                                 const spawnEntity = gameManager.objectiveManager.addObjectiveEntity(objectiveContainer);

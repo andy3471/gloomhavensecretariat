@@ -1,6 +1,6 @@
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { CdkDragDrop, CdkDragEnter, CdkDragExit, CdkDragRelease, CdkDragStart, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, isDevMode, OnInit, ViewChild } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 import { Subscription } from 'rxjs';
 import { GameManager, gameManager } from 'src/app/game/businesslogic/GameManager';
@@ -15,10 +15,11 @@ import { MonsterType } from '../game/model/data/MonsterType';
 import { MonsterNumberPickerDialog } from './figures/monster/dialogs/numberpicker-dialog';
 import { FooterComponent } from './footer/footer';
 import { SubMenu } from './header/menu/menu';
-import { ghsDialogClosingHelper } from './helper/Static';
+import { ConfirmDialogComponent } from './helper/confirm/confirm';
 import { PointerInputService } from './helper/pointer-input';
 
 @Component({
+  standalone: false,
   selector: 'ghs-main',
   templateUrl: './main.html',
   styleUrls: ['./main.scss'],
@@ -39,6 +40,7 @@ export class MainComponent implements OnInit {
   cancelLoading: boolean = false;
   welcome: boolean = false;
   welcomeOtherEditions: boolean = false;
+  welcomeEditionHint: boolean = false;
   fullviewChar: Character | undefined;
   showBackupHint: boolean = false;
 
@@ -58,12 +60,13 @@ export class MainComponent implements OnInit {
   serverPing: number = 0;
   serverPingInterval: any;
 
+  initiativeSetDialog: DialogRef<unknown, ConfirmDialogComponent> | "discard" | false = false;
+
   @ViewChild('footer') footer!: FooterComponent;
 
   constructor(private element: ElementRef, private swUpdate: SwUpdate, private dialog: Dialog, private pointerInputService: PointerInputService) {
     gameManager.uiChange.subscribe({
       next: () => {
-
         this.figures = gameManager.game.figures.filter((figure) => (settingsManager.settings.monsters || !(figure instanceof Monster)) && (!(figure instanceof Character) || !figure.absent || !settingsManager.settings.hideAbsent));
 
         if (this.initialized) {
@@ -74,6 +77,7 @@ export class MainComponent implements OnInit {
           } else if (gameManager.game.figures.length == 0) {
             this.welcome = true;
             this.welcomeOtherEditions = settingsManager.settings.editions.length < gameManager.editionData.length;
+            this.welcomeEditionHint = gameManager.game.edition && settingsManager.getLabel('data.edition.' + gameManager.game.edition + '.hint') != 'hint' || false;
           } else {
             this.fullviewChar = undefined;
             this.welcome = false;
@@ -95,6 +99,36 @@ export class MainComponent implements OnInit {
               }
             }
             this.showBackupHint = settingsManager.settings.backupHint && !this.loading && !gameManager.game.scenario && (gameManager.game.party.scenarios.length > 0 || gameManager.game.party.casualScenarios.length > 0 || gameManager.game.parties.some((party) => party.casualScenarios.length > 0));
+
+            if (settingsManager.settings.initiativeRequired && settingsManager.settings.initiativeRoundConfirm && gameManager.game.state == GameState.draw && gameManager.game.scenario) {
+              if (gameManager.game.figures.find((figure) => figure instanceof Character && gameManager.entityManager.isAlive(figure) && !figure.absent) != undefined && gameManager.game.figures.every((figure) => !(figure instanceof Character) || !gameManager.entityManager.isAlive(figure) || figure.absent || figure.getInitiative() > 0)) {
+                if (!this.initiativeSetDialog) {
+                  this.initiativeSetDialog = this.dialog.open(ConfirmDialogComponent, {
+                    panelClass: ['dialog'],
+                    data: {
+                      label: 'round.hint.initiativeRoundConfirm'
+                    }
+                  });
+
+                  this.initiativeSetDialog.closed.subscribe({
+                    next: (result) => {
+                      this.initiativeSetDialog = "discard";
+                      if (result) {
+                        this.initiativeSetDialog = false;
+                        this.footer.next();
+                      }
+                    }
+                  })
+                }
+              } else {
+                if (this.initiativeSetDialog instanceof DialogRef) {
+                  this.initiativeSetDialog.close();
+                }
+                this.initiativeSetDialog = false;
+              }
+            } else if (gameManager.game.state == GameState.next) {
+              this.initiativeSetDialog = false;
+            }
           }
         }
 
@@ -161,40 +195,6 @@ export class MainComponent implements OnInit {
         await this.automaticClockOut();
       }
     });
-
-    dialog.afterOpened.subscribe({
-      next: (dialogRef: DialogRef) => {
-        if (dialogRef.overlayRef.backdropElement && dialog.openDialogs.length > 1 && !dialogRef.overlayRef.backdropElement.classList.contains('fullscreen-backdrop')) {
-          dialogRef.overlayRef.backdropElement.style.opacity = '0';
-        }
-
-        if (!dialogRef.disableClose) {
-          let closeIcon = document.createElement('img');
-          closeIcon.src = './assets/images/close_dialog.svg';
-          let closeElement = document.createElement('a');
-          closeElement.classList.add('dialog-close-button');
-          closeElement.appendChild(closeIcon);
-          closeElement.addEventListener('click', () => {
-            ghsDialogClosingHelper(dialogRef);
-          });
-          closeElement.title = settingsManager.getLabel('close');
-          dialogRef.overlayRef.hostElement.appendChild(closeElement);
-
-          if (dialogRef.overlayRef.backdropElement) {
-            dialogRef.disableClose = true;
-            dialogRef.overlayRef.backdropElement.addEventListener('click', () => {
-              ghsDialogClosingHelper(dialogRef);
-            });
-          }
-
-          dialogRef.keydownEvents.subscribe(event => {
-            if (!event.ctrlKey && !event.shiftKey && !event.altKey && event.key === "Escape") {
-              ghsDialogClosingHelper(dialogRef);
-            }
-          });
-        }
-      }
-    })
   }
 
   onFigureScroll(event: any) {
@@ -206,7 +206,7 @@ export class MainComponent implements OnInit {
     document.body.classList.add('no-select');
     try {
       await storageManager.init();
-    } catch {
+    } catch (e) {
       // continue
     }
     await settingsManager.init(!environment.production);
@@ -217,6 +217,7 @@ export class MainComponent implements OnInit {
     document.body.style.setProperty('--ghs-barsize', settingsManager.settings.barsize + '');
     document.body.style.setProperty('--ghs-fontsize', settingsManager.settings.fontsize + '');
     document.body.style.setProperty('--ghs-global-fontsize', settingsManager.settings.globalFontsize + '');
+    document.body.style.setProperty('--ghs-animation-speed', settingsManager.settings.animationSpeed + '');
 
 
     if (settingsManager.settings.gameClock && settingsManager.settings.automaticGameClock) {
@@ -231,9 +232,9 @@ export class MainComponent implements OnInit {
       this.calcColumns();
     }
 
-    if (this.swUpdate.isEnabled) {
+    if (this.swUpdate.isEnabled || this.isAppDevMode()) {
       document.body.addEventListener("click", (event) => {
-        if (settingsManager.settings.fullscreen && this.swUpdate.isEnabled) {
+        if (settingsManager.settings.fullscreen && (this.swUpdate.isEnabled || this.isAppDevMode()) && !document.body.classList.contains('fullscreen')) {
           document.body.requestFullscreen && document.body.requestFullscreen();
         }
       });
@@ -338,8 +339,15 @@ export class MainComponent implements OnInit {
       } else {
         settingsManager.set('theme', 'default');
       }
+      if (edition == 'gh2e') {
+        settingsManager.set('fhStyle', true);
+      }
     }
     gameManager.game.party.campaignMode = true;
+    gameManager.game.party.edition = edition;
+    this.welcomeEditionHint = edition && settingsManager.getLabel('data.edition.' + edition + '.hint') != 'hint' || false;
+    gameManager.game.party.eventDecks = {};
+    gameManager.eventCardManager.buildPartyDeckMigration(edition);
     gameManager.stateManager.after();
   }
 
@@ -347,6 +355,13 @@ export class MainComponent implements OnInit {
     gameManager.stateManager.before("cancelCampaign", 'data.edition.' + edition);
     gameManager.game.edition = undefined;
     gameManager.game.party.campaignMode = false;
+    gameManager.game.party.eventDecks = {};
+    gameManager.stateManager.after();
+  }
+
+  toggleCampaignMode() {
+    gameManager.stateManager.before(gameManager.game.party.campaignMode ? "disablePartyCampaignMode" : "enablePartyCampaignMode");
+    gameManager.game.party.campaignMode = !gameManager.game.party.campaignMode;
     gameManager.stateManager.after();
   }
 
@@ -499,11 +514,11 @@ export class MainComponent implements OnInit {
               if (skipAnimation) {
                 containerElement.classList.remove('no-animations');
               }
-            }, !settingsManager.settings.animations || skipAnimation ? 0 : 250);
+            }, !settingsManager.settings.animations || skipAnimation ? 0 : 250 * settingsManager.settings.animationSpeed);
           } else if (skipAnimation) {
             setTimeout(() => {
               containerElement.classList.remove('no-animations');
-            }, !settingsManager.settings.animations ? 0 : 250)
+            }, settingsManager.settings.animations ? 250 * settingsManager.settings.animationSpeed : 0)
           }
         }
       }
@@ -606,8 +621,12 @@ export class MainComponent implements OnInit {
       document.body.appendChild(downloadButton);
       downloadButton.click();
       document.body.removeChild(downloadButton);
-    } catch {
+    } catch (e) {
       console.warn("Could not read datadump");
     }
+  }
+
+  isAppDevMode(): boolean {
+    return isDevMode();
   }
 }

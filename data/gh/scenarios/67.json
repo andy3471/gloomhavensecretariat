@@ -10,10 +10,11 @@
     "gridLocation": "K-2"
   },
   "edition": "gh",
+  "eventType": "road",
   "random": true,
   "rewards": {
     "globalAchievements": [
-      "Ancient Technology"
+      "ancient-technology"
     ],
     "items": [
       "132"

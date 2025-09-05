@@ -1,3 +1,5 @@
+import { EnhancementType } from "./Enhancement";
+
 export class Action {
   type: ActionType;
   value: number | string;
@@ -6,6 +8,7 @@ export class Action {
   subActions: Action[];
   small: boolean;
   hidden: boolean;
+  enhancementTypes: EnhancementType[] | undefined;
 
   constructor(type: ActionType,
     value: number | string = "",
@@ -25,24 +28,33 @@ export class Action {
 export enum ActionType {
   area = "area",
   attack = "attack",
+  box = "box",
+  boxFhSubActions = "boxFhSubActions",
   card = "card",
+  concatenation = "concatenation",
+  concatenationSpacer = "concatenationSpacer",
   condition = "condition",
   custom = "custom",
   damage = "damage",
   element = "element",
   elementHalf = "elementHalf",
   fly = "fly",
-  heal = "heal",
+  forceBox = "forceBox",
   grant = "grant",
+  grid = "grid",
+  heal = "heal",
+  hint = "hint",
   jump = "jump",
   loot = "loot",
   monsterType = "monsterType",
   move = "move",
+  nonCalc = "nonCalc",
   pierce = "pierce",
   pull = "pull",
   push = "push",
   range = "range",
   retaliate = "retaliate",
+  round = "round",
   shield = "shield",
   spawn = "spawn",
   special = "special",
@@ -53,13 +65,7 @@ export enum ActionType {
   switchType = "switchType",
   target = "target",
   teleport = "teleport",
-  nonCalc = "nonCalc",
-  trigger = "trigger",
-  concatenation = "concatenation",
-  grid = "grid",
-  box = "box",
-  boxFhSubActions = "boxFhSubActions",
-  forceBox = "forceBox",
+  trigger = "trigger"
 }
 
 export enum ActionValueType {
@@ -72,37 +78,44 @@ export enum ActionValueType {
 
 export enum ActionSpecialTarget {
   all = "all",
-  ally = "ally",
-  allyShort = "allyShort",
-  allyAffect = "allyAffect",
-  allyAffectRange = "allyAffectRange",
-  allyAdjacent = "allyAdjacent",
+  allCharacters = "allCharacters",
   allies = "allies",
   alliesAdjacent = "alliesAdjacent",
   alliesAdjacentAffect = "alliesAdjacentAffect",
+  alliesAffect = "alliesAffect",
+  alliesEnemies = "alliesEnemies",
   alliesRange = "alliesRange",
   alliesRangeAffect = "alliesRangeAffect",
-  enemy = "enemy",
-  enemyAdjacent = "enemyAdjacent",
-  enemyRange = "enemyRange",
-  enemyOneAll = "enemyOneAll",
+  ally = "ally",
+  allyAdjacent = "allyAdjacent",
+  allyAffect = "allyAffect",
+  allyAffectAdjacent = "allyAffectAdjacent",
+  allyAffectRange = "allyAffectRange",
+  allyShort = "allyShort",
   enemies = "enemies",
   enemiesAdjacent = "enemiesAdjacent",
-  enemiesRange = "enemiesRange",
-  enemiesRangeExact = "enemiesRangeExtact",
-  enemiesRangeAffect = "enemiesRangeAffect",
-  enemiesRangeAffectExact = "enemiesRangeAffectExact",
   enemiesMovedThrough = "enemiesMovedThrough",
   enemiesMovedThroughAdjacent = "enemiesMovedThroughAdjacent",
+  enemiesRange = "enemiesRange",
+  enemiesRangeAffect = "enemiesRangeAffect",
+  enemiesRangeAffectExact = "enemiesRangeAffectExact",
+  enemiesRangeExact = "enemiesRangeExact",
+  enemy = "enemy",
+  enemyAdjacent = "enemyAdjacent",
+  enemyAllyRange = "enemyAllyRange",
+  enemyOneAll = "enemyOneAll",
+  enemyRange = "enemyRange",
   figures = "figures",
   figuresAdjacent = "figuresAdjacent",
   figuresRange = "figuresRange",
   focusEnemyFarthest = "focusEnemyFarthest",
   self = "self",
   selfAllies = "selfAllies",
-  selfAlliesAffect = "selfAlliesAffect",
-  selfAlliesRange = "selfAlliesRange",
   selfAlliesAdjacentAffect = "selfAlliesAdjacentAffect",
+  selfAlliesAffect = "selfAlliesAffect",
+  selfAlliesAffectRange = "selfAlliesAffectRange",
+  selfAlliesRange = "selfAlliesRange",
+  selfOrAlly = "selfOrAlly",
   targets = "targets"
 }
 

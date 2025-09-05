@@ -65,7 +65,7 @@ export class Character extends CharacterData implements Entity, Figure {
       return 200;
     }
 
-    if (this.exhausted || this.longRest || this.health <= 0) {
+    if (this.exhausted || this.longRest && (this.name != 'prism' || this.tags.indexOf('long_rest') == -1) || this.health <= 0) {
       return 100;
     }
 
@@ -74,7 +74,7 @@ export class Character extends CharacterData implements Entity, Figure {
       return this.initiative < 90 ? this.initiative + 10 : 99;
     }
 
-    return this.initiative;
+    return this.initiative - 0.9;
   }
 
   constructor(character: CharacterData, level: number) {
@@ -111,7 +111,7 @@ export class Character extends CharacterData implements Entity, Figure {
   }
 
   toModel(): GameCharacterModel {
-    return new GameCharacterModel(this.name, this.edition, this.marker, this.title, this.initiative, this.experience, this.loot, this.lootCards || [], this.treasures && this.treasures.map((treasure) => '' + treasure) || [], this.exhausted, this.level, this.off, this.active, this.health, this.maxHealth, this.entityConditions.map((condition) => condition.toModel()), this.immunities, this.markers, this.tags || [], this.identity, this.summons.map((summon) => summon.toModel()), this.progress, this.scenarioStats, this.initiativeVisible, this.attackModifierDeckVisible, this.lootCardsVisible, this.itemsVisible, this.number, this.attackModifierDeck.toModel(), this.donations, this.token, this.tokenValues, this.absent, this.longRest, this.battleGoals, this.battleGoal, this.shield, this.shieldPersistent, this.retaliate, this.retaliatePersistent);
+    return new GameCharacterModel(this.name, this.edition, this.marker, this.title, this.initiative, this.experience, this.loot, this.lootCards || [], this.treasures && this.treasures.map((treasure) => '' + treasure) || [], this.exhausted, this.level, this.off, this.active, this.health, this.maxHealth, this.entityConditions.map((condition) => condition.toModel()), this.immunities, this.markers, this.tags || [], this.identity, this.summons.map((summon) => summon.toModel()), this.progress, this.scenarioStats, this.initiativeVisible, this.attackModifierDeckVisible, this.lootCardsVisible, this.itemsVisible, this.number, this.attackModifierDeck.toModel(), this.donations, this.token, this.tokenValues, this.absent, this.longRest, this.battleGoals, this.battleGoal, this.shield, this.shieldPersistent, this.retaliate, this.retaliatePersistent, this.fullview);
   }
 
   fromModel(model: GameCharacterModel) {
@@ -183,6 +183,14 @@ export class Character extends CharacterData implements Entity, Figure {
 
     if (model.progress) {
       this.progress = Object.assign(new CharacterProgress(), model.progress);
+
+      if (this.progress.enhancements) {
+        if (!Array.isArray(this.progress.enhancements)) {
+          this.progress.enhancements = [];
+        }
+      }
+
+      gameManager.characterManager.previousEnhancements(this, gameManager.enhancementsManager.temporary);
     }
 
     this.scenarioStats = new ScenarioStats();
@@ -221,6 +229,9 @@ export class Character extends CharacterData implements Entity, Figure {
     this.shieldPersistent = model.shieldPersistent ? JSON.parse(model.shieldPersistent) : undefined;
     this.retaliate = (model.retaliate || []).map((value) => JSON.parse(value));
     this.retaliatePersistent = (model.retaliatePersistent || []).map((value) => JSON.parse(value));
+    if (model.fullView) {
+      this.fullview = model.fullView;
+    }
   }
 
 
@@ -231,8 +242,8 @@ export class Character extends CharacterData implements Entity, Figure {
       changed = true;
     }
 
-    if (attackModifierDeck.disgarded.length != this.attackModifierDeck.disgarded.length || !attackModifierDeck.disgarded.every((value, index) => this.attackModifierDeck.disgarded.indexOf(value) == index)) {
-      this.attackModifierDeck.disgarded = attackModifierDeck.disgarded;
+    if (attackModifierDeck.discarded.length != this.attackModifierDeck.discarded.length || !attackModifierDeck.discarded.every((value, index) => this.attackModifierDeck.discarded.indexOf(value) == index)) {
+      this.attackModifierDeck.discarded = attackModifierDeck.discarded;
       changed = true;
     }
 
@@ -307,6 +318,7 @@ export class GameCharacterModel {
   shieldPersistent: string;
   retaliate: string[];
   retaliatePersistent: string[];
+  fullView: boolean;
 
   constructor(name: string,
     edition: string,
@@ -347,7 +359,8 @@ export class GameCharacterModel {
     shield: Action | undefined,
     shieldPersistent: Action | undefined,
     retaliate: Action[],
-    retaliatePersistent: Action[]) {
+    retaliatePersistent: Action[],
+    fullView: boolean) {
     this.name = name;
     this.edition = edition;
     this.marker = marker;
@@ -388,6 +401,7 @@ export class GameCharacterModel {
     this.shieldPersistent = shieldPersistent ? JSON.stringify(shieldPersistent) : "";
     this.retaliate = retaliate.map((action) => JSON.stringify(action));
     this.retaliatePersistent = retaliatePersistent.map((action) => JSON.stringify(action));
+    this.fullView = fullView;
   }
 
 }

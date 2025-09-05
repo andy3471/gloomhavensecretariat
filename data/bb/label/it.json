@@ -1,0 +1,13 @@
+{
+  "character": {
+    "bb": {
+      "cragheart": "Cuore di Roccia",
+      "mindthief": "Ladro Mentale",
+      "spellweaver": "Tessimagie",
+      "tinkerer": "Inventore"
+    }
+  },
+  "monster": {
+    "bandit-guard": "Bandito Guardia"
+  }
+}

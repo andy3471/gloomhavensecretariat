@@ -7,7 +7,7 @@ import { Settings } from "../model/Settings";
 import { BuildingData } from "../model/data/BuildingData";
 import { EditionData } from "../model/data/EditionData";
 import { Spoilable } from "../model/data/Spoilable";
-import { debugManager } from "./DebugManager";
+import { DebugManager, debugManager } from "./DebugManager";
 import { gameManager } from "./GameManager";
 import { storageManager } from "./StorageManager";
 
@@ -18,13 +18,15 @@ declare global {
 export class SettingsManager {
 
   defaultLocale: string = 'en';
-  defaultEditions: string[] = ["gh", "fh", "jotl", "fc", "cs", "toa", "bb", "solo"];
-  defaultEditionDataUrls: string[] = ["./assets/data/gh.json", "./assets/data/fh.json", "./assets/data/jotl.json", "./assets/data/fc.json", "./assets/data/cs.json", "./assets/data/toa.json", "./assets/data/bb.json", "./assets/data/gh2e.json", "./assets/data/solo.json", "./assets/data/fh-crossover.json", "./assets/data/gh-envx.json", "./assets/data/toa-envv.json", "./assets/data/sc.json", "./assets/data/gh-solo-items.json", "./assets/data/sox.json", "./assets/data/ir.json", "./assets/data/bas.json", "./assets/data/cc.json", "./assets/data/r100kc.json", "./assets/data/itu.json"];
+  defaultEditions: string[] = ["gh", "fh", "jotl", "fc", "cs", "toa", "bb", "gh2e", "solo"];
+
+  defaultEditionDataUrls: string[] = ["./assets/data/gh.json", "./assets/data/fh.json", "./assets/data/jotl.json", "./assets/data/fc.json", "./assets/data/cs.json", "./assets/data/toa.json", "./assets/data/bb.json", "./assets/data/solo.json", "./assets/data/fh-crossover.json", "./assets/data/gh-envx.json", "./assets/data/toa-envv.json", "./assets/data/sc.json", "./assets/data/gh-solo-items.json", "./assets/data/sox.json", "./assets/data/bas.json", "./assets/data/cc.json", "./assets/data/gh2e.json", "./assets/data/ir.json", "./assets/data/r100kc.json", "./assets/data/sits.json"];
 
   settings: Settings = new Settings();
   label: any = {};
-  locales: string[] = ["en", "de", "fr", "ko"];
+  locales: string[] = ["en", "de", "fr", "ko", "es", "it", "zh_Hans", "zh_Hant", "ru", "pt"];
   developent: boolean = false;
+  debugManager: DebugManager = debugManager;
 
 
   async init(developent: boolean) {
@@ -50,7 +52,7 @@ export class SettingsManager {
       } else {
         loadDefault = true;
       }
-    } catch {
+    } catch (e) {
       loadDefault = true;
     }
 
@@ -65,7 +67,7 @@ export class SettingsManager {
           }).then((value: Settings) => {
             this.setSettings(Object.assign(new Settings(), value));
           });
-      } catch {
+      } catch (e) {
         this.setSettings(new Settings());
       }
     }
@@ -183,6 +185,8 @@ export class SettingsManager {
       }
     } else if (setting === 'locale') {
       await this.updateLocale(value as string);
+    } else if (setting === 'animationSpeed') {
+      document.body.style.setProperty('--ghs-animation-speed', value + '');
     } else if (setting === 'fontsize') {
       document.body.style.setProperty('--ghs-fontsize', value + '');
     } else if (setting === 'barsize') {
@@ -206,6 +210,12 @@ export class SettingsManager {
       gameManager.game.figures.forEach((figure) => {
         if (figure instanceof Character) {
           figure.attackModifierDeck.bb = value || false;
+        }
+      })
+    } else if (setting === 'temporaryEnhancements') {
+      gameManager.game.figures.forEach((figure) => {
+        if (figure instanceof Character) {
+          gameManager.characterManager.previousEnhancements(figure, value);
         }
       })
     }
@@ -369,6 +379,7 @@ export class SettingsManager {
           value.challenges = value.challenges || [];
           value.trials = value.trials || [];
           value.favors = value.favors || [];
+          value.pets = value.pets || [];
           value.personalQuests = value.personalQuests || [];
           value.label = value.label || {};
           value.labelSpoiler = value.labelSpoiler || {};
@@ -399,7 +410,7 @@ export class SettingsManager {
               event.edition = value.edition;
             }
             if (!event.cardId) {
-              event.cardId = (index + 1);
+              event.cardId = '' + (index + 1);
             }
             return event;
           })
@@ -410,6 +421,9 @@ export class SettingsManager {
             }
             if (!personalQuest.cardId) {
               personalQuest.cardId = value.edition + '-' + (index + 1);
+            }
+            if (!personalQuest.requirements) {
+              personalQuest.requirements = [];
             }
             return personalQuest;
           })
@@ -450,6 +464,16 @@ export class SettingsManager {
               favor.name = 'favor-' + (index + 1);
             }
             return favor;
+          })
+
+          value.pets.map((pet, index) => {
+            if (!pet.edition) {
+              pet.edition = value.edition;
+            }
+            if (!pet.id) {
+              pet.id = (index < 9 ? '0' : '') + (index + 1);
+            }
+            return pet;
           })
 
           gameManager.editionData.push(value);
@@ -594,7 +618,7 @@ export class SettingsManager {
                 if (!result[key]) {
                   result[key] = {};
                 } else if (!this.isObject(result[key])) {
-                  result[key] = { '.': result[key] };
+                  result[key] = { "": result[key] };
                 }
                 this.merge(result[key], overwrite, elm[key]);
               } else {
@@ -613,13 +637,15 @@ export class SettingsManager {
     return result;
   };
 
-  getEditionByUrl(url: string) {
-    if (!gameManager.editionData.some((editionData) => editionData.url == url)) {
-      console.error("No edition data found for url '" + url + "'");
-      return;
+  getEditionByUrl(url: string): string {
+    const editionData = gameManager.editionData.find((editionData) => editionData.url == url);
+
+    if (editionData) {
+      return editionData.url;
     }
 
-    return gameManager.editionData.find((editionData) => editionData.url == url)?.edition;
+    console.error("No edition data found for url '" + url + "'");
+    return "";
   }
 
   async addEditionDataUrl(editionDataUrl: string): Promise<EditionData | undefined> {
@@ -736,8 +762,8 @@ export class SettingsManager {
       return empty ? this.emptyLabel(key, args, path) : (path && key ? this.getLabel(key) : key || "");
     } else if (from[key]) {
       if (typeof from[key] === 'object') {
-        if (from[key]["."]) {
-          return this.insertLabelArguments(from[key]["."], args, argLabel);
+        if (from[key][""]) {
+          return this.insertLabelArguments(from[key][""], args, argLabel);
         }
         return empty ? this.emptyLabel(key, args, path) : (path && key ? this.getLabel(key) : key || "");
       }

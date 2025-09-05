@@ -10,16 +10,16 @@
     "gridLocation": "F-10"
   },
   "edition": "gh",
+  "eventType": "road",
   "unlocks": [
     "8"
   ],
   "rewards": {
     "partyAchievements": [
-      "Jekserah's Plans",
-      "Dark Bounty"
+      "jekserahs-plans",
+      "dark-bounty"
     ],
-    "gold": 5,
-    "prosperity": 1
+    "gold": 5
   },
   "monsters": [
     "living-bones",

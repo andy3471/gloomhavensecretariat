@@ -11,6 +11,7 @@
   },
   "edition": "fh",
   "complexity": 3,
+  "eventType": "boat",
   "requirements": [
     {
       "buildings": [
@@ -25,7 +26,7 @@
     "events": [
       "boat:B-19"
     ],
-    "custom": "\"Threat from the Deep\" quest complete"
+    "custom": "%data.scenario.rewards.fh.077%"
   },
   "monsters": [
     "fish-king",

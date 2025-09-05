@@ -11,6 +11,7 @@
   },
   "edition": "fh",
   "complexity": 2,
+  "eventType": "road",
   "rewards": {
     "prosperity": 2,
     "itemDesigns": [
@@ -18,7 +19,7 @@
       "159:fc",
       "161:fc"
     ],
-    "custom": "Add the following Forgotten Circles items to the Frosthaven supply: 153, 159, and 161"
+    "custom": "%data.scenario.rewards.fh.082%"
   },
   "monsters": [
     "frost-demon",

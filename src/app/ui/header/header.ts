@@ -1,19 +1,21 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { ConnectionPositionPair, Overlay } from '@angular/cdk/overlay';
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { gameManager, GameManager } from 'src/app/game/businesslogic/GameManager';
 import { settingsManager, SettingsManager } from 'src/app/game/businesslogic/SettingsManager';
 import { Character } from 'src/app/game/model/Character';
 import { Element } from 'src/app/game/model/data/Element';
 import { GameClockTimestamp, GameState } from 'src/app/game/model/Game';
 import { Monster } from 'src/app/game/model/Monster';
-import { MainMenuComponent, SubMenu } from './menu/menu';
-import { Subscription } from 'rxjs';
-import { EventEffectsDialog } from '../figures/character/event-effects/event-effects';
-import { PartySheetComponent } from './party/party-sheet';
+import { EventEffectsDialog } from '../figures/event-effects/event-effects';
+import { StablesComponent } from '../figures/party/buildings/stables/stables';
 import { GameClockDialogComponent } from './game-clock/game-clock';
+import { MainMenuComponent, SubMenu } from './menu/menu';
+import { PartySheetComponent } from './party/party-sheet';
 
 @Component({
+  standalone: false,
   selector: 'ghs-header',
   templateUrl: './header.html',
   styleUrls: ['./header.scss']
@@ -21,6 +23,7 @@ import { GameClockDialogComponent } from './game-clock/game-clock';
 export class HeaderComponent implements OnInit, OnDestroy {
 
   @Input() standalone: boolean = false;
+  @Input() connection: boolean = false;
   @ViewChild('mainMenuButton') mainMenuButton!: ElementRef;
   @ViewChild('partySheet') partySheet!: PartySheetComponent;
   gameManager: GameManager = gameManager;
@@ -46,7 +49,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.init = true;
-    }, !settingsManager.settings.animations ? 0 : 1500);
+    }, settingsManager.settings.animations ? 1500 * settingsManager.settings.animationSpeed : 0);
 
     this.uiChangeSubscription = gameManager.uiChange.subscribe({
       next: () => {
@@ -55,8 +58,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
           setTimeout(() => {
             this.hintState = this.hintStateValue();
             this.init = true;
-          }, !settingsManager.settings.animations ? 0 : 500);
+          }, settingsManager.settings.animations ? 500 * settingsManager.settings.animationSpeed : 0);
         }
+
         this.updateClock();
       }
     })
@@ -115,8 +119,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
   openEventEffects() {
     this.dialog.open(EventEffectsDialog, {
       panelClass: ['dialog'],
-      data: gameManager.game.round > 0 || gameManager.game.state == GameState.next
+      data: { menu: gameManager.game.round > 0 || gameManager.game.state == GameState.next }
     });
+  }
+
+  openPets() {
+    this.dialog.open(StablesComponent, {
+      panelClass: ['dialog']
+    })
   }
 
   updateClock() {

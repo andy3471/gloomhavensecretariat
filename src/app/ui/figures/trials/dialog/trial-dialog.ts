@@ -1,7 +1,9 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, Inject, OnInit } from '@angular/core';
+import { settingsManager } from 'src/app/game/businesslogic/SettingsManager';
 
 @Component({
+  standalone: false,
     selector: 'ghs-trial-dialog',
     templateUrl: './trial-dialog.html',
     styleUrls: ['./trial-dialog.scss'],
@@ -20,6 +22,6 @@ export class TrialDialogComponent implements OnInit {
         this.opened = false;
         setTimeout(() => {
             this.dialogRef.close();
-        }, 1000);
+        }, settingsManager.settings.animations ? 1000 * settingsManager.settings.animationSpeed : 0);
     }
 }

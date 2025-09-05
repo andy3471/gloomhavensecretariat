@@ -10,6 +10,7 @@
     "gridLocation": "F-3"
   },
   "edition": "gh",
+  "eventType": "road",
   "requires": [
     [
       "38"
@@ -18,7 +19,7 @@
   "requirements": [
     {
       "party": [
-        "Redthorn's Aid"
+        "redthorns-aid"
       ]
     }
   ],

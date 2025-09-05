@@ -11,6 +11,7 @@
   },
   "edition": "fh",
   "complexity": 3,
+  "eventType": "road",
   "unlocks": [
     "64"
   ],
@@ -111,7 +112,6 @@
       "treasures": [
         72
       ],
-      "monster": [],
       "objectives": [
         1
       ]

@@ -1,3 +1,4 @@
+import { commandManager } from "../commands/CommandManager";
 import { Character } from "../model/Character";
 import { Game, GameModel } from "../model/Game";
 import { Monster } from "../model/Monster";
@@ -56,7 +57,7 @@ export class StateManager {
       const gameModel = await storageManager.readGameModel();
       gameModel.server = false;
       this.game.fromModel(gameModel);
-    } catch {
+    } catch (e) {
       if (!tool) {
         storageManager.writeGameModel(this.game.toModel());
       }
@@ -109,7 +110,7 @@ export class StateManager {
       this.redos = await storageManager.readAll<GameModel>('redo');
       this.undoInfos = await storageManager.readAll<string[]>('undo-infos');
       this.updatePermissions();
-    } catch {
+    } catch (e) {
       this.updatePermissions();
     }
   }
@@ -343,6 +344,12 @@ export class StateManager {
         case "ping":
           console.debug("Received ping answer...");
           break;
+        case "remoteCommand":
+          if (message.payload && (gameManager.game.server || message.payload.force)) {
+            console.debug("remoteCommand:", message.payload);
+            commandManager.execute(message.payload.id, ...(message.payload.parameters || []));
+          }
+          break;
         case "error":
           // migration
           if (message.message == "No enum constant de.champonthis.ghs.server.socket.model.MessageType.PING") {
@@ -526,9 +533,9 @@ export class StateManager {
     })
   }
 
-  before(...info: string[]) {
+  before(...info: (string | number | boolean)[]) {
     window.document.body.classList.add('working');
-    this.addToUndo(info || []);
+    this.addToUndo(info && info.map((value) => '' + value) || []);
   }
 
   async after(timeout: number = 1, autoBackup: boolean = false, revisionChange: number = 1, type: string = "game", revision: number = 0, undolength: number = 1) {
@@ -565,7 +572,7 @@ export class StateManager {
         gameManager.uiChange.emit();
         window.document.body.classList.remove('working');
         window.document.body.classList.remove('server-sync');
-      }, timeout);
+      }, timeout * settingsManager.settings.animationSpeed);
     } else {
       this.lastAction = "update";
       gameManager.uiChange.emit();
@@ -638,7 +645,7 @@ export class StateManager {
           downloadButton.click();
           document.body.removeChild(downloadButton);
         }
-      } catch {
+      } catch (e) {
         console.warn("Could not create autobackup");
       }
       window.document.body.classList.remove('working');
@@ -670,6 +677,15 @@ export class StateManager {
 
       this.saveStorage();
     }
+  }
+
+  revertLastUndo() {
+    this.undos.splice(this.undos.length - 1, 1);
+    this.undoInfos.splice(this.undoInfos.length - 1, 1);
+    window.document.body.classList.remove('working');
+    window.document.body.classList.remove('server-sync');
+    this.saveStorage();
+    gameManager.uiChange.emit();
   }
 
   hasUndo(): boolean {

@@ -1,0 +1,14 @@
+{
+  "character": {
+    "fh-crossover": {
+      "cragheart": "Cuore di Roccia",
+      "demolitionist": {
+        "": "Demolitore"
+      },
+      "hatchet": "Ascia da Guerra",
+      "red-guard": "Guardia Rossa",
+      "scoundrel": "Canaglia",
+      "tinkerer": "Inventore"
+    }
+  }
+}

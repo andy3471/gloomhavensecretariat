@@ -156,7 +156,7 @@
           display: flex;
           justify-content: center;
           align-items: center;
-          font-family: ghs-title;
+          font-family: var(--ghs-font-gh-title);
           font-size: calc(var(--ghs-unit) * 3 * var(--ghs-dialog-factor));
           color: var(--ghs-color-white);
           border: calc(var(--ghs-unit) * 0.4 * var(--ghs-dialog-factor)) solid var(--ghs-color-white);
@@ -233,12 +233,19 @@
       }
     }
 
-    &.disabled {
+    &.disabled,
+    &.disabled:hover {
       pointer-events: none;
-      color: var(--ghs-color-gray);
+      color: var(--ghs-color-gray) !important;
+      opacity: initial;
 
       .ghs-svg {
         filter: var(--ghs-filter-gray) !important;
+      }
+
+      &.soft {
+        cursor: initial;
+        pointer-events: initial;
       }
     }
 
@@ -346,13 +353,23 @@
 
   .marker-container,
   .identities-container {
-    display: grid;
-    grid-template-columns: repeat(3, calc(var(--ghs-unit) * 7 * var(--ghs-dialog-factor)));
-    row-gap: calc(var(--ghs-unit) * 1 * var(--ghs-dialog-factor));
-    align-items: center;
-    justify-items: center;
-    margin-bottom: auto;
-    grid-column: 1 / span 3;
+
+    &.marker-container {
+      display: grid;
+      grid-template-columns: repeat(3, calc(var(--ghs-unit) * 7 * var(--ghs-dialog-factor)));
+      row-gap: calc(var(--ghs-unit) * 1 * var(--ghs-dialog-factor));
+      align-items: center;
+      justify-items: center;
+      margin-bottom: auto;
+      grid-column: 1 / span 3;
+    }
+
+    &.identities-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
 
     .item {
       position: relative;
@@ -361,6 +378,10 @@
       justify-content: center;
       height: calc(var(--ghs-unit) * 6 * var(--ghs-dialog-factor));
       width: calc(var(--ghs-unit) * 6 * var(--ghs-dialog-factor));
+
+      &.deactivated {
+        cursor: initial;
+      }
 
       &.active,
       &.new {
@@ -371,11 +392,18 @@
       &:hover {
         border: calc(var(--ghs-unit) / 5) var(--ghs-color-gray) solid;
         border-radius: 100%;
+
+        &.deactivated {
+          border: none;
+        }
       }
 
-      &.disabled img {
-        filter: grayscale(0.7);
-        opacity: 0.7;
+      &.disabled,
+      &.deactivated {
+        img {
+          filter: grayscale(0.7);
+          opacity: 0.7;
+        }
       }
 
     }
@@ -481,7 +509,7 @@
         background-color: var(--ghs-color-darkgray);
         z-index: 1;
         opacity: 0.9;
-        font-family: ghs-title;
+        font-family: var(--ghs-font-gh-title);
         color: var(--ghs-color-white);
         border: calc(var(--ghs-unit) * 0.3 * var(--ghs-dialog-factor)) solid var(--ghs-color-white);
         border-radius: 100%;
@@ -569,6 +597,24 @@
     justify-content: center;
     align-items: center;
 
+    .hint-container {
+
+      img.hint-trigger {
+        height: calc(var(--ghs-unit) * 3 * var(--ghs-dialog-factor));
+        width: auto;
+        margin-top: calc(var(--ghs-unit) * 0.3 * var(--ghs-dialog-factor));
+      }
+
+      .special-action {
+        height: auto;
+        margin-left: calc(var(--ghs-unit) * 0.2 * var(--ghs-dialog-factor));
+      }
+
+      .hint {
+        min-width: calc(var(--ghs-unit) * 40 * var(--ghs-dialog-factor));
+      }
+    }
+
     .special-action {
       display: flex;
       justify-content: center;
@@ -586,7 +632,7 @@
         height: calc(var(--ghs-unit) * 2 * var(--ghs-dialog-factor));
         transform: scale(0);
         transform-origin: bottom left;
-        transition: 120ms transform ease-in-out;
+        transition: transform calc(var(--ghs-animation-speed) * 120ms) ease-in-out;
         clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
         color: var(--ghs-color-white);
         background-color: var(--ghs-color-white);
@@ -610,7 +656,7 @@
     margin: calc(var(--ghs-unit) * 1) 0;
 
     .deck {
-      font-family: "ghs-title";
+      font-family: var(--ghs-font-gh-title);
       display: flex;
       justify-content: center;
       z-index: 2;

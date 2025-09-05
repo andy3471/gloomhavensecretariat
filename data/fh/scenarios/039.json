@@ -11,6 +11,7 @@
   },
   "edition": "fh",
   "complexity": 3,
+  "eventType": "road",
   "unlocks": [
     "47"
   ],
@@ -22,7 +23,7 @@
     }
   ],
   "rewards": {
-    "custom": "Gain 2 additional loot cards each",
+    "custom": "%data.scenario.rewards.fh.gain2loot%",
     "inspiration": -1
   },
   "monsters": [

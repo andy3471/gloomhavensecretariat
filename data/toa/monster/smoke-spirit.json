@@ -4,9 +4,7 @@
   "flying": true,
   "count": 10,
   "baseStat": {
-    "type": "normal",
-    "immunities": [],
-    "special": []
+    "type": "normal"
   },
   "stats": [
     {
@@ -21,7 +19,7 @@
           "subActions": [
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]
@@ -45,7 +43,7 @@
             },
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]
@@ -69,7 +67,7 @@
             },
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]
@@ -93,7 +91,7 @@
             },
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]
@@ -117,7 +115,7 @@
             },
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]
@@ -141,7 +139,7 @@
             },
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]
@@ -165,7 +163,7 @@
             },
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]
@@ -189,7 +187,7 @@
             },
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]
@@ -214,7 +212,7 @@
             },
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]
@@ -239,7 +237,7 @@
             },
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]
@@ -264,7 +262,7 @@
             },
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]
@@ -289,7 +287,7 @@
             },
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]
@@ -314,7 +312,7 @@
             },
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]
@@ -339,7 +337,7 @@
             },
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]
@@ -364,7 +362,7 @@
             },
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]
@@ -389,7 +387,7 @@
             },
             {
               "type": "custom",
-              "value": "Retaliate only applies before its turn",
+              "value": "%data.custom.toa.smoke-spirit.1%",
               "small": true
             }
           ]

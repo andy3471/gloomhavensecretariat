@@ -4,12 +4,13 @@ import { gameManager, GameManager } from "src/app/game/businesslogic/GameManager
 import { settingsManager } from "src/app/game/businesslogic/SettingsManager";
 import { Character } from "src/app/game/model/Character";
 import { GameState } from "src/app/game/model/Game";
-import { ScenarioSummaryComponent } from "../scenario/summary/scenario-summary";
-import { ScenarioConclusionComponent } from "../scenario/scenario-conclusion/scenario-conclusion";
 import { ObjectiveContainer } from "src/app/game/model/ObjectiveContainer";
 import { ghsDialogClosingHelper } from "../../helper/Static";
+import { ScenarioConclusionComponent } from "../scenario/scenario-conclusion/scenario-conclusion";
+import { ScenarioSummaryComponent } from "../scenario/summary/scenario-summary";
 
 @Component({
+    standalone: false,
     selector: 'ghs-hint-dialog',
     templateUrl: './hint-dialog.html',
     styleUrls: ['./hint-dialog.scss']
@@ -39,7 +40,7 @@ export class HintDialogComponent {
         if (gameManager.game.scenario) {
             const conclusions = gameManager.sectionData(gameManager.game.scenario.edition).filter((sectionData) => {
                 if (gameManager.game.scenario) {
-                    return sectionData.edition == gameManager.game.scenario.edition && sectionData.parent == gameManager.game.scenario.index && sectionData.group == gameManager.game.scenario.group && sectionData.conclusion;
+                    return sectionData.edition == gameManager.game.scenario.edition && sectionData.parent == gameManager.game.scenario.index && sectionData.group == gameManager.game.scenario.group && sectionData.conclusion && gameManager.scenarioManager.getRequirements(sectionData).length == 0;
                 }
                 return false;
             });
@@ -71,6 +72,7 @@ export class HintDialogComponent {
                     }
                 });
             }
+            ghsDialogClosingHelper(this.dialogRef, false);
         }
     }
 
@@ -87,7 +89,7 @@ export class HintDialogComponent {
     }
 
     missingInitiative(): boolean {
-        return gameManager.game.figures.some((figure) => settingsManager.settings.initiativeRequired && (figure instanceof Character && gameManager.entityManager.isAlive(figure) && !figure.absent || figure instanceof ObjectiveContainer) && figure.getInitiative() < 1);
+        return gameManager.game.figures.some((figure) => settingsManager.settings.initiativeRequired && (figure instanceof Character && gameManager.entityManager.isAlive(figure) && !figure.absent || figure instanceof ObjectiveContainer) && figure.getInitiative() <= 0);
     }
 
     active(): boolean {
@@ -96,6 +98,10 @@ export class HintDialogComponent {
 
     battleGoals(): boolean {
         return !this.missingInitiative() && settingsManager.settings.battleGoals && settingsManager.settings.battleGoalsReminder && gameManager.game.scenario != undefined && gameManager.roundManager.firstRound && !gameManager.game.figures.every((figure) => !(figure instanceof Character) || figure.battleGoal || figure.absent) && !gameManager.bbRules();
+    }
+
+    eventDraw(): boolean {
+        return !this.missingInitiative() && !settingsManager.settings.eventsDraw && settingsManager.settings.eventsDrawReminder && gameManager.game.scenario != undefined && gameManager.roundManager.firstRound && gameManager.game.eventDraw != undefined;
     }
 
     finish(): boolean {
@@ -109,7 +115,7 @@ export class HintDialogComponent {
 
     @HostListener('document:keydown', ['$event'])
     onKeyEnter(event: KeyboardEvent) {
-        if (event.key === 'Enter') {
+        if (settingsManager.settings.keyboardShortcuts && event.key === 'Enter') {
             if (this.active()) {
                 this.confirm();
             } else if (this.finish()) {
@@ -117,6 +123,8 @@ export class HintDialogComponent {
             } else if (this.failed()) {
                 this.finishScenario(false);
             } else if (this.battleGoals()) {
+                this.confirm();
+            } else if (this.eventDraw()) {
                 this.confirm();
             }
             event.preventDefault();

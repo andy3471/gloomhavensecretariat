@@ -11,6 +11,7 @@
   },
   "edition": "fh",
   "complexity": 3,
+  "eventType": "road",
   "requirements": [
     {
       "buildings": [
@@ -23,8 +24,7 @@
   },
   "monsters": [
     "frost-demon",
-    "living-spirit",
-    "snow-imp"
+    "living-spirit"
   ],
   "lootDeckConfig": {
     "money": 6,

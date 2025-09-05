@@ -45,6 +45,7 @@
     .ability-actions-container {
       position: relative;
       overflow: auto;
+      z-index: 2;
 
       .ability-actions {
         position: relative;
@@ -116,35 +117,6 @@
       filter: var(--ghs-filter-shadow-thin);
       bottom: 0.5em;
       left: 0.5em;
-    }
-
-    .lost {
-      position: absolute;
-      bottom: 16.5em;
-      right: 3.3em;
-      height: 2em;
-
-      img {
-        position: relative;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: auto;
-
-        &:nth-child(1) {
-          filter: var(--ghs-filter-white) var(--ghs-filter-shadow);
-        }
-
-        &:nth-child(2) {
-          position: absolute;
-
-        }
-      }
-
-      &.bottom {
-        right: 4.6em;
-        bottom: 3em;
-      }
     }
 
     &.bottom-actions,
@@ -282,6 +254,74 @@
         bottom: 2.5em;
       }
     }
+
+    .required-container {
+      position: absolute;
+      bottom: 16.5em;
+      right: 3.3em;
+      display: flex;
+
+      .label {
+        display: none;
+      }
+
+
+      .box {
+        position: relative;
+        display: flex;
+        flex-grow: 1;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 0.2em;
+
+        span {
+          position: relative;
+          display: block;
+          height: 2em;
+          margin: 0 0.1em;
+
+          &.loss {
+            height: 1.4em;
+            margin: 0 0.2em;
+          }
+
+          img {
+            position: relative;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: auto;
+
+            &:nth-child(1) {
+              filter: var(--ghs-filter-white) var(--ghs-filter-shadow);
+            }
+
+            &:nth-child(2) {
+              position: absolute;
+
+            }
+          }
+
+          .value {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font-size: 1.6em;
+            font-family: var(--ghs-font-gh-title);
+            text-align: center;
+            color: var(--ghs-color-black);
+            margin: 0;
+          }
+        }
+      }
+
+      &.bottom {
+        right: 4.6em;
+        bottom: 3em;
+      }
+    }
   }
 
   .ability-back {
@@ -408,7 +448,7 @@
         &::before {
           background-color: var(--ghs-ability-color);
           background-image: url('~src/assets/images/fh/character/abilities/character-ability-front.png'), url('~src/assets/images/fh/character/abilities/character-ability-front-blend.png');
-          background-blend-mode: screen, luminosity;
+          background-blend-mode: luminosity, luminosity;
         }
 
         .name {
@@ -422,7 +462,7 @@
           top: 1.1em;
           left: 0.8em;
           font-size: 1.6em;
-          font-family: ghs-title;
+          font-family: var(--ghs-font-gh-title);
           color: var(--ghs-color-black);
           mask: none;
           background-color: transparent;
@@ -435,9 +475,9 @@
         }
 
         .initiative {
-          font-family: ghs-title;
+          font-family: var(--ghs-font-gh-title);
           font-size: 2.6em;
-          top: 6.4em;
+          top: 6.35em;
           left: 4.8em;
         }
 
@@ -455,6 +495,45 @@
           left: 2.8em;
         }
       }
+
+      .required-container {
+        bottom: 15.7em;
+        right: 2.6em;
+        overflow: hidden;
+
+        &:before {
+          content: ' ';
+          display: block;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: var(--ghs-color-black);
+          opacity: 0.5;
+          z-index: 0;
+          border: 0.1em solid var(--ghs-color-white);
+          border-top-left-radius: 0.5em;
+        }
+
+        .label {
+          display: block;
+          position: relative;
+          top: 0.1em;
+          display: flex;
+          flex-grow: 1;
+          justify-content: center;
+          align-items: center;
+          padding: 0.3em;
+          border-right: 0.1em solid var(--ghs-color-white);
+          font-size: 1.5em;
+        }
+
+        &.bottom {
+          bottom: 2em;
+          right: 2.3em;
+        }
+      }
     }
 
     .ability-back {
@@ -468,7 +547,7 @@
       &.character-actions {
         background-color: var(--ghs-ability-color);
         background-image: url('~src/assets/images/fh/character/abilities/character-ability-back.png'), url('~src/assets/images/fh/character/abilities/character-ability-back-blend.png');
-        background-blend-mode: screen, luminosity;
+        background-blend-mode: luminosity, luminosity;
 
         .name {
           color: var(--ghs-color-black);

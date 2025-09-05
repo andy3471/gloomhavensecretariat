@@ -1,19 +1,21 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { gameManager, GameManager } from 'src/app/game/businesslogic/GameManager';
+import { SettingsManager, settingsManager } from 'src/app/game/businesslogic/SettingsManager';
 import { GameState } from 'src/app/game/model/Game';
 import { Monster } from 'src/app/game/model/Monster';
 import { Ability } from 'src/app/game/model/data/Ability';
-import { SettingsManager, settingsManager } from 'src/app/game/businesslogic/SettingsManager';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { applyPlaceholder } from '../../helper/label';
 
 @Component({
+  standalone: false,
   selector: 'ghs-abilities-dialog',
   templateUrl: './abilities-dialog.html',
   styleUrls: ['./abilities-dialog.scss']
 })
-export class AbiltiesDialogComponent implements OnInit {
+export class AbiltiesDialogComponent implements OnInit, OnDestroy {
 
   @ViewChild('menu') menuElement!: ElementRef;
   reveal: number = 0;
@@ -25,7 +27,7 @@ export class AbiltiesDialogComponent implements OnInit {
   maxHeight: string = "";
   bottomActions: boolean = false;
   upcomingCards: Ability[] = [];
-  disgardedCards: Ability[] = [];
+  discardedCards: Ability[] = [];
   deletedCards: Ability[] = [];
 
   constructor(@Inject(DIALOG_DATA) public monster: Monster, public dialogRef: DialogRef) { }
@@ -35,11 +37,19 @@ export class AbiltiesDialogComponent implements OnInit {
       if (this.menuElement) {
         this.maxHeight = 'calc(80vh - ' + this.menuElement.nativeElement.offsetHeight + 'px)';
       }
-    }, !settingsManager.settings.animations ? 0 : 250);
+    }, settingsManager.settings.animations ? 250 * settingsManager.settings.animationSpeed : 0);
 
     this.bottomActions = gameManager.monsterManager.hasBottomActions(this.monster);
     this.update();
-    gameManager.uiChange.subscribe({ next: () => this.update() });
+    this.uiChangeSubscription = gameManager.uiChange.subscribe({ next: () => this.update() });
+  }
+
+  uiChangeSubscription: Subscription | undefined;
+
+  ngOnDestroy(): void {
+    if (this.uiChangeSubscription) {
+      this.uiChangeSubscription.unsubscribe();
+    }
   }
 
   toggleEdit() {
@@ -55,7 +65,7 @@ export class AbiltiesDialogComponent implements OnInit {
       abilityNumber++;
     }
     this.upcomingCards = this.monster.abilities.filter((value, index) => index > abilityNumber).map((value) => gameManager.abilities(this.monster)[value]);
-    this.disgardedCards = this.monster.abilities.filter((value, index) => index <= abilityNumber).map((value) => gameManager.abilities(this.monster)[value]).reverse();
+    this.discardedCards = this.monster.abilities.filter((value, index) => index <= abilityNumber).map((value) => gameManager.abilities(this.monster)[value]).reverse();
     this.deletedCards = gameManager.deckData(this.monster).abilities.filter((ability, index) => this.monster.abilities.indexOf(index) == -1);
   }
 
@@ -115,7 +125,7 @@ export class AbiltiesDialogComponent implements OnInit {
     this.update();
   }
 
-  dropDisgarded(event: CdkDragDrop<Ability[]>) {
+  dropDiscarded(event: CdkDragDrop<Ability[]>) {
     gameManager.stateManager.before("reorderAbilities", "data.monster." + this.monster.name);
     if (event.container == event.previousContainer) {
       moveItemInArray(this.monster.abilities, this.monster.ability - event.previousIndex, this.monster.ability - event.currentIndex);
@@ -157,7 +167,7 @@ export class AbiltiesDialogComponent implements OnInit {
 
   abilityLabel(ability: Ability): string {
     let label = 'data.monster.' + this.monster.name;
-    if (ability?.name) {
+    if (ability && ability.name) {
       label = 'data.ability.' + ability.name;
     } else if (this.monster.deck != this.monster.name) {
       label = 'data.deck.' + this.monster.deck;

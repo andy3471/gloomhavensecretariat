@@ -11,13 +11,14 @@
   },
   "edition": "fh",
   "complexity": 2,
+  "eventType": "road",
   "rewards": {
     "prosperity": 2,
     "events": [
       "winter-outpost:WO-66",
       "winter-outpost:WO-67"
     ],
-    "custom": "Remove all %game.action.custom.fh-algox% events from all outpost event decks",
+    "custom": "%data.scenario.rewards.fh.remove-algox%",
     "morale": 2,
     "campaignSticker": [
       "friend-of-the-frostspeakers"

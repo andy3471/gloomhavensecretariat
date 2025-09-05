@@ -10,6 +10,7 @@ import { HiddenScenarioFigureRuleTypes, ScenarioFigureRule, ScenarioRule } from 
 import { ScenarioSummaryComponent } from "../scenario/summary/scenario-summary";
 
 @Component({
+    standalone: false,
     selector: 'ghs-scenario-rules',
     templateUrl: './scenario-rules.html',
     styleUrls: ['./scenario-rules.scss']
@@ -31,7 +32,7 @@ export class ScenarioRulesComponent {
             if (gameManager.game.scenario) {
                 const section = gameManager.sectionData(gameManager.game.scenario.edition, true).find((sectionData) => sectionData.index == cardId && sectionData.group == 'randomMonsterCard');
                 if (section) {
-                    return "&nbsp%data.section." + section.name + '% (#' + section.index + ")";
+                    return "&nbsp%" + gameManager.scenarioManager.scenarioTitle(section, true) + '% (#' + section.index + ")";
                 }
             }
 
@@ -48,7 +49,7 @@ export class ScenarioRulesComponent {
             if (gameManager.game.scenario) {
                 const section = gameManager.sectionData(gameManager.game.scenario.edition, true).find((sectionData) => sectionData.index == cardId && sectionData.group == 'randomDungeonCard');
                 if (section) {
-                    return "&nbsp%data.section." + section.name + '% (#' + section.index + ")";
+                    return "&nbsp%" + gameManager.scenarioManager.scenarioTitle(section, true) + '% (#' + section.index + ")";
                 }
             }
 
@@ -207,7 +208,7 @@ export class ScenarioRulesComponent {
                     }
 
                     gameManager.stateManager.after();
-                }, !settingsManager.settings.animations ? 0 : 100)
+                }, settingsManager.settings.animations ? 100 * settingsManager.settings.animationSpeed : 0)
             }
         }
     }
@@ -218,9 +219,9 @@ export class ScenarioRulesComponent {
         setTimeout(() => {
             gameManager.stateManager.before("hideScenarioRule");
             const ruleModel = gameManager.game.scenarioRules.splice(index, 1)[0];
-            gameManager.game.disgardedScenarioRules.push(ruleModel.identifier);
+            gameManager.game.discardedScenarioRules.push(ruleModel.identifier);
             gameManager.stateManager.after();
-        }, !settingsManager.settings.animations ? 0 : 100)
+        }, settingsManager.settings.animations ? 100 * settingsManager.settings.animationSpeed : 0)
     }
 
     close(element: HTMLElement, index: number) {
@@ -228,10 +229,10 @@ export class ScenarioRulesComponent {
         setTimeout(() => {
             gameManager.stateManager.before("removeScenarioRule");
             const ruleModel = gameManager.game.scenarioRules.splice(index, 1)[0];
-            if (ruleModel.rule.once || ruleModel.rule.alwaysApplyTurn) {
-                gameManager.game.disgardedScenarioRules.push(ruleModel.identifier);
+            if (ruleModel.rule.once || ruleModel.rule.alwaysApplyTurn || ruleModel.rule.alwaysApply) {
+                gameManager.game.discardedScenarioRules.push(ruleModel.identifier);
             }
             gameManager.stateManager.after();
-        }, !settingsManager.settings.animations ? 0 : 100)
+        }, settingsManager.settings.animations ? 100 * settingsManager.settings.animationSpeed : 0)
     }
 }

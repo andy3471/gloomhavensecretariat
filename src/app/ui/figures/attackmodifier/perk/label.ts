@@ -5,6 +5,7 @@ import { AttackModifier, AttackModifierEffect, AttackModifierEffectType, AttackM
 import { Perk, PerkType } from "src/app/game/model/data/Perks";
 
 @Component({
+    standalone: false,
     selector: 'ghs-perk-label',
     templateUrl: './label.html',
     styleUrls: ['./label.scss'],
@@ -72,7 +73,7 @@ export class PerkLabelComponent {
 
     attackModifierHtml(attackModifier: AttackModifier): string {
         let html = "";
-        attackModifier = new AttackModifier(attackModifier.type, attackModifier.value, attackModifier.valueType, attackModifier.id, attackModifier.effects, attackModifier.rolling);
+        attackModifier = new AttackModifier(attackModifier.type, attackModifier.value, attackModifier.valueType, attackModifier.id, attackModifier.effects, attackModifier.rolling, attackModifier.active, attackModifier.shuffle);
 
         html += '<span class="attack-modifier-container">'
 
@@ -83,8 +84,10 @@ export class PerkLabelComponent {
         if (!attackModifier.rolling || attackModifier.type != AttackModifierType.plus0) {
             if (attackModifier.valueType == AttackModifierValueType.minus) {
                 html += '<span class="attack-modifier-icon' + (attackModifier.value > 9 ? ' small' : '') + '">-' + attackModifier.value + '</span>';
-            } else if (attackModifier.valueType == AttackModifierValueType.multiply) {
+            } else if (attackModifier.type != AttackModifierType.null && attackModifier.valueType == AttackModifierValueType.multiply) {
                 html += '<span class="attack-modifier-icon' + (attackModifier.value > 9 ? ' small' : '') + '">' + attackModifier.value + 'x</span>';
+            } else if (attackModifier.type == AttackModifierType.null) {
+                html += '<span class="attack-modifier-icon">&zwj;<img class="null" src="./assets/images/attackmodifier/null.svg"></span>';
             } else if (attackModifier.type == AttackModifierType.plusX) {
                 html += '<span class="attack-modifier-icon">+X</span>';
             } else {
@@ -105,6 +108,10 @@ export class PerkLabelComponent {
             if (attackModifier.effects.length > 1) {
                 html += '"';
             }
+        }
+
+        if (attackModifier.shuffle && attackModifier.type != AttackModifierType.null) {
+            html += '<span class="attack-modifier-effect shuffle">&zwj;<img class="action-icon sw" src="./assets/images/shuffle.svg"></span>';
         }
 
         if (settingsManager.settings.fhStyle && attackModifier.rolling) {
@@ -212,7 +219,23 @@ export class PerkLabelComponent {
                         html += this.attackModifierEffectHtml(subEffect, true);
                     })
                 }
-                
+
+                if (!noQuotes) {
+                    html = '"' + html + '"';
+                }
+                return html;
+            case AttackModifierEffectType.required:
+                if (effect.value) {
+                    html += '<span>' + effect.value + '</span>';
+                } else {
+                    html += '<span>!</span>';
+                }
+                if (effect.effects) {
+                    effect.effects.forEach((subEffect) => {
+                        html += this.attackModifierEffectHtml(subEffect, true);
+                    })
+                }
+
                 if (!noQuotes) {
                     html = '"' + html + '"';
                 }

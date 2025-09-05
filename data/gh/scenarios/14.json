@@ -9,9 +9,10 @@
     "gridLocation": "C-10"
   },
   "edition": "gh",
+  "eventType": "road",
   "rewards": {
     "globalAchievements": [
-      "The Power of Enhancement"
+      "the-power-of-enhancement"
     ]
   },
   "monsters": [

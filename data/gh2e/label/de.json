@@ -1,0 +1,18 @@
+{
+  "character": {
+    "gh2e": {
+      "cragheart": "Felsenherz",
+      "mindthief": "Gedankendiebin",
+      "spellweaver": "Spruchweberin",
+      "tinkerer": "Tüftler"
+    }
+  },
+  "deck": {
+    "archer": "Schütze",
+    "boss": "Boss",
+    "guard": "Wache",
+    "imp": "Wicht",
+    "priest": "Priester",
+    "scout": "Späher"
+  }
+}
