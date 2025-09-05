@@ -27,7 +27,7 @@
   "rooms": [
     {
       "roomNumber": 1,
-      "ref": "itu4-1",
+      "ref": "L1b",
       "initial": true,
       "rooms": [],
       "monster": [
