@@ -1,17 +1,27 @@
 {
   "index": "7",
-  "name": "TODO",
+  "name": "Arrival in Chains",
   "flowChartGroup": "itu",
   "edition": "itu",
   "unlocks": [
     "8"
   ],
-  "rewards": {},
-  "monsters": [],
+  "rewards": {
+    "battleGoals": 2,
+    "items": [
+      "91-gh"
+    ]
+  },
+  "monsters": [
+    "rending-drake",
+    "rocket-golem",
+    "spitting-drake",
+    "witch-bear"
+  ],
   "rooms": [
     {
       "roomNumber": 1,
-      "ref": "itu7-1",
+      "ref": "M1a",
       "initial": true,
       "rooms": [],
       "monster": []
