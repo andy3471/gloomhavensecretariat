@@ -1,20 +1,53 @@
 {
   "index": "6",
-  "name": "TODO",
+  "name": "A Ship in a Storm",
   "flowChartGroup": "itu",
   "edition": "itu",
   "unlocks": [
     "7"
   ],
-  "rewards": {},
-  "monsters": [],
+  "rewards": {
+    "experience": 10,
+    "items": [
+      "78-gh"
+    ]
+  },
+  "monsters": [
+    "frost-demon",
+    "lurker",
+    "wind-demon"
+  ],
+  "objectives": [
+    {
+      "name": "Dreyl",
+      "health": "6+(2xL)",
+      "marker": "a",
+      "initiative": 1
+    },
+    {
+      "name": "Barty",
+      "health": "6+(2xL)",
+      "marker": "b",
+      "initiative": 50
+    }
+  ],
+  "rules": [
+    {
+      "round": "R == 12",
+      "finish": "won"
+    }
+  ],
   "rooms": [
     {
       "roomNumber": 1,
-      "ref": "itu6-1",
+      "ref": "I1a",
       "initial": true,
       "rooms": [],
-      "monster": []
+      "monster": [],
+      "objectives": [
+        1,
+        2
+      ]
     }
   ]
 }
