@@ -18,13 +18,83 @@
     "spitting-drake",
     "witch-bear"
   ],
+  "rules": [
+    {
+      "round": "true",
+      "once": true,
+      "figures": [
+        {
+          "identifier": {
+            "type": "monster",
+            "name": "witch-bear"
+          },
+          "type": "killed"
+        }
+      ],
+      "spawns": [
+        {
+          "monster": {
+            "name": "rending-drake",
+            "player2": "normal",
+            "player3": "normal",
+            "player4": "elite"
+          },
+          "count": 2
+        },
+        {
+          "monster": {
+            "name": "spitting-drake",
+            "player2": "normal",
+            "player3": "elite",
+            "player4": "elite"
+          },
+          "count": 2
+        }
+      ]
+    },
+    {
+      "round": "true",
+      "once": true,
+      "figures": [
+        {
+          "identifier": {
+            "type": "monster",
+            "name": "rending-drake"
+          },
+          "value": 2,
+          "type": "killed"
+        },
+        {
+          "identifier": {
+            "type": "monster",
+            "name": "spitting-drake"
+          },
+          "value": 2,
+          "type": "killed"
+        }
+      ],
+      "spawns": [
+        {
+          "monster": {
+            "name": "rocket-golem",
+            "type": "boss"
+          }
+        }
+      ]
+    }
+  ],
   "rooms": [
     {
       "roomNumber": 1,
       "ref": "M1a",
       "initial": true,
       "rooms": [],
-      "monster": []
+      "monster": [
+        {
+          "name": "witch-bear",
+          "type": "boss"
+        }
+      ]
     }
   ]
 }
