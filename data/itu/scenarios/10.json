@@ -1,17 +1,122 @@
 {
   "index": "10",
-  "name": "TODO",
+  "name": "Panic Room",
   "flowChartGroup": "itu",
   "edition": "itu",
   "rewards": {},
-  "monsters": [],
+  "monsters": [
+    "deep-terror",
+    "night-demon"
+  ],
+  "objectives": [
+    {
+      "name": "Crystal",
+      "health": "Cx(4+2xL)",
+      "marker": "1"
+    }
+  ],
+  "rules": [
+    {
+      "always": true,
+      "once": true,
+      "rooms": [
+        2
+      ],
+      "figures": [
+        {
+          "identifier": {
+            "type": "objective",
+            "edition": "objective",
+            "name": "Crystal",
+            "marker": "1"
+          },
+          "type": "dead"
+        }
+      ]
+    }
+  ],
   "rooms": [
     {
       "roomNumber": 1,
-      "ref": "itu10-1",
+      "ref": "N1a",
       "initial": true,
       "rooms": [],
-      "monster": []
+      "monster": [
+        {
+          "name": "deep-terror",
+          "player2": "elite",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "deep-terror",
+          "player2": "elite",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "deep-terror",
+          "player3": "normal",
+          "player4": "elite"
+        },
+        {
+          "name": "deep-terror",
+          "player3": "normal",
+          "player4": "elite"
+        },
+        {
+          "name": "night-demon",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "elite"
+        },
+        {
+          "name": "night-demon",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "night-demon",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        }
+      ],
+      "objectives": [
+        1
+      ]
+    },
+    {
+      "roomNumber": 2,
+      "ref": "G2a",
+      "rooms": [],
+      "monster": [
+        {
+          "name": "night-demon",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "elite"
+        },
+        {
+          "name": "night-demon",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "elite"
+        },
+        {
+          "name": "night-demon",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "night-demon",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        }
+      ]
     }
   ]
 }
