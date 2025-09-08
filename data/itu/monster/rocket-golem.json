@@ -11,11 +11,11 @@
   },
   "stats": [
     {
-      "type": "elite",
       "level": 0,
-      "health": 10,
+      "health": "(10xC)/2",
       "movement": 2,
       "attack": 4,
+      "range": 4,
       "actions": [
         {
           "type": "shield",
@@ -24,11 +24,11 @@
       ]
     },
     {
-      "type": "elite",
       "level": 1,
-      "health": 11,
+      "health": "(11xC)/2",
       "movement": 2,
       "attack": 4,
+      "range": 4,
       "actions": [
         {
           "type": "shield",
@@ -37,11 +37,11 @@
       ]
     },
     {
-      "type": "elite",
       "level": 2,
-      "health": 14,
+      "health": "(14xC)/2",
       "movement": 2,
       "attack": 5,
+      "range": 4,
       "actions": [
         {
           "type": "shield",
@@ -50,11 +50,11 @@
       ]
     },
     {
-      "type": "elite",
       "level": 3,
-      "health": 15,
+      "health": "(15xC)/2",
       "movement": 2,
       "attack": 5,
+      "range": 4,
       "actions": [
         {
           "type": "shield",
@@ -63,11 +63,11 @@
       ]
     },
     {
-      "type": "elite",
       "level": 4,
-      "health": 17,
+      "health": "(17xC)/2",
       "movement": 2,
       "attack": 6,
+      "range": 4,
       "actions": [
         {
           "type": "shield",
@@ -76,11 +76,11 @@
       ]
     },
     {
-      "type": "elite",
       "level": 5,
-      "health": 19,
+      "health": "(19xC)/2",
       "movement": 3,
       "attack": 6,
+      "range": 4,
       "actions": [
         {
           "type": "shield",
@@ -89,11 +89,11 @@
       ]
     },
     {
-      "type": "elite",
       "level": 6,
-      "health": 20,
+      "health": "(20xC)/2",
       "movement": 3,
       "attack": 7,
+      "range": 4,
       "actions": [
         {
           "type": "shield",
@@ -102,11 +102,11 @@
       ]
     },
     {
-      "type": "elite",
       "level": 7,
-      "health": 21,
+      "health": "(21xC)/2",
       "movement": 3,
       "attack": 7,
+      "range": 4,
       "actions": [
         {
           "type": "shield",

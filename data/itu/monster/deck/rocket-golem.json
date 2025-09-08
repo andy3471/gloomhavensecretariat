@@ -31,7 +31,14 @@
         {
           "type": "attack",
           "value": 0,
-          "valueType": "plus"
+          "valueType": "plus",
+          "subActions": [
+            {
+              "type": "custom",
+              "value": "Deal 2 damage to any enemy adjacent to any enemy it performs an attack against",
+              "small": true
+            }
+          ]
         },
         {
           "type": "sufferDamage",
@@ -53,7 +60,14 @@
         {
           "type": "attack",
           "value": 1,
-          "valueType": "minus"
+          "valueType": "minus",
+          "subActions": [
+            {
+              "type": "custom",
+              "value": "Deal 2 damage to any enemy adjacent to any enemy it performs an attack against",
+              "small": true
+            }
+          ]
         }
       ]
     },
@@ -69,7 +83,14 @@
         {
           "type": "attack",
           "value": 0,
-          "valueType": "plus"
+          "valueType": "plus",
+          "subActions": [
+            {
+              "type": "custom",
+              "value": "Deal 2 damage to any enemy adjacent to any enemy it performs an attack against",
+              "small": true
+            }
+          ]
         }
       ]
     },
@@ -85,6 +106,11 @@
             {
               "type": "range",
               "value": 3,
+              "small": true
+            },
+            {
+              "type": "custom",
+              "value": "Deal 2 damage to any enemy adjacent to any enemy it performs an attack against",
               "small": true
             }
           ]
@@ -109,7 +135,14 @@
         {
           "type": "attack",
           "value": 1,
-          "valueType": "plus"
+          "valueType": "plus",
+          "subActions": [
+            {
+              "type": "custom",
+              "value": "Deal 2 damage to any enemy adjacent to any enemy it performs an attack against",
+              "small": true
+            }
+          ]
         }
       ]
     },
@@ -130,6 +163,11 @@
             {
               "type": "specialTarget",
               "value": "enemiesAdjacent",
+              "small": true
+            },
+            {
+              "type": "custom",
+              "value": "Deal 2 damage to any enemy adjacent to any enemy it performs an attack against",
               "small": true
             }
           ]
@@ -163,6 +201,11 @@
             {
               "type": "condition",
               "value": "immobilize",
+              "small": true
+            },
+            {
+              "type": "custom",
+              "value": "Deal 2 damage to any enemy adjacent to any enemy it performs an attack against",
               "small": true
             }
           ]

@@ -1,6 +1,7 @@
 {
   "name": "witch-bear",
   "edition": "itu",
+  "deck": "cave-bear",
   "boss": true,
   "hidden": true,
   "count": 1,
