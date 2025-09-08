@@ -1,20 +1,112 @@
 {
   "index": "8",
-  "name": "TODO",
+  "name": "The Doctor's Lab",
   "flowChartGroup": "itu",
   "edition": "itu",
   "unlocks": [
     "9"
   ],
-  "rewards": {},
-  "monsters": [],
+  "rewards": {
+    "gold": 15
+  },
+  "monsters": [
+    "living-bones"
+  ],
   "rooms": [
     {
       "roomNumber": 1,
-      "ref": "itu8-1",
+      "ref": "C1a",
       "initial": true,
-      "rooms": [],
-      "monster": []
+      "rooms": [
+        2,
+        3
+      ],
+      "monster": [
+        {
+          "name": "living-bones",
+          "player2": "elite",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "living-bones",
+          "player2": "elite",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "living-bones",
+          "player3": "normal",
+          "player4": "elite"
+        },
+        {
+          "name": "living-bones",
+          "player3": "normal",
+          "player4": "elite"
+        }
+      ]
+    },
+    {
+      "roomNumber": 2,
+      "ref": "B2b",
+      "rooms": [
+        4
+      ],
+      "monster": [
+        {
+          "name": "ancient-artillery",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "ancient-artillery",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "ancient-artillery",
+          "player3": "normal",
+          "player4": "elite"
+        }
+      ]
+    },
+    {
+      "roomNumber": 3,
+      "ref": "B3b",
+      "rooms": [
+        4
+      ],
+      "monster": [
+        {
+          "name": "ancient-artillery",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "ancient-artillery",
+          "player2": "normal",
+          "player3": "normal",
+          "player4": "normal"
+        },
+        {
+          "name": "ancient-artillery",
+          "player3": "normal",
+          "player4": "elite"
+        }
+      ]
+    },
+    {
+      "roomNumber": 4,
+      "ref": "I1b",
+      "monster": [
+        {
+          "name": "the-doctor",
+          "type": "boss"
+        }
+      ]
     }
   ]
 }

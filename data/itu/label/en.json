@@ -5,7 +5,8 @@
   "monster": {
     "barty-half-ear": "Barty Half Ear",
     "rocket-golem": "Rocket Golem",
-    "witch-bear": "Witch Bear"
+    "witch-bear": "Witch Bear",
+    "the-doctor": "The Doctor"
   },
   "custom": {
     "itu": {
@@ -28,7 +29,8 @@
         "4": "Unlikely Allies",
         "5": "The Sun Spire",
         "6": "A Ship in a Storm",
-        "7": "Arrival in Chains"
+        "7": "Arrival in Chains",
+        "8": "The Doctor's Lab"
       }
     }
   }
