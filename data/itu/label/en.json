@@ -18,7 +18,12 @@
   "scenario": {
     "rewards": {
       "itu": {
-        "004": "2 experience each for each Vermling alive"
+        "04": {
+          "1": "2 experience each for each Vermling alive"
+        },
+        "09": {
+          "1": "All Cultists summon normal Living Spirits instead of normal Living Bones."
+        }
       }
     },
     "title": {
@@ -30,7 +35,8 @@
         "5": "The Sun Spire",
         "6": "A Ship in a Storm",
         "7": "Arrival in Chains",
-        "8": "The Doctor's Lab"
+        "8": "The Doctor's Lab",
+        "9": "Skewed Perspective"
       }
     }
   }

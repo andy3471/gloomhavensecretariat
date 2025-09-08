@@ -103,7 +103,7 @@
       "ref": "I1b",
       "monster": [
         {
-          "name": "the-doctor",
+          "name": "the-doctor:+1",
           "type": "boss"
         }
       ]

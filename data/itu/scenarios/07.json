@@ -76,7 +76,7 @@
       "spawns": [
         {
           "monster": {
-            "name": "rocket-golem",
+            "name": "rocket-golem:+2",
             "type": "boss"
           }
         }

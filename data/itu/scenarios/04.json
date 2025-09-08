@@ -11,7 +11,7 @@
     "items": [
       "106-gh"
     ],
-    "custom": "%data.scenario.rewards.itu.004%"
+    "custom": "%data.scenario.rewards.itu.04.1%"
   },
   "monsters": [
     "giant-viper",
