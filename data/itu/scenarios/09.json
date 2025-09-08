@@ -29,9 +29,9 @@
             "name": "cultist"
           },
           "statEffect": {
-            "deck": "cultist-scenario-09"
+            "deck": "cultist-scenario-9"
           },
-          "note": "%data.scenario.rules.itu.09.1%"
+          "note": "%data.scenario.rules.itu.9.1%"
         }
       ]
     }
