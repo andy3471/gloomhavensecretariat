@@ -1,0 +1,6 @@
+{
+  "edition": "ci",
+  "extensions": [
+    "gh"
+  ]
+}

@@ -18,9 +18,9 @@ declare global {
 export class SettingsManager {
 
   defaultLocale: string = 'en';
-  defaultEditions: string[] = ["gh", "fh", "jotl", "fc", "cs", "toa", "bb", "gh2e", "solo", 'itu'];
+  defaultEditions: string[] = ["gh", "fh", "jotl", "fc", "cs", "toa", "bb", "gh2e", "solo"];
 
-  defaultEditionDataUrls: string[] = ["./assets/data/gh.json", "./assets/data/fh.json", "./assets/data/jotl.json", "./assets/data/fc.json", "./assets/data/cs.json", "./assets/data/toa.json", "./assets/data/bb.json", "./assets/data/solo.json", "./assets/data/fh-crossover.json", "./assets/data/gh-envx.json", "./assets/data/toa-envv.json", "./assets/data/sc.json", "./assets/data/gh-solo-items.json", "./assets/data/sox.json", "./assets/data/bas.json", "./assets/data/cc.json", "./assets/data/gh2e.json", "./assets/data/ir.json", "./assets/data/r100kc.json", "./assets/data/sits.json", "./assets/data/itu.json"];
+  defaultEditionDataUrls: string[] = ["./assets/data/gh.json", "./assets/data/fh.json", "./assets/data/jotl.json", "./assets/data/fc.json", "./assets/data/cs.json", "./assets/data/toa.json", "./assets/data/bb.json", "./assets/data/solo.json", "./assets/data/fh-crossover.json", "./assets/data/gh-envx.json", "./assets/data/toa-envv.json", "./assets/data/sc.json", "./assets/data/gh-solo-items.json", "./assets/data/sox.json", "./assets/data/bas.json", "./assets/data/cc.json", "./assets/data/gh2e.json", "./assets/data/ir.json", "./assets/data/r100kc.json",  "./assets/data/itu.json", "./assets/data/ci.json", "./assets/data/ib.json", "./assets/data/tbatb.json", "./assets/data/sits.json"];
 
   settings: Settings = new Settings();
   label: any = {};

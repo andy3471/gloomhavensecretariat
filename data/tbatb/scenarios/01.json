@@ -1,0 +1,11 @@
+{
+  "index": "1",
+  "name": "TBATB-1",
+  "flowChartGroup": "tbatb",
+  "edition": "tbatb",
+  "initial": true,
+  "unlocks": [
+    "2"
+  ],
+  "rooms": []
+}

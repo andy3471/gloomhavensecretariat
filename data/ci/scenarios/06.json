@@ -1,0 +1,10 @@
+{
+  "index": "6",
+  "name": "CI-6",
+  "flowChartGroup": "ci",
+  "edition": "ci",
+  "unlocks": [
+    "7"
+  ],
+  "rooms": []
+}

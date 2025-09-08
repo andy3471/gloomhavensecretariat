@@ -1,0 +1,10 @@
+{
+  "index": "2",
+  "name": "IB-2",
+  "flowChartGroup": "ib",
+  "edition": "ib",
+  "unlocks": [
+    "3"
+  ],
+  "rooms": []
+}
