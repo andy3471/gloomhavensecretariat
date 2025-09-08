@@ -1,7 +1,7 @@
 {
   "name": "the-doctor",
   "edition": "itu",
-  "deck": "stone-golem",
+  "deck": "the-doctor",
   "boss": true,
   "hidden": true,
   "count": 1,
