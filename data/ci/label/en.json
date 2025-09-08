@@ -1,5 +1,22 @@
 {
   "edition": {
     "ci": "Capital Intrigue"
+  },
+  "scenario": {
+    "rewards": {
+      "ci": {
+        "09": {
+          "1": "3 experience for each juror with at least C(3+L) damage tokens."
+        }
+      }
+    }
+  },
+  "custom": {
+    "ci": {
+      "captain-of-the-guard-scenario-9": {
+        "1": "Move to the closest empty hex adjacent to the juror with the most damage token and remove all of them. In the case of the tie, move to the lowest numbered juror.",
+        "2": "Move to hex f, or the closest empty hex. Remove 4+(2xC) damage tokens from the judge."
+      }
+    }
   }
 }

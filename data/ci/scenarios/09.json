@@ -1,10 +1,119 @@
 {
   "index": "9",
-  "name": "CI-9",
+  "name": "Legal Entanglements",
   "flowChartGroup": "ci",
   "edition": "ci",
   "unlocks": [
     "10"
   ],
-  "rooms": []
+  "rewards": {
+    "battleGoals": 1,
+    "custom": "%data.scenario.rewards.ci.09.1%"
+  },
+  "monsters": [
+    "captain-of-the-guard-scenario-9",
+    "city-guard"
+  ],
+  "objectives": [
+    {
+      "name": "Juror 1",
+      "health": "Cx(3+L)",
+      "marker": "1"
+    },
+    {
+      "name": "Juror 2",
+      "health": "Cx(3+L)",
+      "marker": "2"
+    },
+    {
+      "name": "Juror 3",
+      "health": "Cx(3+L)",
+      "marker": "3"
+    },
+    {
+      "name": "Juror 4",
+      "health": "Cx(3+L)",
+      "marker": "4"
+    },
+    {
+      "name": "Juror 5",
+      "health": "Cx(3+L)",
+      "marker": "5"
+    },
+    {
+      "name": "Juror 6",
+      "health": "Cx(3+L)",
+      "marker": "6"
+    },
+    {
+      "name": "Juror 7",
+      "health": "Cx(3+L)",
+      "marker": "7"
+    },
+    {
+      "name": "Juror 8",
+      "health": "Cx(3+L)",
+      "marker": "8"
+    },
+    {
+      "name": "Juror 9",
+      "health": "Cx(3+L)",
+      "marker": "9"
+    },
+    {
+      "name": "Juror 10",
+      "health": "Cx(3+L)",
+      "marker": "10"
+    },
+    {
+      "name": "Juror 11",
+      "health": "Cx(3+L)",
+      "marker": "11"
+    },
+    {
+      "name": "Juror 12",
+      "health": "Cx(3+L)",
+      "marker": "12"
+    }
+  ],
+  "rooms": [
+    {
+      "roomNumber": 1,
+      "ref": "I1a",
+      "initial": true,
+      "rooms": [],
+      "monster": [
+        {
+          "name": "captain-of-the-guard-scenario-9",
+          "type": "boss"
+        },
+        {
+          "name": "city-guard",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        },
+        {
+          "name": "city-guard",
+          "player2": "normal",
+          "player3": "elite",
+          "player4": "elite"
+        }
+      ],
+      "objectives": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ]
+    }
+  ]
 }
