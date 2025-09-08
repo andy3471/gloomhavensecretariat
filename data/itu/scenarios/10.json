@@ -41,6 +41,9 @@
       "ref": "N1a",
       "initial": true,
       "rooms": [],
+      "treasures": [
+        2
+      ],
       "monster": [
         {
           "name": "deep-terror",

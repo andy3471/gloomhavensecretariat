@@ -21,6 +21,9 @@
         2,
         3
       ],
+      "treasures": [
+        1
+      ],
       "monster": [
         {
           "name": "living-bones",
@@ -101,6 +104,9 @@
     {
       "roomNumber": 4,
       "ref": "I1b",
+      "treasures": [
+        1
+      ],
       "monster": [
         {
           "name": "the-doctor:+1",
