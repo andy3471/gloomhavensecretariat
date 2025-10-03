@@ -52,6 +52,8 @@ export class AttackModifier {
       this.id = id;
     } else if (type == AttackModifierType.townguard) {
       this.id = 'tg-' + valueType + value;
+    } else if (type == AttackModifierType.wreck || type == AttackModifierType.success) {
+      this.id = 'tg-' + type;
     } else {
       this.id = (type != AttackModifierType.plus && type != AttackModifierType.minus) ? type : (type + value);
     }
@@ -168,6 +170,26 @@ export class AttackModifierEffect {
     this.hint = hint;
     this.effects = effects;
     this.icon = icon;
+  }
+}
+
+export class AttackResult {
+  index: number;
+  chooseOffset: number;
+  state: 'advantage' | 'disadvantage' | undefined;
+  attack: string | number;
+  stringified: string;
+  result: number;
+  effects: AttackModifierEffect[];
+
+  constructor(index: number, chooseOffset: number, state: 'advantage' | 'disadvantage' | undefined, attack: string | number, stringified: string, result: number, effects: AttackModifierEffect[]) {
+    this.index = index;
+    this.chooseOffset = chooseOffset;
+    this.state = state;
+    this.attack = attack;
+    this.stringified = stringified;
+    this.result = result;
+    this.effects = effects;
   }
 }
 
